@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyTech - Trivia Élite Pro</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background: rgba(30, 41, 59, 0.85);
+            backdrop-filter: blur(12px);
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.7);
+            width: 100%;
+            max-width: 500px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            box-sizing: border-box;
+        }
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .badge-category {
+            display: inline-block;
+            background: rgba(56, 189, 248, 0.15);
+            color: #38bdf8;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+        .stats-top {
+            font-size: 0.85rem;
+            color: #94a3b8;
+        }
+        .hearts {
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+        }
+        h1 {
+            text-align: center;
+            color: #38bdf8;
+            margin-bottom: 10px;
+            margin-top: 0;
+            font-size: 1.8rem;
+            text-shadow: 0 2px 10px rgba(56,189,248,0.3);
+        }
+        .timer-bar-container {
+            width: 100%;
+            height: 6px;
+            background: #334155;
+            border-radius: 3px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+        .timer-bar {
+            width: 100%;
+            height: 100%;
+            background: #38bdf8;
+            transition: width 1s linear;
+        }
+        #question-box {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            background: #1e293b;
+            color: #f8fafc;
+            border: 2px solid #334155;
+            padding: 12px 15px;
+            margin-bottom: 12px;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+        }
+        .btn:hover:not(:disabled) {
+            background: #334155;
+            border-color: #38bdf8;
+            transform: translateY(-2px);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border: none;
+            text-align: center;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #2563eb, #1e40af);
+        }
+        #explanation {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            background: rgba(15, 23, 42, 0.6);
+            border-left: 4px solid #38bdf8;
+        }
+        .control-btns {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            font-size: 0.85rem;
+        }
+        .control-btns button {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        .control-btns button:hover {
+            color: #38bdf8;
+        }
+        .menu-card {
+            text-align: center;
+            padding: 10px;
+        }
+        .menu-logo {
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+        }
+        .settings-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(15, 23, 42, 0.5);
+            padding: 10px 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #334155;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="app-container">
+        <!-- Se renderiza dinámicamente -->
+    </div>
+
+    <script src="questions.js"></script>
+    <script>
+        let currentIndex = 0;
+        let scoreCorrect = 0;
+        let scoreIncorrect = 0;
+        let lives = 3;
+        let timeLeft = 25;
+        let timerInterval = null;
+        let soundEnabled = true;
+        let activeQuestions = []; // Almacenará las preguntas barajadas por bloques
+
+        // AUDIO WEB API
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playTone(frequency, type, duration) {
+            if (!soundEnabled) return;
+            if (audioCtx.state === 'suspended') { audioCtx.resume(); }
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.value = frequency;
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + duration);
+        }
+
+        function soundClick() { playTone(440, 'sine', 0.08); }
+        function soundSuccess() {
+            playTone(587.33, 'sine', 0.15);
+            setTimeout(() => playTone(880, 'sine', 0.3), 150);
+        }
+        function soundLevelUp() {
+            playTone(440, 'triangle', 0.1);
+            setTimeout(() => playTone(554.37, 'triangle', 0.1), 100);
+            setTimeout(() => playTone(659.25, 'triangle', 0.1), 200);
+            setTimeout(() => playTone(880, 'triangle', 0.4), 300);
+        }
+        function soundError() { playTone(200, 'sawtooth', 0.25); }
+        function soundGameOver() {
+            playTone(300, 'sawtooth', 0.2);
+            setTimeout(() => playTone(220, 'sawtooth', 0.2), 200);
+            setTimeout(() => playTone(150, 'sawtooth', 0.4), 400);
+        }
+
+        function getCategoryInfo(index) {
+            if (index < 20) return { name: "🌐 Módulo 1: Redes", color: "#38bdf8" };
+            if (index < 40) return { name: "🐧 Módulo 2: Linux", color: "#4ade80" };
+            if (index < 60) return { name: "💻 Módulo 3: Software", color: "#facc15" };
+            if (index < 80) return { name: "⚡ Módulo 4: Programación", color: "#f472b6" };
+            return { name: "🗄️ Módulo 5: Bases de Datos", color: "#c084fc" };
+        }
+
+        // Función para barajar un arreglo (Fisher-Yates)
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // Prepara las preguntas barajando cada bloque de 20 por separado
+        function prepareModuleQuestions() {
+            if (typeof questions === 'undefined' || !questions || questions.length === 0) {
+                return [];
+            }
+            let cloned = [...questions];
+            let finalizedQuestions = [];
+
+            // Dividir en 5 bloques de 20 y barajar cada bloque independientemente
+            for (let i = 0; i < cloned.length; i += 20) {
+                let block = cloned.slice(i, i + 20);
+                shuffleArray(block);
+                finalizedQuestions.push(...block);
+            }
+            return finalizedQuestions;
+        }
+
+        function showMenu() {
+            clearInterval(timerInterval);
+            let bestScore = localStorage.getItem('cytech_best_score') || 0;
+
+            document.getElementById('app-container').innerHTML = `
+                <div class="menu-card">
+                    <div class="menu-logo">⚡🤖</div>
+                    <h1>CyTech Pro</h1>
+                    <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 20px;">La Trivia Élite de Tecnología</p>
+                    
+                    <div class="settings-row">
+                        <span>🔊 Efectos de Sonido</span>
+                        <button onclick="toggleSound()" style="background:none; border:none; color: ${soundEnabled ? '#4ade80' : '#f87171'}; font-weight:bold; cursor:pointer;">
+                            ${soundEnabled ? 'ACTIVADO' : 'SILENCIADO'}
+                        </button>
+                    </div>
+
+                    <div style="background: rgba(15, 23, 42, 0.5); padding: 12px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #334155; text-align: left;">
+                        <div style="font-size: 0.85rem; color: #cbd5e1;">👑 Récord Personal: <b>${bestScore} aciertos</b></div>
+                        <div style="font-size: 0.85rem; color: #cbd5e1; margin-top: 5px;">❤️ Vidas por partida: <b>3 Corazones</b></div>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="startGame()">🚀 Iniciar Partida</button>
+                </div>
+            `;
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            soundClick();
+            showMenu();
+        }
+
+        function startGame() {
+            soundClick();
+            currentIndex = 0;
+            scoreCorrect = 0;
+            scoreIncorrect = 0;
+            lives = 3;
+            activeQuestions = prepareModuleQuestions();
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            clearInterval(timerInterval);
+
+            if (activeQuestions.length === 0) {
+                document.getElementById('app-container').innerHTML = `<h2>Error: No se encontró el archivo questions.js o está vacío.</h2>`;
+                return;
+            }
+
+            if (currentIndex >= activeQuestions.length) {
+                showVictoryScreen();
+                return;
+            }
+
+            renderQuestionCard();
+            startTimer();
+        }
+
+        function startTimer() {
+            timeLeft = 25;
+            const timerBar = document.getElementById('timer-bar');
+            if(!timerBar) return;
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                let percent = (timeLeft / 25) * 100;
+                if(timerBar) timerBar.style.width = percent + '%';
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    handleTimeOut();
+                }
+            }, 1000);
+        }
+
+        function handleTimeOut() {
+            soundError();
+            scoreIncorrect++;
+            lives--;
+            const expBox = document.getElementById('explanation');
+            expBox.innerHTML = `<strong>¡Tiempo agotado!</strong><br>Perdiste 1 vida.`;
+            document.getElementById('btn-a').disabled = true;
+            document.getElementById('btn-b').disabled = true;
+
+            checkLivesOrProceed();
+        }
+
+        function renderQuestionCard() {
+            const current = activeQuestions[currentIndex];
+            const cat = getCategoryInfo(currentIndex);
+            const heartsDisplay = '❤️'.repeat(lives) + '🖤'.repeat(3 - lives);
+
+            document.getElementById('app-container').innerHTML = `
+                <h1>CyTech Pro</h1>
+                <div class="header-top">
+                    <div class="badge-category" style="color: ${cat.color}; border-color: ${cat.color};">${cat.name}</div>
+                    <div class="hearts">${heartsDisplay}</div>
+                </div>
+                <div style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 8px; text-align: right;">Pregunta ${currentIndex + 1}/100</div>
+                <div class="timer-bar-container">
+                    <div id="timer-bar" class="timer-bar"></div>
+                </div>
+                <div id="question-box">${current.q}</div>
+                <button class="btn" id="btn-a" onclick="checkAnswer('A')">A) ${current.a}</button>
+                <button class="btn" id="btn-b" onclick="checkAnswer('B')">B) ${current.b}</button>
+                <div id="explanation"></div>
+                <div class="control-btns">
+                    <button onclick="confirmRestart()">🏠 Menú Principal</button>
+                    <span style="font-size: 0.8rem; color: #94a3b8;">✅ ${scoreCorrect} | ❌ ${scoreIncorrect}</span>
+                </div>
+            `;
+        }
+
+        function checkAnswer(selected) {
+            clearInterval(timerInterval);
+            const current = activeQuestions[currentIndex];
+            const expBox = document.getElementById('explanation');
+            
+            document.getElementById('btn-a').disabled = true;
+            document.getElementById('btn-b').disabled = true;
+
+            if (selected === current.correct) {
+                soundSuccess();
+                scoreCorrect++;
+                confetti({ particleCount: 30, spread: 50, origin: { y: 0.6 } });
+                expBox.innerHTML = `<strong>¡Correcto!</strong><br>${current.exp}`;
+            } else {
+                soundError();
+                scoreIncorrect++;
+                lives--;
+                expBox.innerHTML = `<strong>Incorrecto.</strong><br>${current.exp}`;
+            }
+
+            checkLivesOrProceed();
+        }
+
+        function checkLivesOrProceed() {
+            setTimeout(() => {
+                if (lives <= 0) {
+                    showGameOverScreen();
+                } else {
+                    currentIndex++;
+                    processNextStep();
+                }
+            }, 3000);
+        }
+
+        function processNextStep() {
+            if (currentIndex === 20 || currentIndex === 40 || currentIndex === 60 || currentIndex === 80) {
+                showCheckpointScreen();
+            } else {
+                loadQuestion();
+            }
+        }
+
+        function showCheckpointScreen() {
+            soundLevelUp();
+            confetti({ particleCount: 70, spread: 100, origin: { y: 0.5 } });
+            const catPrev = getCategoryInfo(currentIndex - 1);
+            const catNext = getCategoryInfo(currentIndex);
+
+            document.getElementById('app-container').innerHTML = `
+                <div style="text-align: center; padding: 10px;">
+                    <div style="font-size: 3rem; margin-bottom: 10px;">⭐🚀</div>
+                    <h2 style="color: #4ade80; font-size: 1.4rem; margin-bottom: 8px;">¡Checkpoint Superado!</h2>
+                    <p style="color: #f8fafc; font-size: 0.95rem; margin-bottom: 12px;">
+                        Completaste: <b>${catPrev.name}</b>
+                    </p>
+                    <div style="background: rgba(56, 189, 248, 0.1); padding: 10px; border-radius: 8px; margin-bottom: 15px; border: 1px dashed #38bdf8;">
+                        <span style="color: #38bdf8; font-weight: bold; font-size: 0.9rem;">Siguiente Reto:</span> 
+                        <p style="color: #cbd5e1; font-size: 0.9rem; margin-top: 4px;">${catNext.name}</p>
+                    </div>
+                    <p style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 15px;">Vidas restantes: ${'❤️'.repeat(lives)} | Aciertos: ${scoreCorrect}</p>
+                    <button class="btn btn-primary" onclick="loadQuestion()">
+                        Continuar al Siguiente Nivel ➔
+                    </button>
+                    <button onclick="confirmRestart()" style="background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 0.85rem; text-decoration: underline; margin-top: 10px;">
+                        🏠 Volver al Menú
+                    </button>
+                </div>
+            `;
+        }
+
+        function showGameOverScreen() {
+            soundGameOver();
+            document.getElementById('app-container').innerHTML = `
+                <div style="text-align: center; padding: 10px;">
+                    <div style="font-size: 3.5rem; margin-bottom: 10px;">💀💔</div>
+                    <h2 style="color: #f87171; font-size: 1.6rem; margin-bottom: 10px;">¡GAME OVER!</h2>
+                    <p style="color: #94a3b8; font-size: 0.95rem; margin-bottom: 20px;">Te has quedado sin vidas en el intento.</p>
+                    
+                    <div style="background: rgba(15, 23, 42, 0.5); padding: 12px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #334155;">
+                        <div style="font-size: 0.85rem; color: #cbd5e1;">Aciertos logrados: ${scoreCorrect}</div>
+                        <div style="font-size: 0.85rem; color: #cbd5e1; margin-top: 4px;">Pregunta alcanzada: ${currentIndex + 1}/100</div>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="startGame()">🔄 Reintentar Partida</button>
+                    <button onclick="showMenu()" style="background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 0.85rem; text-decoration: underline; margin-top: 15px;">
+                        🏠 Menú Principal
+                    </button>
+                </div>
+            `;
+        }
+
+        function showVictoryScreen() {
+            soundLevelUp();
+            let totalAnswered = scoreCorrect + scoreIncorrect;
+            let percentage = totalAnswered > 0 ? Math.round((scoreCorrect / totalAnswered) * 100) : 100;
+            
+            let bestScore = localStorage.getItem('cytech_best_score') || 0;
+            if (scoreCorrect > bestScore) {
+                localStorage.setItem('cytech_best_score', scoreCorrect);
+            }
+
+            var duration = 3.5 * 1000;
+            var end = Date.now() + duration;
+            (function frame() {
+                confetti({ particleCount: 20, angle: 60, spread: 80, origin: { x: 0 } });
+                confetti({ particleCount: 20, angle: 120, spread: 80, origin: { x: 1 } });
+                if (Date.now() < end) { requestAnimationFrame(frame); }
+            }());
+
+            document.getElementById('app-container').innerHTML = `
+                <div style="text-align: center; padding: 5px;">
+                    <div style="font-size: 3.5rem; margin-bottom: 5px;">🏆✨</div>
+                    <h2 style="color: #38bdf8; font-size: 1.5rem; margin-bottom: 5px;">¡MÁSTER EN TECNOLOGÍA!</h2>
+                    <p style="color: #4ade80; font-size: 1rem; margin-bottom: 12px; font-weight: bold;">Insignia Élite Desbloqueada</p>
+                    
+                    <div style="background: rgba(15, 23, 42, 0.5); padding: 12px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #334155; text-align: left;">
+                        <div style="font-size: 0.9rem; margin-bottom: 5px; color: #f8fafc;">📊 <b>Estadísticas Finales:</b></div>
+                        <div style="font-size: 0.85rem; color: #cbd5e1;">✅ Respuestas correctas: ${scoreCorrect}</div>
+                        <div style="font-size: 0.85rem; color: #cbd5e1;">❌ Respuestas incorrectas: ${scoreIncorrect}</div>
+                        <div style="font-size: 0.85rem; color: #38bdf8; margin-top: 4px;">📈 Efectividad global: ${percentage}%</div>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="showMenu()">🏠 Volver al Menú Principal</button>
+                </div>
+            `;
+        }
+
+        function confirmRestart() {
+            if(confirm("¿Deseas salir al menú principal? Perderás el progreso actual.")) {
+                showMenu();
+            }
+        }
+
+        // Arrancar en el Menú Principal al cargar
+        window.onload = showMenu;
+    </script>
+</body>
+</html>
