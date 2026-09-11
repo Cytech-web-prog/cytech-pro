@@ -1,0 +1,179 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SupplyChain AI Dashboard Pro</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent: #38bdf8;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --danger: #f43f5e;
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); padding: 16px; }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        h1 { font-size: 1.25rem; color: var(--accent); }
+        .lang-btn { background: var(--card-bg); border: 1px solid var(--text-muted); color: var(--text-main); padding: 6px 12px; border-radius: 6px; cursor: pointer; }
+        
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+        .card { background: var(--card-bg); padding: 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); }
+        .card h3 { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 6px; }
+        .card .value { font-size: 1.3rem; font-weight: bold; }
+        
+        .section-box { background: var(--card-bg); padding: 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 20px; }
+        .section-box h2 { font-size: 1rem; margin-bottom: 12px; color: var(--accent); }
+        
+        textarea { width: 100%; height: 70px; background: #0f172a; border: 1px solid var(--text-muted); color: var(--text-main); padding: 8px; border-radius: 6px; margin-bottom: 10px; resize: none; font-size: 0.9rem; }
+        button.action-btn { background: var(--accent); color: #0f172a; border: none; padding: 10px 16px; font-weight: bold; border-radius: 6px; width: 100%; cursor: pointer; }
+        .output { margin-top: 12px; background: #0f172a; padding: 10px; border-radius: 6px; font-size: 0.85rem; color: var(--text-muted); min-height: 50px; line-height: 1.4; }
+
+        .filters { display: flex; gap: 8px; margin-bottom: 12px; overflow-x: auto; padding-bottom: 4px; }
+        .filter-btn { background: #0f172a; border: 1px solid var(--text-muted); color: var(--text-muted); padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; white-space: nowrap; }
+        .filter-btn.active { background: var(--accent); color: #0f172a; border-color: var(--accent); font-weight: bold; }
+
+        .table-container { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left; }
+        th { color: var(--text-muted); border-bottom: 1px solid var(--text-muted); padding-bottom: 6px; font-weight: 600; }
+        td { padding: 8px 4px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .badge { padding: 3px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; }
+        .badge.critical { background: rgba(244, 63, 94, 0.2); color: var(--danger); }
+        .badge.warning { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+        .badge.stable { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1 id="title">SupplyChain IA Pro</h1>
+        <button class="lang-btn" onclick="toggleLanguage()">EN / ES</button>
+    </header>
+
+    <div class="grid">
+        <div class="card">
+            <h3 id="lbl-stock">Stock Crítico</h3>
+            <div class="value" id="stock-val" style="color: var(--danger);">3 SKUs</div>
+        </div>
+        <div class="card">
+            <h3 id="lbl-time">Lead Time Promedio</h3>
+            <div class="value" id="time-val" style="color: var(--success);">4.2 Días</div>
+        </div>
+    </div>
+
+    <div class="section-box">
+        <h2 id="lbl-ai">Asistente de Reglas & IA Avanzada</h2>
+        <textarea id="prompt-input" placeholder="Ej: Analizar riesgo de stock en componentes electrónicos..."></textarea>
+        <button class="action-btn" id="btn-analyze" onclick="runAnalysis()">Ejecutar Análisis Ejecutivo</button>
+        <div class="output" id="ai-output">Esperando ejecución del modelo logístico...</div>
+    </div>
+
+    <div class="section-box">
+        <h2 id="lbl-table-title">Inventario y Envíos en Tiempo Real</h2>
+        <div class="filters">
+            <button class="filter-btn active" onclick="filterTable('all', this)" id="f-all">Todos</button>
+            <button class="filter-btn" onclick="filterTable('critical', this)" id="f-crit">Críticos</button>
+            <button class="filter-btn" onclick="filterTable('transit', this)" id="f-trans">En Tránsito</button>
+        </div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th id="th-item">Item / SKU</th>
+                        <th id="th-status">Estado</th>
+                        <th id="th-stock">Cant.</th>
+                    </tr>
+                </thead>
+                <tbody id="inventory-body">
+                    <tr data-category="critical">
+                        <td>Microcontrolador PIC</td>
+                        <td><span class="badge critical">Crítico</span></td>
+                        <td>12 u.</td>
+                    </tr>
+                    <tr data-category="transit">
+                        <td>Sensor de Flujo V2</td>
+                        <td><span class="badge warning">En Tránsito</span></td>
+                        <td>140 u.</td>
+                    </tr>
+                    <tr data-category="stable">
+                        <td>Módulo Bluetooth BLE</td>
+                        <td><span class="badge stable">Estable</span></td>
+                        <td>450 u.</td>
+                    </tr>
+                    <tr data-category="critical">
+                        <td>Válvula Solenoida 12V</td>
+                        <td><span class="badge critical">Crítico</span></td>
+                        <td>5 u.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        let isEnglish = false;
+
+        function toggleLanguage() {
+            isEnglish = !isEnglish;
+            document.getElementById('title').innerText = isEnglish ? "SupplyChain AI Pro" : "SupplyChain IA Pro";
+            document.getElementById('lbl-stock').innerText = isEnglish ? "Critical Stock" : "Stock Crítico";
+            document.getElementById('lbl-time').innerText = isEnglish ? "Avg Lead Time" : "Lead Time Promedio";
+            document.getElementById('lbl-ai').innerText = isEnglish ? "AI & Advanced Rules Engine" : "Asistente de Reglas & IA Avanzada";
+            document.getElementById('prompt-input').placeholder = isEnglish ? "Ex: Analyze electronic components stock risk..." : "Ej: Analizar riesgo de stock en componentes electrónicos...";
+            document.getElementById('btn-analyze').innerText = isEnglish ? "Run Executive Analysis" : "Ejecutar Análisis Ejecutivo";
+            document.getElementById('lbl-table-title').innerText = isEnglish ? "Real-time Inventory & Shipments" : "Inventario y Envíos en Tiempo Real";
+            document.getElementById('f-all').innerText = isEnglish ? "All" : "Todos";
+            document.getElementById('f-crit').innerText = isEnglish ? "Critical" : "Críticos";
+            document.getElementById('f-trans').innerText = isEnglish ? "In Transit" : "En Tránsito";
+            document.getElementById('th-item').innerText = isEnglish ? "Item / SKU" : "Item / SKU";
+            document.getElementById('th-status').innerText = isEnglish ? "Status" : "Estado";
+            document.getElementById('th-stock').innerText = isEnglish ? "Qty" : "Cant.";
+        }
+
+        function runAnalysis() {
+            const input = document.getElementById('prompt-input').value;
+            const output = document.getElementById('ai-output');
+            
+            output.innerHTML = isEnglish ? 
+                `<strong>AI Simulation Output:</strong> Processing query "${input || 'General Check'}". <br>➔ Recommendation: Automated reorder triggered for critical SKUs. Lead time variance within safe parameters.` : 
+                `<strong>Resultado Simulación IA:</strong> Procesando consulta "${input || 'Revisión General'}". <br>➔ Recomendación: Reabastecimiento automático sugerido para SKUs críticos. Varianza de lead time en parámetros seguros.`;
+        }
+
+        function filterTable(category, btn) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            const rows = document.querySelectorAll('#inventory-body tr');
+            rows.forEach(row => {
+                if (category === 'all' || row.getAttribute('data-category') === category) {
+                    row.style.display = '';
+                } else {
+                row.style.display = 'none';
+                          });
+        }
+    fetch("http://localhost:3000/api/inventory/1").then(r=>r.json()).then(d=>console.log(d));
+    </script>
+
+
+<script>
+document.querySelector('button').addEventListener('click', async () => {
+    const box = document.querySelector('.bg-\\[\\#1e293b\\]:nth-child(3) div');
+    box.innerText = "Analizando riesgos logísticos con IA...";
+    
+    try {
+        const response = await fetch('http://localhost:3000/api/analysis', { method: 'POST' });
+        const data = await response.json();
+        box.innerText = data.recommendation;
+    } catch (error) {
+        box.innerText = "Error al conectar con el motor de análisis.";
+    }
+});
+</script>
+</body>
+</html>
+
