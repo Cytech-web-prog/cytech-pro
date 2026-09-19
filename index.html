@@ -1,0 +1,31 @@
+‎<!DOCTYPE html>
+‎<html lang="es">
+‎<head>
+‎    <meta charset="UTF-8">
+‎    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+‎    <title>CyTech Pro - Trivia</title>
+‎    <style>
+‎        body { font-family: Arial, sans-serif; background: #0f172a; color: #fff; text-align: center; padding: 20px; }
+‎        .container { max-width: 600px; margin: 0 auto; background: #1e293b; padding: 20px; border-radius: 10px; }
+‎        button { background: #3b82f6; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 5px; cursor: pointer; margin-top: 20px; }
+‎        button:hover { background: #2563eb; }
+‎    </style>
+‎</head>
+‎<body>
+‎    <div class="container">
+‎        <h1>CyTech Pro</h1>
+‎        <p>¡Bienvenido a la trivia interactiva de tecnología!</p>
+‎        <div id="quiz-box">
+‎            <p id="question-text">Cargando preguntas...</p>
+‎        </div>
+‎    </div>
+‎    <script src="questions.js"></script>
+‎    <script>
+‎        if (typeof questionsData !== 'undefined' && questionsData.length > 0) {
+‎            document.getElementById('question-text').innerText = "¡Preguntas cargadas con éxito! Total: " + questionsData.length;
+‎        } else {
+‎            document.getElementById('question-text').innerText = "Error: No se encontró questions.js o está vacío.";
+‎        }
+‎    </script>
+‎</body>
+‎</html>
