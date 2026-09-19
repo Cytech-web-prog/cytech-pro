@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -308,7 +308,7 @@
             <h1>CyTech Pro</h1>
             <div class="brand-subtitle">Christ Ydrogo</div>
             <div id="streak-container" class="streak-badge">🔥 Racha Diaria: 1 Días</div>
-            <p class="welcome-desc">Pon a prueba tu conocimiento técnico superando los 5 niveles de la app con preguntas dinámicas. ¡Demuestra tu dominio absoluto!</p>
+            <p class="welcome-desc">Pon a prueba tu conocimiento técnico superando los 5 niveles de la app con preguntas dinámicas y alertas de voz. ¡Demuestra tu dominio!</p>
             <button class="btn-primary" onclick="startGame()">Comenzar Desafío</button>
         </div>
 
@@ -334,7 +334,7 @@
             
             <div class="footer-score">
                 <span>Puntaje: <strong id="score-val" style="color: var(--primary);">0</strong></span>
-                <span style="font-size: 12px; opacity: 0.7;">Christ Ydrogo</span>
+                <span id="streak-live-display" style="font-size: 12px; color: #f59e0b; font-weight: bold;">🔥 Racha: 1</span>
             </div>
         </div>
 
@@ -371,6 +371,18 @@
 
     <script src="questions.js"></script>
     <script>
+        // --- MOTOR DE VOZ DE ALERTA (SpeechSynthesis API) ---
+        function speakAlert(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel(); // Detener voz anterior si habla muy rápido
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'es-ES';
+                utterance.rate = 1.05; // Velocidad un poco dinámica
+                utterance.pitch = 1.0;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
         // --- MOTOR DE SONIDOS DIGITALES (Web Audio API) ---
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
@@ -461,6 +473,7 @@
         let fails = 0;
         let lives = 3;
         let currentQuestions = [];
+        let globalStreak = 1;
 
         // --- SISTEMA DE RACHAS DIARIAS ---
         function checkStreak() {
@@ -487,8 +500,8 @@
 
         // Mostrar racha al cargar la página
         window.addEventListener('DOMContentLoaded', () => {
-            const currentStreak = checkStreak();
-            document.getElementById('streak-container').innerText = `🔥 Racha Diaria: ${currentStreak} Días`;
+            globalStreak = checkStreak();
+            document.getElementById('streak-container').innerText = `🔥 Racha Diaria: ${globalStreak} Días`;
         });
 
         // --- ALGORITMO DE MEZCLA ALEATORIA (Anti-Monotonía) ---
@@ -507,6 +520,7 @@
                 return;
             }
             playSound('start');
+            speakAlert("¡Comenzando desafío! Mucha suerte.");
             document.getElementById('welcome-screen').style.display = 'none';
             document.getElementById('victory-screen').style.display = 'none';
             document.getElementById('level-complete-screen').style.display = 'none';
@@ -526,6 +540,7 @@
         function updateStatsUI() {
             document.getElementById('score-val').innerText = score;
             document.getElementById('fails-val').innerText = fails;
+            document.getElementById('streak-live-display').innerText = `🔥 Racha: ${globalStreak}`;
             let heartsStr = '';
             for(let i = 0; i < lives; i++) heartsStr += '❤️';
             for(let i = lives; i < 3; i++) heartsStr += '🖤';
@@ -590,6 +605,7 @@
             document.getElementById('level-complete-screen').style.display = 'block';
 
             playSound('victory');
+            speakAlert("¡Nivel superado con éxito! Excelente trabajo.");
             triggerMassiveConfetti();
         }
 
@@ -616,17 +632,28 @@
             if (selected === correct) {
                 score++;
                 playSound('correct');
+                // Alerta de voz esporádica en aciertos
+                if (Math.random() > 0.6) {
+                    speakAlert("¡Correcto!");
+                }
             } else {
                 fails++;
                 lives--;
                 playSound('wrong');
-                if (lives <= 0) {
+
+                // AQUÍ HABLA LA ALERTA DE VOZ PERSONALIZADA EN CASO DE FALLO
+                if (lives === 1) {
+                    speakAlert("¡Alerta! Te queda una sola vida.");
+                } else if (lives <= 0) {
+                    speakAlert("Juego terminado. Te has quedado sin vidas.");
                     updateStatsUI();
                     setTimeout(() => {
                         alert("¡Te has quedado sin vidas! Game Over. Volviendo al menú principal.");
                         location.reload();
                     }, 400);
                     return;
+                } else {
+                    speakAlert("¡Fallaste! Cuidado.");
                 }
             }
             
@@ -654,6 +681,7 @@
             document.getElementById('final-lives').innerText = lives;
             
             playSound('victory');
+            speakAlert("¡Increíble! Has obtenido el rango supremo de maestro de la tecnología.");
             triggerMassiveConfetti();
         }
 
