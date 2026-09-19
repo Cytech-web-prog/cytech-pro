@@ -193,11 +193,30 @@
             font-size: 16px;
             border-radius: 12px;
             cursor: pointer;
-            margin-top: 25px;
+            margin-top: 15px;
             display: none;
             width: 100%;
             font-weight: bold;
             box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        /* Botón de Modo Prueba / Salto */
+        .btn-skip {
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--primary);
+            border: 1px dashed var(--primary);
+            padding: 10px 15px;
+            font-size: 13px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 15px;
+            width: 100%;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-skip:hover {
+            background: rgba(56, 189, 248, 0.2);
         }
 
         .footer-score {
@@ -282,6 +301,7 @@
             </div>
 
             <button id="next-btn" onclick="nextQuestion()">Siguiente Pregunta</button>
+            <button class="btn-skip" onclick="skipToNextLevel()">⏩ Saltar Nivel (Modo Prueba)</button>
             
             <div class="footer-score">
                 <span>Puntaje: <strong id="score-val" style="color: var(--primary);">0</strong></span>
@@ -299,7 +319,7 @@
                 <div>🎯 <strong>Puntaje Final:</strong> <span id="final-score" style="color: #38bdf8;">0</span> / 100</div>
                 <div>❌ <strong>Total de Fallos:</strong> <span id="final-fails" style="color: #f87171;">0</span></div>
                 <div>❤️ <strong>Vidas Restantes:</strong> <span id="final-lives" style="color: #ef4444;">3</span> / 3</div>
-                <div>⭐ <strong>Rango Obtenido:</strong> <span style="color: #34d399; font-weight: bold;">Maestro de la Tecnología</span></div>
+                <div>⭐ <strong>Rango Supremo:</strong> <span style="color: #34d399; font-weight: bold;">Maestro de la Tecnología</span></div>
             </div>
 
             <button class="btn-primary" onclick="restartGame()">Jugar de Nuevo</button>
@@ -363,13 +383,33 @@
             }
         }
 
-        // --- LÓGICA DE JUEGO ---
+        // --- DEFINICIÓN DE NIVELES Y RANGOS TEMÁTICOS ---
         const levels = [
-            { key: 'redes', name: 'Nivel 1: Redes y Protocolos' },
-            { key: 'programacion', name: 'Nivel 2: Programación y Desarrollo' },
-            { key: 'baseDeDatos', name: 'Nivel 3: Bases de Datos' },
-            { key: 'linux', name: 'Nivel 4: Linux y Comandos' },
-            { key: 'softwareLibre', name: 'Nivel 5: Software Libre y Cultura' }
+            { 
+                key: 'redes', 
+                name: 'Nivel 1: Redes y Protocolos', 
+                ranks: { newbie: 'Novato de Subred 🔌', mid: 'Técnico de Conectividad 🌐', elite: 'Arquitecto de Redes Globales 🛡️✨' } 
+            },
+            { 
+                key: 'programacion', 
+                name: 'Nivel 2: Programación y Desarrollo', 
+                ranks: { newbie: 'Depurador de Bugs 🐛', mid: 'Ingeniero de Software Junior ⌨️', elite: 'Maestro del Código Limpio 💻🚀' } 
+            },
+            { 
+                key: 'baseDeDatos', 
+                name: 'Nivel 3: Bases de Datos', 
+                ranks: { newbie: 'Consultor de Tablas 📋', mid: 'Administrador de Registros 🗄️', elite: 'Señor de las Consultas SQL 📊⚡' } 
+            },
+            { 
+                key: 'linux', 
+                name: 'Nivel 4: Linux y Comandos', 
+                ranks: { newbie: 'Aprendiz de Terminal 💻', mid: 'Operador de Shell 🖥️', elite: 'Dios del Root y los Comandos 🐧👑' } 
+            },
+            { 
+                key: 'softwareLibre', 
+                name: 'Nivel 5: Software Libre y Cultura', 
+                ranks: { newbie: 'Colaborador Open Source 🤝', mid: 'Evangelista del Software Libre 📖', elite: 'Gurú de la Filosofía Libre 🌍🏆' } 
+            }
         ];
 
         let currentLevelIndex = 0;
@@ -441,11 +481,20 @@
                 
                 updateStatsUI();
             } else {
+                // Al terminar las 20 preguntas del nivel actual, calculamos el rango obtenido
+                const completedLevel = levels[currentLevelIndex];
+                let earnedRank = completedLevel.ranks.elite;
+                if (fails >= 5) {
+                    earnedRank = completedLevel.ranks.newbie;
+                } else if (fails >= 2) {
+                    earnedRank = completedLevel.ranks.mid;
+                }
+
                 currentLevelIndex++;
                 if (currentLevelIndex < levels.length) {
                     playSound('victory');
                     triggerMassiveConfetti();
-                    alert(`¡Excelente trabajo! Has superado el ${levels[currentLevelIndex - 1].name}. ¡Avanzamos al siguiente nivel!`);
+                    alert(`🎉 ¡Nivel Superado!\n\nCompletaste ${completedLevel.name}.\n⭐ ¡Nuevo Rango Obtenido:\n${earnedRank}!\n\nAvanzamos al siguiente nivel.`);
                     loadLevel();
                 } else {
                     loadLevel();
@@ -492,6 +541,23 @@
             showQuestion();
         }
 
+        // Función para saltar al siguiente nivel directamente (Modo Prueba)
+        function skipToNextLevel() {
+            score += (20 - currentQuestionIndex);
+            const completedLevel = levels[currentLevelIndex];
+            const earnedRank = completedLevel.ranks.elite; // Salto directo otorga rango élite
+            currentLevelIndex++;
+            
+            if (currentLevelIndex < levels.length) {
+                playSound('victory');
+                triggerMassiveConfetti();
+                alert(`🚀 [Modo Prueba]\nHas saltado ${completedLevel.name}.\n⭐ ¡Rango Élite Obtenido:\n${earnedRank}!`);
+                loadLevel();
+            } else {
+                showVictoryScreen();
+            }
+        }
+
         function showVictoryScreen() {
             document.getElementById('game-screen').style.display = 'none';
             document.getElementById('victory-screen').style.display = 'block';
@@ -509,7 +575,6 @@
 
         // --- EFECTO DE CONFETI MASIVO ---
         function triggerMassiveConfetti() {
-            // Explosión múltiple para cubrir toda la pantalla con bastante confeti
             const duration = 3.5 * 1000;
             const animationEnd = Date.now() + duration;
             const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 1000 };
