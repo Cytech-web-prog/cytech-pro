@@ -34,14 +34,14 @@
             width: 100%;
             max-width: 480px;
             background: var(--card-bg);
-            padding: 30px 25px;
+            padding: 25px 20px;
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             border: 1px solid rgba(56, 189, 248, 0.15);
             box-sizing: border-box;
         }
 
-        /* Pantalla de Inicio / Bienvenida */
+        /* Pantalla de Inicio / Mapa Global de Ruta */
         #welcome-screen {
             display: flex;
             flex-direction: column;
@@ -53,60 +53,100 @@
             background: linear-gradient(135deg, #38bdf8, #6366f1);
             color: #fff;
             font-weight: 800;
-            font-size: 28px;
-            width: 75px;
-            height: 75px;
+            font-size: 24px;
+            width: 60px;
+            height: 60px;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 50%;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             box-shadow: 0 0 20px var(--primary-glow);
         }
 
         h1 {
             color: var(--text-main);
-            font-size: 28px;
-            margin: 0 0 10px 0;
+            font-size: 24px;
+            margin: 0 0 5px 0;
             font-weight: 700;
-            letter-spacing: 0.5px;
         }
 
         .brand-subtitle {
             color: var(--primary);
-            font-size: 14px;
+            font-size: 13px;
             text-transform: uppercase;
             letter-spacing: 2px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             font-weight: 600;
         }
 
-        .welcome-desc {
-            color: var(--text-muted);
-            font-size: 15px;
-            line-height: 1.6;
-            margin-bottom: 20px;
-        }
-
-        /* Insignia de Racha Diaria */
         .streak-badge {
             background: rgba(245, 158, 11, 0.1);
             border: 1px solid rgba(245, 158, 11, 0.3);
             color: #f59e0b;
-            padding: 8px 15px;
+            padding: 6px 12px;
             border-radius: 10px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: bold;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             display: inline-block;
+        }
+
+        /* Estilo del Mapa Global de Nodos */
+        .world-map-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .map-node {
+            background: #1e293b;
+            border: 2px solid #334155;
+            padding: 12px 15px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .map-node:hover {
+            border-color: var(--primary);
+            background: rgba(56, 189, 248, 0.05);
+        }
+
+        .map-node.active {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, rgba(2, 132, 199, 0.2), rgba(79, 70, 229, 0.2));
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
+        }
+
+        .node-info h4 {
+            margin: 0;
+            font-size: 14px;
+            color: var(--text-main);
+        }
+
+        .node-info span {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .node-icon {
+            font-size: 22px;
         }
 
         .btn-primary {
             background: linear-gradient(135deg, #0284c7, #4f46e5);
             color: white;
             border: none;
-            padding: 15px 30px;
-            font-size: 17px;
+            padding: 14px 20px;
+            font-size: 16px;
             font-weight: bold;
             border-radius: 12px;
             cursor: pointer;
@@ -135,7 +175,7 @@
         }
 
         #level-title {
-            font-size: 13px;
+            font-size: 12px;
             color: var(--primary);
             font-weight: bold;
             text-align: left;
@@ -166,8 +206,8 @@
         }
 
         #question-text {
-            font-size: 18px;
-            margin-bottom: 25px;
+            font-size: 17px;
+            margin-bottom: 20px;
             line-height: 1.5;
             text-align: left;
             color: #e2e8f0;
@@ -177,15 +217,15 @@
         .options-grid {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
         }
 
         button.option-btn {
             background: #1e293b;
             color: var(--text-main);
             border: 2px solid #334155;
-            padding: 14px 18px;
-            font-size: 15px;
+            padding: 13px 15px;
+            font-size: 14px;
             border-radius: 12px;
             cursor: pointer;
             transition: all 0.2s;
@@ -202,8 +242,8 @@
             background: #10b981;
             color: white;
             border: none;
-            padding: 14px 20px;
-            font-size: 16px;
+            padding: 13px 20px;
+            font-size: 15px;
             border-radius: 12px;
             cursor: pointer;
             margin-top: 15px;
@@ -213,8 +253,8 @@
             box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
         }
 
-        /* Pantalla Intermedia de Nivel Superado */
-        #level-complete-screen {
+        /* Pantallas de Nivel Superado y Victoria */
+        #level-complete-screen, #victory-screen {
             display: none;
             animation: fadeIn 0.5s ease-in-out;
             text-align: center;
@@ -223,12 +263,11 @@
         .rank-badge-box {
             background: rgba(56, 189, 248, 0.08);
             border: 1px solid rgba(56, 189, 248, 0.3);
-            padding: 20px;
+            padding: 18px;
             border-radius: 15px;
             margin: 20px 0;
         }
 
-        /* Botón de Modo Prueba / Salto */
         .btn-skip {
             background: rgba(56, 189, 248, 0.1);
             color: var(--primary);
@@ -237,43 +276,31 @@
             font-size: 13px;
             border-radius: 10px;
             cursor: pointer;
-            margin-top: 15px;
+            margin-top: 12px;
             width: 100%;
             font-weight: 600;
-            transition: all 0.2s;
-        }
-
-        .btn-skip:hover {
-            background: rgba(56, 189, 248, 0.2);
         }
 
         .footer-score {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: 20px;
+            margin-top: 15px;
             font-size: 14px;
             color: var(--text-muted);
             border-top: 1px solid rgba(255,255,255,0.05);
-            padding-top: 15px;
-        }
-
-        /* Pantalla de Victoria Final */
-        #victory-screen {
-            display: none;
-            animation: fadeIn 0.6s ease-in-out;
-            text-align: center;
+            padding-top: 12px;
         }
 
         .trophy-icon {
-            font-size: 68px;
+            font-size: 60px;
             margin-bottom: 10px;
             animation: bounce 1.5s infinite;
         }
 
         .victory-title {
             color: #38bdf8;
-            font-size: 26px;
+            font-size: 24px;
             font-weight: bold;
             margin-bottom: 5px;
         }
@@ -281,12 +308,12 @@
         .victory-stats {
             background: rgba(255,255,255,0.03);
             border: 1px solid rgba(255,255,255,0.1);
-            padding: 18px;
+            padding: 15px;
             border-radius: 12px;
-            margin: 20px 0;
+            margin: 15px 0;
             text-align: left;
-            font-size: 15px;
-            line-height: 1.9;
+            font-size: 14px;
+            line-height: 1.8;
         }
 
         @keyframes fadeIn {
@@ -296,20 +323,60 @@
 
         @keyframes bounce {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-12px); }
+            50% { transform: translateY(-10px); }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- PANTALLA DE BIENVENIDA -->
+        <!-- PANTALLA DE BIENVENIDA: MAPA GLOBAL DE TECNOLOGÍA -->
         <div id="welcome-screen">
             <div class="logo-badge">Cy</div>
             <h1>CyTech Pro</h1>
             <div class="brand-subtitle">Christ Ydrogo</div>
             <div id="streak-container" class="streak-badge">🔥 Racha Diaria: 1 Días</div>
-            <p class="welcome-desc">Pon a prueba tu conocimiento técnico superando los 5 niveles de la app con preguntas dinámicas y alertas de voz. ¡Demuestra tu dominio!</p>
-            <button class="btn-primary" onclick="startGame()">Comenzar Desafío</button>
+            
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">Selecciona una estación global del ciberespacio:</p>
+            
+            <div class="world-map-container">
+                <div class="map-node active" onclick="selectLevelAndStart(0)">
+                    <div class="node-info">
+                        <h4>Estación 1: Redes Globales</h4>
+                        <span>América - Protocolos y Conectividad</span>
+                    </div>
+                    <div class="node-icon">🔌</div>
+                </div>
+                <div class="map-node" onclick="selectLevelAndStart(1)">
+                    <div class="node-info">
+                        <h4>Estación 2: Núcleo de Software</h4>
+                        <span>Europa - Programación y Desarrollo</span>
+                    </div>
+                    <div class="node-icon">💻</div>
+                </div>
+                <div class="map-node" onclick="selectLevelAndStart(2)">
+                    <div class="node-info">
+                        <h4>Estación 3: Servidores SQL</h4>
+                        <span>Asia - Bases de Datos</span>
+                    </div>
+                    <div class="node-icon">📊</div>
+                </div>
+                <div class="map-node" onclick="selectLevelAndStart(3)">
+                    <div class="node-info">
+                        <h4>Estación 4: Terminal Root</h4>
+                        <span>África - Linux y Comandos</span>
+                    </div>
+                    <div class="node-icon">🐧</div>
+                </div>
+                <div class="map-node" onclick="selectLevelAndStart(4)">
+                    <div class="node-info">
+                        <h4>Estación 5: Filosofía Libre</h4>
+                        <span>Oceanía - Software Libre y Cultura</span>
+                    </div>
+                    <div class="node-icon">🌍</div>
+                </div>
+            </div>
+
+            <button class="btn-primary" onclick="startGame(0)">Iniciar Ruta Global 🚀</button>
         </div>
 
         <!-- PANTALLA DE JUEGO -->
@@ -330,7 +397,7 @@
             </div>
 
             <button id="next-btn" onclick="nextQuestion()">Siguiente Pregunta</button>
-            <button class="btn-skip" onclick="skipToNextLevel()">⏩ Saltar Nivel (Modo Prueba)</button>
+            <button class="btn-skip" onclick="skipToNextLevel()">⏩ Saltar Estación (Modo Prueba)</button>
             
             <div class="footer-score">
                 <span>Puntaje: <strong id="score-val" style="color: var(--primary);">0</strong></span>
@@ -341,7 +408,7 @@
         <!-- PANTALLA INTERMEDIA DE NIVEL SUPERADO -->
         <div id="level-complete-screen">
             <div style="font-size: 50px; margin-bottom: 10px;">🎉</div>
-            <div class="victory-title">¡Nivel Superado!</div>
+            <div class="victory-title">¡Estación Hackeada!</div>
             <p id="completed-level-name" style="color: var(--text-muted); font-size: 14px; margin-bottom: 10px;"></p>
             
             <div class="rank-badge-box">
@@ -349,14 +416,14 @@
                 <div id="earned-rank-text" style="font-size: 18px; font-weight: bold; color: #34d399;"></div>
             </div>
 
-            <button class="btn-primary" onclick="proceedToNextLevel()">Siguiente Nivel 🚀</button>
+            <button class="btn-primary" onclick="proceedToNextLevel()">Siguiente Estación 🚀</button>
         </div>
 
         <!-- PANTALLA DE VICTORIA FINAL -->
         <div id="victory-screen">
             <div class="trophy-icon">🏆</div>
-            <div class="victory-title">¡Gran Triunfo Técnico!</div>
-            <p style="color: var(--text-muted); font-size: 14px;">Has superado exitosamente las 100 preguntas de CyTech Pro.</p>
+            <div class="victory-title">¡Red Global Conquistada!</div>
+            <p style="color: var(--text-muted); font-size: 13px;">Has superado exitosamente todas las estaciones de CyTech Pro.</p>
             
             <div class="victory-stats">
                 <div>🎯 <strong>Puntaje Final:</strong> <span id="final-score" style="color: #38bdf8;">0</span> / 100</div>
@@ -365,7 +432,7 @@
                 <div>⭐ <strong>Rango Supremo:</strong> <span style="color: #34d399; font-weight: bold;">Maestro de la Tecnología</span></div>
             </div>
 
-            <button class="btn-primary" onclick="restartGame()">Jugar de Nuevo</button>
+            <button class="btn-primary" onclick="location.reload()">Volver al Mapa Global</button>
         </div>
     </div>
 
@@ -374,10 +441,10 @@
         // --- MOTOR DE VOZ DE ALERTA (SpeechSynthesis API) ---
         function speakAlert(text) {
             if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel(); // Detener voz anterior si habla muy rápido
+                window.speechSynthesis.cancel();
                 const utterance = new SpeechSynthesisUtterance(text);
                 utterance.lang = 'es-ES';
-                utterance.rate = 1.05; // Velocidad un poco dinámica
+                utterance.rate = 1.05;
                 utterance.pitch = 1.0;
                 window.speechSynthesis.speak(utterance);
             }
@@ -442,27 +509,27 @@
         const levels = [
             { 
                 key: 'redes', 
-                name: 'Nivel 1: Redes y Protocolos', 
+                name: 'Estación 1: Redes y Protocolos', 
                 ranks: { newbie: 'Novato de Subred 🔌', mid: 'Técnico de Conectividad 🌐', elite: 'Arquitecto de Redes Globales 🛡️✨' } 
             },
             { 
                 key: 'programacion', 
-                name: 'Nivel 2: Programación y Desarrollo', 
+                name: 'Estación 2: Programación y Desarrollo', 
                 ranks: { newbie: 'Depurador de Bugs 🐛', mid: 'Ingeniero de Software Junior ⌨️', elite: 'Maestro del Código Limpio 💻🚀' } 
             },
             { 
                 key: 'baseDeDatos', 
-                name: 'Nivel 3: Bases de Datos', 
+                name: 'Estación 3: Bases de Datos', 
                 ranks: { newbie: 'Consultor de Tablas 📋', mid: 'Administrador de Registros 🗄️', elite: 'Señor de las Consultas SQL 📊⚡' } 
             },
             { 
                 key: 'linux', 
-                name: 'Nivel 4: Linux y Comandos', 
+                name: 'Estación 4: Linux y Comandos', 
                 ranks: { newbie: 'Aprendiz de Terminal 💻', mid: 'Operador de Shell 🖥️', elite: 'Dios del Root y los Comandos 🐧👑' } 
             },
             { 
                 key: 'softwareLibre', 
-                name: 'Nivel 5: Software Libre y Cultura', 
+                name: 'Estación 5: Software Libre y Cultura', 
                 ranks: { newbie: 'Colaborador Open Source 🤝', mid: 'Evangelista del Software Libre 📖', elite: 'Gurú de la Filosofía Libre 🌍🏆' } 
             }
         ];
@@ -498,13 +565,18 @@
             return streak;
         }
 
-        // Mostrar racha al cargar la página
         window.addEventListener('DOMContentLoaded', () => {
             globalStreak = checkStreak();
             document.getElementById('streak-container').innerText = `🔥 Racha Diaria: ${globalStreak} Días`;
         });
 
-        // --- ALGORITMO DE MEZCLA ALEATORIA (Anti-Monotonía) ---
+        // Selección directa al hacer clic en un nodo del mapa
+        function selectLevelAndStart(index) {
+            currentLevelIndex = index;
+            startGame(index);
+        }
+
+        // --- ALGORITMO DE MEZCLA ALEATORIA ---
         function shuffleArray(array) {
             let arr = [...array];
             for (let i = arr.length - 1; i > 0; i--) {
@@ -514,13 +586,14 @@
             return arr;
         }
 
-        function startGame() {
+        function startGame(startIndex = 0) {
             if (typeof categoriesData === 'undefined') {
                 alert("Error: No se pudo cargar questions.js");
                 return;
             }
+            currentLevelIndex = startIndex;
             playSound('start');
-            speakAlert("¡Comenzando desafío! Mucha suerte.");
+            speakAlert("¡Conectando con la red global! Iniciando desafío.");
             document.getElementById('welcome-screen').style.display = 'none';
             document.getElementById('victory-screen').style.display = 'none';
             document.getElementById('level-complete-screen').style.display = 'none';
@@ -533,7 +606,6 @@
             score = 0;
             fails = 0;
             lives = 3;
-            currentLevelIndex = 0;
             updateStatsUI();
         }
 
@@ -550,8 +622,6 @@
         function loadLevel() {
             if (currentLevelIndex < levels.length) {
                 const levelInfo = levels[currentLevelIndex];
-                
-                // Mezcla aleatoria de las preguntas del nivel actual
                 const rawQuestions = categoriesData[levelInfo.key];
                 currentQuestions = shuffleArray(rawQuestions);
                 
@@ -573,7 +643,6 @@
                 const optionsContainer = document.getElementById('options-container');
                 optionsContainer.innerHTML = '';
                 
-                // También mezclamos las opciones de respuesta para mayor variedad
                 const shuffledOptions = shuffleArray(q.options);
 
                 shuffledOptions.forEach(option => {
@@ -600,12 +669,12 @@
 
         function showLevelCompleteScreen(levelName, rankTitle) {
             document.getElementById('game-screen').style.display = 'none';
-            document.getElementById('completed-level-name').innerText = `Has completado exitosamente ${levelName}.`;
+            document.getElementById('completed-level-name').innerText = `Has hackeado con éxito ${levelName}.`;
             document.getElementById('earned-rank-text').innerText = rankTitle;
             document.getElementById('level-complete-screen').style.display = 'block';
 
             playSound('victory');
-            speakAlert("¡Nivel superado con éxito! Excelente trabajo.");
+            speakAlert("¡Estación superada! Excelente dominio tecnológico.");
             triggerMassiveConfetti();
         }
 
@@ -632,7 +701,6 @@
             if (selected === correct) {
                 score++;
                 playSound('correct');
-                // Alerta de voz esporádica en aciertos
                 if (Math.random() > 0.6) {
                     speakAlert("¡Correcto!");
                 }
@@ -641,14 +709,13 @@
                 lives--;
                 playSound('wrong');
 
-                // AQUÍ HABLA LA ALERTA DE VOZ PERSONALIZADA EN CASO DE FALLO
                 if (lives === 1) {
                     speakAlert("¡Alerta! Te queda una sola vida.");
                 } else if (lives <= 0) {
                     speakAlert("Juego terminado. Te has quedado sin vidas.");
                     updateStatsUI();
                     setTimeout(() => {
-                        alert("¡Te has quedado sin vidas! Game Over. Volviendo al menú principal.");
+                        alert("¡Te has quedado sin vidas! Game Over. Volviendo al mapa global.");
                         location.reload();
                     }, 400);
                     return;
@@ -681,12 +748,8 @@
             document.getElementById('final-lives').innerText = lives;
             
             playSound('victory');
-            speakAlert("¡Increíble! Has obtenido el rango supremo de maestro de la tecnología.");
+            speakAlert("¡Increíble! Has conquistado todo el mapa global tecnológico.");
             triggerMassiveConfetti();
-        }
-
-        function restartGame() {
-            startGame();
         }
 
         // --- EFECTO DE CONFETI MASIVO ---
