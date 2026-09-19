@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -200,6 +200,21 @@
             box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
         }
 
+        /* Pantalla Intermedia de Nivel Superado */
+        #level-complete-screen {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+            text-align: center;
+        }
+
+        .rank-badge-box {
+            background: rgba(56, 189, 248, 0.08);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+
         /* Botón de Modo Prueba / Salto */
         .btn-skip {
             background: rgba(56, 189, 248, 0.1);
@@ -230,7 +245,7 @@
             padding-top: 15px;
         }
 
-        /* Pantalla de Victoria Final con Trofeo y Confeti Masivo */
+        /* Pantalla de Victoria Final (100 PREGUNTAS COMPLETADAS) */
         #victory-screen {
             display: none;
             animation: fadeIn 0.6s ease-in-out;
@@ -307,6 +322,20 @@
                 <span>Puntaje: <strong id="score-val" style="color: var(--primary);">0</strong></span>
                 <span style="font-size: 12px; opacity: 0.7;">Christ Ydrogo</span>
             </div>
+        </div>
+
+        <!-- PANTALLA INTERMEDIA DE NIVEL SUPERADO -->
+        <div id="level-complete-screen">
+            <div style="font-size: 50px; margin-bottom: 10px;">🎉</div>
+            <div class="victory-title">¡Nivel Superado!</div>
+            <p id="completed-level-name" style="color: var(--text-muted); font-size: 14px; margin-bottom: 10px;"></p>
+            
+            <div class="rank-badge-box">
+                <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px;">Nuevo Rango Obtenido</div>
+                <div id="earned-rank-text" style="font-size: 18px; font-weight: bold; color: #34d399;"></div>
+            </div>
+
+            <button class="btn-primary" onclick="proceedToNextLevel()">Siguiente Nivel 🚀</button>
         </div>
 
         <!-- PANTALLA DE VICTORIA FINAL (100 PREGUNTAS COMPLETADAS) -->
@@ -427,6 +456,7 @@
             playSound('start');
             document.getElementById('welcome-screen').style.display = 'none';
             document.getElementById('victory-screen').style.display = 'none';
+            document.getElementById('level-complete-screen').style.display = 'none';
             document.getElementById('game-screen').style.display = 'block';
             resetGameStats();
             loadLevel();
@@ -481,7 +511,7 @@
                 
                 updateStatsUI();
             } else {
-                // Al terminar las 20 preguntas del nivel actual, calculamos el rango obtenido
+                // Al terminar las 20 preguntas, mostramos la pantalla intermedia sin bloquear con alerts
                 const completedLevel = levels[currentLevelIndex];
                 let earnedRank = completedLevel.ranks.elite;
                 if (fails >= 5) {
@@ -490,16 +520,25 @@
                     earnedRank = completedLevel.ranks.mid;
                 }
 
-                currentLevelIndex++;
-                if (currentLevelIndex < levels.length) {
-                    playSound('victory');
-                    triggerMassiveConfetti();
-                    alert(`🎉 ¡Nivel Superado!\n\nCompletaste ${completedLevel.name}.\n⭐ ¡Nuevo Rango Obtenido:\n${earnedRank}!\n\nAvanzamos al siguiente nivel.`);
-                    loadLevel();
-                } else {
-                    loadLevel();
-                }
+                showLevelCompleteScreen(completedLevel.name, earnedRank);
             }
+        }
+
+        function showLevelCompleteScreen(levelName, rankTitle) {
+            document.getElementById('game-screen').style.display = 'none';
+            document.getElementById('completed-level-name').innerText = `Has completado exitosamente ${levelName}.`;
+            document.getElementById('earned-rank-text').innerText = rankTitle;
+            document.getElementById('level-complete-screen').style.display = 'block';
+
+            playSound('victory');
+            triggerMassiveConfetti();
+        }
+
+        function proceedToNextLevel() {
+            currentLevelIndex++;
+            document.getElementById('level-complete-screen').style.display = 'none';
+            document.getElementById('game-screen').style.display = 'block';
+            loadLevel();
         }
 
         function selectAnswer(button, selected, correct) {
@@ -545,17 +584,8 @@
         function skipToNextLevel() {
             score += (20 - currentQuestionIndex);
             const completedLevel = levels[currentLevelIndex];
-            const earnedRank = completedLevel.ranks.elite; // Salto directo otorga rango élite
-            currentLevelIndex++;
-            
-            if (currentLevelIndex < levels.length) {
-                playSound('victory');
-                triggerMassiveConfetti();
-                alert(`🚀 [Modo Prueba]\nHas saltado ${completedLevel.name}.\n⭐ ¡Rango Élite Obtenido:\n${earnedRank}!`);
-                loadLevel();
-            } else {
-                showVictoryScreen();
-            }
+            const earnedRank = completedLevel.ranks.elite;
+            showLevelCompleteScreen(completedLevel.name, earnedRank);
         }
 
         function showVictoryScreen() {
