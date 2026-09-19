@@ -85,7 +85,20 @@
             color: var(--text-muted);
             font-size: 15px;
             line-height: 1.6;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
+        }
+
+        /* Insignia de Racha Diaria */
+        .streak-badge {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            color: #f59e0b;
+            padding: 8px 15px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 25px;
+            display: inline-block;
         }
 
         .btn-primary {
@@ -245,7 +258,7 @@
             padding-top: 15px;
         }
 
-        /* Pantalla de Victoria Final (100 PREGUNTAS COMPLETADAS) */
+        /* Pantalla de Victoria Final */
         #victory-screen {
             display: none;
             animation: fadeIn 0.6s ease-in-out;
@@ -294,7 +307,8 @@
             <div class="logo-badge">Cy</div>
             <h1>CyTech Pro</h1>
             <div class="brand-subtitle">Christ Ydrogo</div>
-            <p class="welcome-desc">Pon a prueba tu conocimiento técnico superando los 5 niveles de la app. ¡Demuestra tu dominio absoluto y alcanza la gloria técnica!</p>
+            <div id="streak-container" class="streak-badge">🔥 Racha Diaria: 1 Días</div>
+            <p class="welcome-desc">Pon a prueba tu conocimiento técnico superando los 5 niveles de la app con preguntas dinámicas. ¡Demuestra tu dominio absoluto!</p>
             <button class="btn-primary" onclick="startGame()">Comenzar Desafío</button>
         </div>
 
@@ -338,7 +352,7 @@
             <button class="btn-primary" onclick="proceedToNextLevel()">Siguiente Nivel 🚀</button>
         </div>
 
-        <!-- PANTALLA DE VICTORIA FINAL (100 PREGUNTAS COMPLETADAS) -->
+        <!-- PANTALLA DE VICTORIA FINAL -->
         <div id="victory-screen">
             <div class="trophy-icon">🏆</div>
             <div class="victory-title">¡Gran Triunfo Técnico!</div>
@@ -412,7 +426,7 @@
             }
         }
 
-        // --- DEFINICIÓN DE NIVELES Y RANGOS TEMÁTICOS ---
+        // --- DEFINICIÓN DE NIVELES Y RANGOS ---
         const levels = [
             { 
                 key: 'redes', 
@@ -448,6 +462,45 @@
         let lives = 3;
         let currentQuestions = [];
 
+        // --- SISTEMA DE RACHAS DIARIAS ---
+        function checkStreak() {
+            const lastPlay = localStorage.getItem('cytech_last_play');
+            const today = new Date().toDateString();
+            let streak = parseInt(localStorage.getItem('cytech_streak') || '0', 10);
+            
+            if (lastPlay) {
+                const lastDate = new Date(lastPlay);
+                const diffDays = Math.floor((new Date(today) - lastDate) / (1000 * 60 * 60 * 24));
+                
+                if (diffDays === 1) {
+                    streak += 1; 
+                } else if (diffDays > 1) {
+                    streak = 1;  
+                }
+            } else {
+                streak = 1;
+            }
+            localStorage.setItem('cytech_last_play', today);
+            localStorage.setItem('cytech_streak', streak);
+            return streak;
+        }
+
+        // Mostrar racha al cargar la página
+        window.addEventListener('DOMContentLoaded', () => {
+            const currentStreak = checkStreak();
+            document.getElementById('streak-container').innerText = `🔥 Racha Diaria: ${currentStreak} Días`;
+        });
+
+        // --- ALGORITMO DE MEZCLA ALEATORIA (Anti-Monotonía) ---
+        function shuffleArray(array) {
+            let arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
         function startGame() {
             if (typeof categoriesData === 'undefined') {
                 alert("Error: No se pudo cargar questions.js");
@@ -482,7 +535,11 @@
         function loadLevel() {
             if (currentLevelIndex < levels.length) {
                 const levelInfo = levels[currentLevelIndex];
-                currentQuestions = categoriesData[levelInfo.key];
+                
+                // Mezcla aleatoria de las preguntas del nivel actual
+                const rawQuestions = categoriesData[levelInfo.key];
+                currentQuestions = shuffleArray(rawQuestions);
+                
                 currentQuestionIndex = 0;
                 document.getElementById('level-title').innerText = levelInfo.name;
                 showQuestion();
@@ -501,7 +558,10 @@
                 const optionsContainer = document.getElementById('options-container');
                 optionsContainer.innerHTML = '';
                 
-                q.options.forEach(option => {
+                // También mezclamos las opciones de respuesta para mayor variedad
+                const shuffledOptions = shuffleArray(q.options);
+
+                shuffledOptions.forEach(option => {
                     const btn = document.createElement('button');
                     btn.className = 'option-btn';
                     btn.innerText = option;
@@ -511,7 +571,6 @@
                 
                 updateStatsUI();
             } else {
-                // Al terminar las 20 preguntas, mostramos la pantalla intermedia sin alertas nativas
                 const completedLevel = levels[currentLevelIndex];
                 let earnedRank = completedLevel.ranks.elite;
                 if (fails >= 5) {
@@ -580,7 +639,6 @@
             showQuestion();
         }
 
-        // Función para saltar al siguiente nivel directamente (Modo Prueba)
         function skipToNextLevel() {
             score += (20 - currentQuestionIndex);
             const completedLevel = levels[currentLevelIndex];
