@@ -76,20 +76,33 @@
             font-size: 13px;
             text-transform: uppercase;
             letter-spacing: 2px;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             font-weight: 600;
         }
 
-        .streak-badge {
+        .badges-top-row {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .streak-badge, .league-badge-top {
             background: rgba(245, 158, 11, 0.1);
             border: 1px solid rgba(245, 158, 11, 0.3);
             color: #f59e0b;
-            padding: 6px 12px;
+            padding: 5px 10px;
             border-radius: 10px;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: bold;
-            margin-bottom: 20px;
-            display: inline-block;
+        }
+
+        .league-badge-top {
+            background: rgba(56, 189, 248, 0.1);
+            border-color: rgba(56, 189, 248, 0.3);
+            color: var(--primary);
+            cursor: pointer;
         }
 
         /* Estilo del Mapa Global de Nodos */
@@ -98,7 +111,7 @@
             flex-direction: column;
             gap: 10px;
             width: 100%;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             position: relative;
         }
 
@@ -153,10 +166,24 @@
             width: 100%;
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+            margin-top: 5px;
         }
 
         .btn-primary:active {
             transform: scale(0.98);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 10px 15px;
+            font-size: 13px;
+            border-radius: 12px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: 600;
+            margin-top: 10px;
         }
 
         /* Pantalla de Juego */
@@ -253,8 +280,8 @@
             box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
         }
 
-        /* Pantallas de Nivel Superado y Victoria */
-        #level-complete-screen, #victory-screen {
+        /* Pantallas de Nivel Superado y Ligas */
+        #level-complete-screen, #victory-screen, #leagues-screen {
             display: none;
             animation: fadeIn 0.5s ease-in-out;
             text-align: center;
@@ -316,6 +343,29 @@
             line-height: 1.8;
         }
 
+        /* Estilo de la tabla de Ligas Globales */
+        .league-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px;
+            margin: 15px 0;
+            text-align: left;
+        }
+
+        .league-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 13px;
+        }
+
+        .league-row:last-child {
+            border-bottom: none;
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(6px); }
             to { opacity: 1; transform: translateY(0); }
@@ -334,7 +384,11 @@
             <div class="logo-badge">Cy</div>
             <h1>CyTech Pro</h1>
             <div class="brand-subtitle">Christ Ydrogo</div>
-            <div id="streak-container" class="streak-badge">🔥 Racha Diaria: 1 Días</div>
+            
+            <div class="badges-top-row">
+                <div id="streak-container" class="streak-badge">🔥 Racha: 1 Días</div>
+                <div id="league-container" class="league-badge-top" onclick="showLeaguesScreen()">🏆 Liga Bronce</div>
+            </div>
             
             <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">Selecciona una estación global del ciberespacio:</p>
             
@@ -377,6 +431,7 @@
             </div>
 
             <button class="btn-primary" onclick="startGame(0)">Iniciar Ruta Global 🚀</button>
+            <button class="btn-secondary" onclick="showLeaguesScreen()">🏆 Ver Salón de la Fama y Ligas</button>
         </div>
 
         <!-- PANTALLA DE JUEGO -->
@@ -400,8 +455,8 @@
             <button class="btn-skip" onclick="skipToNextLevel()">⏩ Saltar Estación (Modo Prueba)</button>
             
             <div class="footer-score">
-                <span>Puntaje: <strong id="score-val" style="color: var(--primary);">0</strong></span>
-                <span id="streak-live-display" style="font-size: 12px; color: #f59e0b; font-weight: bold;">🔥 Racha: 1</span>
+                <span>Puntaje: <strong id="score-val" style="color: var(--primary);">0</strong>XP</span>
+                <span id="streak-live-display" style="font-size: 12px; color: #f59e0b; font-weight: bold;">🔥 1</span>
             </div>
         </div>
 
@@ -419,6 +474,34 @@
             <button class="btn-primary" onclick="proceedToNextLevel()">Siguiente Estación 🚀</button>
         </div>
 
+        <!-- PANTALLA DE LIGAS Y RÉCORDS -->
+        <div id="leagues-screen">
+            <div style="font-size: 50px; margin-bottom: 5px;">🏆</div>
+            <div class="victory-title">Salón de la Fama</div>
+            <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 15px;">Tus estadísticas y estatus en el ciberespacio global.</p>
+            
+            <div class="league-card">
+                <div class="league-row">
+                    <span>🏆 Liga Actual:</span>
+                    <strong id="league-name-display" style="color: var(--primary);">Bronce</strong>
+                </div>
+                <div class="league-row">
+                    <span>⚡ XP Acumulado Total:</span>
+                    <strong id="total-xp-display" style="color: #34d399;">0 XP</strong>
+                </div>
+                <div class="league-row">
+                    <span>🔥 Racha Máxima:</span>
+                    <strong id="best-streak-display" style="color: #f59e0b;">1 Días</strong>
+                </div>
+                <div class="league-row">
+                    <span>⭐ Partidas Perfectas (0 Fallos):</span>
+                    <strong id="perfect-games-display" style="color: #818cf8;">0</strong>
+                </div>
+            </div>
+
+            <button class="btn-primary" onclick="backToWelcome()">Volver al Menú Principal</button>
+        </div>
+
         <!-- PANTALLA DE VICTORIA FINAL -->
         <div id="victory-screen">
             <div class="trophy-icon">🏆</div>
@@ -426,7 +509,7 @@
             <p style="color: var(--text-muted); font-size: 13px;">Has superado exitosamente todas las estaciones de CyTech Pro.</p>
             
             <div class="victory-stats">
-                <div>🎯 <strong>Puntaje Final:</strong> <span id="final-score" style="color: #38bdf8;">0</span> / 100</div>
+                <div>🎯 <strong>Puntaje Final:</strong> <span id="final-score" style="color: #38bdf8;">0</span> / 100 XP</div>
                 <div>❌ <strong>Total de Fallos:</strong> <span id="final-fails" style="color: #f87171;">0</span></div>
                 <div>❤️ <strong>Vidas Restantes:</strong> <span id="final-lives" style="color: #ef4444;">3</span> / 3</div>
                 <div>⭐ <strong>Rango Supremo:</strong> <span style="color: #34d399; font-weight: bold;">Maestro de la Tecnología</span></div>
@@ -541,9 +624,10 @@
         let lives = 3;
         let currentQuestions = [];
         let globalStreak = 1;
+        let totalXP = 0;
 
-        // --- SISTEMA DE RACHAS DIARIAS ---
-        function checkStreak() {
+        // --- SISTEMA DE RACHAS Y LIGAS DIARIAS ---
+        function checkStreakAndLeagues() {
             const lastPlay = localStorage.getItem('cytech_last_play');
             const today = new Date().toDateString();
             let streak = parseInt(localStorage.getItem('cytech_streak') || '0', 10);
@@ -562,13 +646,51 @@
             }
             localStorage.setItem('cytech_last_play', today);
             localStorage.setItem('cytech_streak', streak);
+
+            // Cargar XP y récords
+            totalXP = parseInt(localStorage.getItem('cytech_total_xp') || '0', 10);
+            
             return streak;
         }
 
+        function updateLeagueUI() {
+            globalStreak = checkStreakAndLeagues();
+            document.getElementById('streak-container').innerText = `🔥 Racha: ${globalStreak} Días`;
+
+            let leagueName = "Bronce 🥉";
+            if (totalXP >= 300) leagueName = "Diamante 💎";
+            else if (totalXP >= 150) leagueName = "Oro 🥇";
+            else if (totalXP >= 50) leagueName = "Plata 🥈";
+
+            document.getElementById('league-container').innerText = `🏆 Liga ${leagueName}`;
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
-            globalStreak = checkStreak();
-            document.getElementById('streak-container').innerText = `🔥 Racha Diaria: ${globalStreak} Días`;
+            updateLeagueUI();
         });
+
+        function showLeaguesScreen() {
+            document.getElementById('welcome-screen').style.display = 'none';
+            document.getElementById('leagues-screen').style.display = 'block';
+
+            let leagueName = "Bronce 🥉";
+            if (totalXP >= 300) leagueName = "Diamante 💎";
+            else if (totalXP >= 150) leagueName = "Oro 🥇";
+            else if (totalXP >= 50) leagueName = "Plata 🥈";
+
+            document.getElementById('league-name-display').innerText = leagueName;
+            document.getElementById('total-xp-display').innerText = `${totalXP} XP`;
+            document.getElementById('best-streak-display').innerText = `${globalStreak} Días`;
+            
+            const perfectGames = localStorage.getItem('cytech_perfect_games') || '0';
+            document.getElementById('perfect-games-display').innerText = perfectGames;
+        }
+
+        function backToWelcome() {
+            document.getElementById('leagues-screen').style.display = 'none';
+            document.getElementById('welcome-screen').style.display = 'flex';
+            updateLeagueUI();
+        }
 
         // Selección directa al hacer clic en un nodo del mapa
         function selectLevelAndStart(index) {
@@ -597,6 +719,7 @@
             document.getElementById('welcome-screen').style.display = 'none';
             document.getElementById('victory-screen').style.display = 'none';
             document.getElementById('level-complete-screen').style.display = 'none';
+            document.getElementById('leagues-screen').style.display = 'none';
             document.getElementById('game-screen').style.display = 'block';
             resetGameStats();
             loadLevel();
@@ -612,7 +735,7 @@
         function updateStatsUI() {
             document.getElementById('score-val').innerText = score;
             document.getElementById('fails-val').innerText = fails;
-            document.getElementById('streak-live-display').innerText = `🔥 Racha: ${globalStreak}`;
+            document.getElementById('streak-live-display').innerText = `🔥 ${globalStreak}`;
             let heartsStr = '';
             for(let i = 0; i < lives; i++) heartsStr += '❤️';
             for(let i = lives; i < 3; i++) heartsStr += '🖤';
@@ -655,6 +778,15 @@
                 
                 updateStatsUI();
             } else {
+                // Guardar XP total acumulado
+                totalXP += score;
+                localStorage.setItem('cytech_total_xp', totalXP);
+
+                if (fails === 0) {
+                    let perf = parseInt(localStorage.getItem('cytech_perfect_games') || '0', 10);
+                    localStorage.setItem('cytech_perfect_games', perf + 1);
+                }
+
                 const completedLevel = levels[currentLevelIndex];
                 let earnedRank = completedLevel.ranks.elite;
                 if (fails >= 5) {
@@ -735,6 +867,9 @@
 
         function skipToNextLevel() {
             score += (20 - currentQuestionIndex);
+            totalXP += score;
+            localStorage.setItem('cytech_total_xp', totalXP);
+
             const completedLevel = levels[currentLevelIndex];
             const earnedRank = completedLevel.ranks.elite;
             showLevelCompleteScreen(completedLevel.name, earnedRank);
