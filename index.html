@@ -141,7 +141,7 @@
     </div>
 
     <script>
-        // Base de datos completa con las 100 preguntas organizadas por estaciones
+        // Base de datos completa con las 100 preguntas (20 preguntas por cada una de las 5 estaciones)
         const levels = [
             {
                 name: "Estación 1: Redes Globales",
@@ -151,7 +151,22 @@
                     { question: "¿Qué protocolo se utiliza principalmente para asegurar páginas web mediante cifrado?", options: ["HTTPS", "HTTP", "FTP", "SMTP"], answer: "HTTPS" },
                     { question: "¿Cuál es el puerto estándar por defecto para conexiones web seguras (HTTPS)?", options: ["443", "80", "21", "8080"], answer: "443" },
                     { question: "¿Qué significan las siglas IP en redes de computadoras?", options: ["Internet Protocol", "Internal Protocol", "Interconnection Port", "Information Packet"], answer: "Internet Protocol" },
-                    { question: "¿Cuál es la función principal del protocolo DNS?", options: ["Traducir nombres de dominio a direcciones IP", "Enviar correos", "Asignar IPs dinámicas", "Bloquear virus"], answer: "Traducir nombres de dominio a direcciones IP" }
+                    { question: "¿Cuál es la función principal del protocolo DNS?", options: ["Traducir nombres de dominio a direcciones IP", "Enviar correos", "Asignar IPs dinámicas", "Bloquear virus"], answer: "Traducir nombres de dominio a direcciones IP" },
+                    { question: "¿Qué capa del modelo OSI se encarga del direccionamiento físico y control de acceso al medio (MAC)?", options: ["Capa de Enlace de Datos", "Capa de Red", "Capa de Transporte", "Capa Física"], answer: "Capa de Enlace de Datos" },
+                    { question: "¿Cuál es la dirección IP de loopback (localhost) en IPv4?", options: ["127.0.0.1", "192.168.1.1", "10.0.0.1", "255.255.255.0"], answer: "127.0.0.1" },
+                    { question: "¿Qué protocolo se utiliza para la asignación dinámica de direcciones IP en una red?", options: ["DHCP", "DNS", "TCP", "FTP"], answer: "DHCP" },
+                    { question: "¿Cuántos bits componen una dirección IP versión 4 (IPv4)?", options: ["32 bits", "64 bits", "128 bits", "16 bits"], answer: "32 bits" },
+                    { question: "¿Cuál es el propósito principal del protocolo ICMP?", options: ["Enviar mensajes de control y diagnóstico (como ping)", "Transferir archivos grandes", "Navegar por páginas web", "Gestionar correo electrónico"], answer: "Enviar mensajes de control y diagnóstico (como ping)" },
+                    { question: "¿Qué dispositivo de red opera exclusivamente en la capa física amplificando la señal?", options: ["Hub", "Router", "Switch gestionable", "Firewall"], answer: "Hub" },
+                    { question: "¿Qué protocolo de la capa de transporte garantiza la entrega fiable de los datos mediante confirmación?", options: ["TCP", "UDP", "IP", "ICMP"], answer: "TCP" },
+                    { question: "¿Cuál de los siguientes protocolos pertenece a la capa de aplicación para el envío de correo?", options: ["SMTP", "FTP", "SSH", "SNMP"], answer: "SMTP" },
+                    { question: "¿Qué clase de dirección IP privada pertenece al rango 192.168.x.x?", options: ["Clase C", "Clase A", "Clase B", "Clase D"], answer: "Clase C" },
+                    { question: "¿Qué es una máscara de subred?", options: ["Un número que distingue la parte de red de la parte de hosts en una IP", "Una contraseña de enrutador", "Un tipo de cifrado inalámabrico", "Una dirección MAC virtual"], answer: "Un número que distingue la parte de red de la parte de hosts en una IP" },
+                    { question: "¿Qué puerto utiliza por defecto el protocolo seguro SSH para administración remota?", options: ["22", "80", "21", "443"], answer: "22" },
+                    { question: "¿Qué tecnología permite conectar redes locales geográficamente distantes a través de Internet de forma segura?", options: ["VPN (Red Privada Virtual)", "LAN Inalámbrica", "Bluetooth", "Fibra óptica directa"], answer: "VPN (Red Privada Virtual)" },
+                    { question: "¿Qué significa que un puerto esté 'abierto' en un análisis de red?", options: ["Que hay un servicio escuchando y aceptando conexiones en ese puerto", "Que la red no tiene contraseña", "Que el cable está desconectado", "Que el router está dañado"], answer: "Que hay un servicio escuchando y aceptando conexiones en ese puerto" },
+                    { question: "¿Cuál es el estándar IEEE para redes inalámbricas Wi-Fi?", options: ["IEEE 802.11", "IEEE 802.3", "IEEE 802.15", "IEEE 802.1Q"], answer: "IEEE 802.11" },
+                    { question: "¿Qué equipo se utiliza para interconectar múltiples segmentos de red operando de forma inteligente aprendiendo direcciones MAC?", options: ["Switch", "Hub", "Gateway analógico", "Modem dial-up"], answer: "Switch" }
                 ]
             },
             {
@@ -162,7 +177,22 @@
                     { question: "¿Cuál de los siguientes es un tipo de datos booleano en programación?", options: ["true / false", "'Verdadero'", "12345", "[ ]"], answer: "true / false" },
                     { question: "¿Qué estructura de control se utiliza para repetir un bloque de código varias veces?", options: ["for / while", "if / else", "switch", "try / catch"], answer: "for / while" },
                     { question: "¿Qué significa la sigla DOM en el desarrollo web?", options: ["Document Object Model", "Digital Oriented Method", "Data Operation Module", "Direct Output Main"], answer: "Document Object Model" },
-                    { question: "¿Cuál operador se usa para comparar tanto el valor como el tipo estricto en JavaScript?", options: ["===", "==", "=", "!=="], answer: "===" }
+                    { question: "¿Cuál operador se usa para comparar tanto el valor como el tipo estricto en JavaScript?", options: ["===", "==", "=", "!=="], answer: "===" },
+                    { question: "¿Qué etiqueta HTML se utiliza para enlazar un archivo de estilo CSS externo?", options: ["<link>", "<script>", "<style>", "<css>"], answer: "<link>" },
+                    { question: "¿Cuál de los siguientes no es un lenguaje de programación orientado a objetos?", options: ["C", "Java", "Python", "C++"], answer: "C" },
+                    { question: "¿Qué significa la sigla API en desarrollo de software?", options: ["Application Programming Interface", "Advanced Program Integration", "Automated Protocol Interaction", "Application Process Index"], answer: "Application Programming Interface" },
+                    { question: "¿Qué método de JavaScript se usa para añadir un elemento al final de un arreglo (array)?", options: ["push()", "pop()", "shift()", "concat()"], answer: "push()" },
+                    { question: "¿Cuál es el propósito de la etiqueta `<head>` en un documento HTML?", options: ["Contener metadatos, título y enlaces a recursos de la página", "Mostrar el texto principal visible", "Crear un pie de página", "Diseñar botones flotantes"], answer: "Contener metadatos, título y enlaces a recursos de la página" },
+                    { question: "¿Qué paradigma de programación se basa en funciones puras y evita el estado mutable?", options: ["Programación Funcional", "Programación Imperativa", "Programación Lineal", "Programación Estructurada"], answer: "Programación Funcional" },
+                    { question: "¿Qué herramienta se utiliza ampliamente para el control de versiones de código?", options: ["Git", "Photoshop", "Docker", "Apache"], answer: "Git" },
+                    { question: "¿Qué significa JSON?", options: ["JavaScript Object Notation", "Java Source Open Network", "Junction Script Oriented Name", "JavaScript Online Node"], answer: "JavaScript Object Notation" },
+                    { question: "¿Cuál de las siguientes opciones define correctamente a una variable constante en JavaScript moderno?", options: ["const", "let", "var", "static"], answer: "const" },
+                    { question: "¿Qué función cumple el bucle `while` en programación?", options: ["Ejecutar un bloque mientras se cumpla una condición booleana", "Ejecutar código una sola vez", "Declarar variables globales", "Manejar excepciones de errores"], answer: "Ejecutar un bloque mientras se cumpla una condición booleana" },
+                    { question: "¿Qué es un framework en el desarrollo de software?", options: ["Un conjunto de herramientas y librerías predefinidas para estructurar proyectos", "Un sistema operativo móvil", "Un conector físico de red", "Un protocolo de seguridad web"], answer: "Un conjunto de herramientas y librerías predefinidas para estructurar proyectos" },
+                    { question: "¿Cómo se llama el proceso de encontrar y corregir errores en el código fuente?", options: ["Depuración (Debugging)", "Compilación", "Minificación", "Despliegue"], answer: "Depuración (Debugging)" },
+                    { question: "¿Qué propiedad de CSS se utiliza para cambiar el color de texto de un elemento?", options: ["color", "background-color", "font-style", "text-decoration"], answer: "color" },
+                    { question: "¿Qué es una función callback en JavaScript?", options: ["Una función que se pasa como argumento a otra para ser ejecutada más tarde", "Una función que se ejecuta al apagar la PC", "Un error de sintaxis", "Un comando de consola"], answer: "Una función que se pasa como argumento a otra para ser ejecutada más tarde" },
+                    { question: "¿Cuál es el resultado de evaluar `typeof 42` en JavaScript?", options: ["'number'", "'string'", "'boolean'", "'object'"], answer: "'number'" }
                 ]
             },
             {
@@ -173,7 +203,22 @@
                     { question: "¿Qué comando SQL se utiliza para obtener registros de una tabla?", options: ["SELECT", "GET", "FETCH", "PULL"], answer: "SELECT" },
                     { question: "¿Qué es una clave primaria (Primary Key)?", options: ["Un identificador único para cada registro", "Un campo duplicado", "Una contraseña de acceso", "Un tipo de dato decimal"], answer: "Un identificador único para cada registro" },
                     { question: "¿Cuál de las siguientes es una base de datos de tipo NoSQL?", options: ["MongoDB", "MySQL", "PostgreSQL", "Oracle"], answer: "MongoDB" },
-                    { question: "¿Qué comando se usa para añadir un nuevo registro en una tabla SQL?", options: ["INSERT INTO", "ADD", "UPDATE", "CREATE"], answer: "INSERT INTO" }
+                    { question: "¿Qué comando se usa para añadir un nuevo registro en una tabla SQL?", options: ["INSERT INTO", "ADD", "UPDATE", "CREATE"], answer: "INSERT INTO" },
+                    { question: "¿Qué cláusula se utiliza en SQL para filtrar registros según una condición específica?", options: ["WHERE", "FILTER", "LIMIT", "GROUP BY"], answer: "WHERE" },
+                    { question: "¿Qué comando SQL se utiliza para eliminar una tabla completa de la base de datos?", options: ["DROP TABLE", "DELETE TABLE", "REMOVE TABLE", "CLEAR TABLE"], answer: "DROP TABLE" },
+                    { question: "¿Qué es una clave foránea (Foreign Key)?", options: ["Un campo que establece relación con la clave primaria de otra tabla", "Una contraseña externa", "Un índice secundario temporal", "Una copia de seguridad"], answer: "Un campo que establece relación con la clave primaria de otra tabla" },
+                    { question: "¿Qué función de agregación SQL se utiliza para contar el número de filas?", options: ["COUNT()", "SUM()", "TOTAL()", "NUMBER()"], answer: "COUNT()" },
+                    { question: "¿Cuál es la sentencia SQL utilizada para modificar registros existentes?", options: ["UPDATE", "MODIFY", "CHANGE", "ALTER"], answer: "UPDATE" },
+                    { question: "¿Qué cláusula se usa en SQL para ordenar los resultados obtenidos?", options: ["ORDER BY", "SORT BY", "ARRANGE", "GROUP BY"], answer: "ORDER BY" },
+                    { question: "¿Qué significa ACID en el contexto de bases de datos relacionales?", options: ["Atomicidad, Consistencia, Aislamiento, Durabilidad", "Acceso, Control, Integridad, Datos", "Automatización, Cifrado, Indexación, Distribución", "Ninguna de las anteriores"], answer: "Atomicidad, Consistencia, Aislamiento, Durabilidad" },
+                    { question: "¿Qué comando se emplea para eliminar registros específicos de una tabla sin borrar su estructura?", options: ["DELETE", "DROP", "TRUNCATE", "REMOVE"], answer: "DELETE" },
+                    { question: "¿Qué tipo de unión (JOIN) devuelve todos los registros cuando hay coincidencia en al menos una de las tablas?", options: ["INNER JOIN", "FULL OUTER JOIN", "CROSS JOIN", "SELF JOIN"], answer: "INNER JOIN" },
+                    { question: "¿Qué sentencia se usa para crear una nueva base de datos en SQL?", options: ["CREATE DATABASE", "NEW DATABASE", "ADD DATABASE", "MAKE DB"], answer: "CREATE DATABASE" },
+                    { question: "¿Cuál es la función de la cláusula `GROUP BY`?", options: ["Agrupar filas que tienen los mismos valores en columnas resumidas", "Unir dos tablas diferentes", "Filtrar por fechas", "Crear índices de búsqueda"], answer: "Agrupar filas que tienen los mismos valores en columnas resumidas" },
+                    { question: "¿Qué operador se utiliza en SQL para buscar patrones de texto coincidentes (ej. con comodines %)?", options: ["LIKE", "EQUALS", "MATCH", "CONTAIN"], answer: "LIKE" },
+                    { question: "¿Qué restricción (constraint) impide que un campo contenga valores nulos?", options: ["NOT NULL", "UNIQUE", "PRIMARY KEY", "DEFAULT"], answer: "NOT NULL" },
+                    { question: "¿Qué es la normalización de bases de datos?", options: ["El proceso de organizar los datos para reducir la redundancia y mejorar la integridad", "Un método para encriptar contraseñas", "El respaldo diario de información", "La compresión de archivos de audio"], answer: "El proceso de organizar los datos para reducir la redundancia y mejorar la integridad" },
+                    { question: "¿Qué comando se usa para borrar todos los registros de una tabla rápidamente reseteando contadores?", options: ["TRUNCATE TABLE", "DELETE ALL", "DROP TABLE", "CLEAR TABLE"], answer: "TRUNCATE TABLE" }
                 ]
             },
             {
@@ -184,7 +229,22 @@
                     { question: "¿Qué comando permite cambiar de directorio actual en la terminal?", options: ["cd", "mv", "cp", "pwd"], answer: "cd" },
                     { question: "¿Cómo se llama el intérprete de comandos por defecto en la mayoría de distribuciones Linux modernas?", options: ["Bash", "Cmd", "PowerShell", "TerminalX"], answer: "Bash" },
                     { question: "¿Qué comando se usa para ver la ruta del directorio actual de trabajo?", options: ["pwd", "where", "path", "locate"], answer: "pwd" },
-                    { question: "¿Qué permiso representa el número '7' en la notación octal de Linux?", options: ["Lectura, escritura y ejecución", "Solo lectura", "Lectura y ejecución", "Sin permisos"], answer: "Lectura, escritura y ejecución" }
+                    { question: "¿Qué permiso representa el número '7' en la notación octal de Linux?", options: ["Lectura, escritura y ejecución", "Solo lectura", "Lectura y ejecución", "Sin permisos"], answer: "Lectura, escritura y ejecución" },
+                    { question: "¿Qué comando se emplea para crear un nuevo directorio vacío?", options: ["mkdir", "touch", "create", "newdir"], answer: "mkdir" },
+                    { question: "¿Qué comando se utiliza para copiar archivos o directorios en Linux?", options: ["cp", "mv", "copy", "du"], answer: "cp" },
+                    { question: "¿Qué utilidad de Linux permite ver los procesos del sistema en tiempo real?", options: ["top", "ps", "kill", "jobs"], answer: "top" },
+                    { question: "¿Qué comando se usa para mover o renombrar archivos?", options: ["mv", "rn", "move", "cp"], answer: "mv" },
+                    { question: "¿Qué comando elimina archivos o directorios de forma permanente?", options: ["rm", "del", "erase", "clear"], answer: "rm" },
+                    { question: "¿Cuál es el propósito del comando `chmod`?", options: ["Cambiar los permisos de acceso de un archivo o directorio", "Modificar la contraseña de usuario", "Cambiar el propietario", "Comprimir directorios"], answer: "Cambiar los permisos de acceso de un archivo o directorio" },
+                    { question: "¿Qué comando se utiliza para buscar texto dentro de archivos en Linux?", options: ["grep", "find", "search", "locate"], answer: "grep" },
+                    { question: "¿Qué comando muestra el espacio libre y ocupado en los discos del sistema?", options: ["df", "du", "free", "lsblk"], answer: "df" },
+                    { question: "¿Qué significa el carácter `~` (tilde) en la terminal de Linux?", options: ["Representa el directorio home del usuario actual", "Representa la raíz del sistema (/)", "Indica error de comando", "Es un comodín de multiplicación"], answer: "Representa el directorio home del usuario actual" },
+                    { question: "¿Qué comando se usa para ver las primeras líneas de un archivo de texto?", options: ["head", "tail", "cat", "more"], answer: "head" },
+                    { question: "¿Qué comando permite cambiar el propietario de un archivo en Linux?", options: ["chown", "chmod", "chgrp", "owner"], answer: "chown" },
+                    { question: "¿Qué utilidad de compresión de archivos utiliza comúnmente la extensión `.tar.gz`?", options: ["tar", "zip", "rar", "gzip puro"], answer: "tar" },
+                    { question: "¿Qué comando se usa para actualizar la lista de paquetes en distribuciones basadas en Debian/Ubuntu (como Termux)?", options: ["pkg update / apt update", "apt install", "systemctl update", "update-system"], answer: "pkg update / apt update" },
+                    { question: "¿Qué significa el símbolo `>` en la terminal?", options: ["Redirecciona la salida estándar hacia un archivo sobrescribiéndolo", "Compara si un número es mayor", "Ejecuta un comando en segundo plano", "Concatena dos comandos"], answer: "Redirecciona la salida estándar hacia un archivo sobrescribiéndolo" },
+                    { question: "¿Qué comando permite ver el manual de ayuda de cualquier comando en Linux?", options: ["man", "help", "info", "doc"], answer: "man" }
                 ]
             },
             {
@@ -195,7 +255,22 @@
                     { question: "¿Quién es considerado el principal creador del proyecto GNU?", options: ["Richard Stallman", "Linus Torvalds", "Steve Jobs", "Bill Gates"], answer: "Richard Stallman" },
                     { question: "¿Qué mascota representa al sistema operativo Linux?", options: ["Un pingüino (Tux)", "Un zorro", "Un búho", "Un león"], answer: "Un pingüino (Tux)" },
                     { question: "¿Qué significa que un software sea de 'Código Abierto' (Open Source)?", options: ["Que su código fuente puede ser inspeccionado y modificado libremente", "Que es gratuito y nadie puede modificarlo", "Que solo funciona en servidores públicos", "Que no tiene soporte técnico"], answer: "Que su código fuente puede ser inspeccionado y modificado libremente" },
-                    { question: "¿Qué kernel o núcleo de sistema operativo desarrolló Linus Torvalds en 1991?", options: ["Linux", "Windows NT", "Darwin", "Unix BSD"], answer: "Linux" }
+                    { question: "¿Qué kernel o núcleo de sistema operativo desarrolló Linus Torvalds em 1991?", options: ["Linux", "Windows NT", "Darwin", "Unix BSD"], answer: "Linux" },
+                    { question: "¿Cuál es el pilar fundamental de las cuatro libertades del software libre según la FSF?", options: ["La libertad de usar, estudiar, modificar y redistribuir el software", "La prohibición absoluta de cobro comercial", "La obligación de usar servidores GNU", "El derecho a ocultar el autor original"], answer: "La libertad de usar, estudiar, modificar y redistribuir el software" },
+                    { question: "¿Qué organización fundó Richard Stallman en 1985 para promover el software libre?", options: ["FSF (Free Software Foundation)", "OSI (Open Source Initiative)", "GNU Project Foundation", "Linux Foundation"], answer: "FSF (Free Software Foundation)" },
+                    { question: "¿Qué significa copyleft en contraposición al copyright tradicional?", options: ["Un método legal para garantizar que las libertades de un software se mantengan en obras derivadas", "Una renuncia total a los derechos de autor sin reglas", "Un sistema para registrar marcas comerciales de pago", "Una licencia exclusiva para gobiernos"], answer: "Un método legal para garantizar que las libertades de un software se mantengan en obras derivadas" },
+                    { question: "¿Qué distribución de Linux es una de las más populares orientadas a usuarios principiantes?", options: ["Ubuntu", "Slackware Gentoo", "LFS (Linux From Scratch)", "Arch avanzado"], answer: "Ubuntu" },
+                    { question: "¿Qué diferencia principal existe entre Open Source y Software Libre?", options: ["El software libre enfatiza la filosofía ética y social de libertad; el open source se enfoca en aspectos prácticos de desarrollo", "Son exactamente lo mismo sin ninguna diferencia comercial", "El software libre nunca puede ser vendido", "El open source prohíbe modificar el código"], answer: "El software libre enfatiza la filosofía ética y social de libertad; el open source se enfoca en aspectos prácticos de desarrollo" },
+                    { question: "¿Qué licencia permite utilizar código de forma muy libre con mínimas restricciones de atribución (ej. utilizada en React)?", options: ["Licencia MIT", "GPL v3", "AGPL", "Licencia Propietaria"], answer: "Licencia MIT" },
+                    { question: "¿Cómo se llama la famosa conferencia anual que celebra el desarrollo y cultura de Linux y el software libre?", options: ["LinuxTag / DebConf / FOSDEM", "Microsoft Build", "WWDC", "Google I/O"], answer: "LinuxTag / DebConf / FOSDEM" },
+                    { question: "¿Qué oficina o herramienta descentralizada promueve los estándares abiertos en la web?", options: ["W3C (World Wide Web Consortium)", "ICANN", "ISO exclusiva", "IEEE web division"], answer: "W3C (World Wide Web Consortium)" },
+                    { question: "¿Qué significa que un formato de archivo sea 'abierto'?", options: ["Sus especificaciones son públicas y cualquier programa puede implementarlo sin pagar patentes", "Que el archivo no tiene contraseña", "Que solo se puede abrir con software de pago", "Que se borra solo a los 30 días"], answer: "Sus especificaciones son públicas y cualquier programa puede implementarlo sin pagar patentes" },
+                    { question: "¿Qué proyecto colaborativo masivo de código abierto es la enciclopedia libre más grande del mundo?", options: ["Wikipedia", "Encarta", "Google Knowledge", "OpenEncyclopedia"], answer: "Wikipedia" },
+                    { question: "¿Qué lenguaje y sistema de control de fuentes popularizó la filosofía de contribución abierta global?", options: ["Git / GitHub", "SVN Privado", "CVS Legacy", "Bitbucket Pro exclusivo"], answer: "Git / GitHub" },
+                    { question: "¿Qué significa la sigla FOSS?", options: ["Free and Open Source Software", "Fast Online Secure System", "File Open Standard Source", "Free Operating System Server"], answer: "Free and Open Source Software" },
+                    { question: "¿Qué ventaja principal ofrece el uso de estándares abiertos en la administración pública?", options: ["Evita la dependencia de proveedores tecnológicos privativos (vendor lock-in)", "Aumenta el costo de licencias anuales", "Reduce la compatibilidad con equipos modernos", "Impide la auditoría ciudadana"], answer: "Evita la dependencia de proveedores tecnológicos privativos (vendor lock-in)" },
+                    { question: "¿Quién acuñó el término 'Open Source' (Código Abierto) en 1998?", options: ["Christine Peterson", "Linus Torvalds", "Bill Gates", "Alan Turing"], answer: "Christine Peterson" },
+                    { question: "¿Qué movimiento cultural promueve el acceso libre al conocimiento científico y publicaciones de investigación?", options: ["Acceso Abierto (Open Access)", "Ciencia Privativa", "Propiedad Intelectual Cerrada", "Monopolio Académico"], answer: "Acceso Abierto (Open Access)" }
                 ]
             }
         ];
@@ -233,12 +308,11 @@
 
         function showQuestion() {
             if (currentQuestionIndex >= currentQuestions.length) {
-                // Victoria en la estación
                 document.getElementById('challenge-screen').style.display = 'none';
                 document.getElementById('game-screen').style.display = 'block';
                 document.getElementById('victory-text').innerText = `Has hackeado con éxito ${levels[currentLevelIndex].name}.`;
                 document.getElementById('rank-title').innerText = levels[currentLevelIndex].rankName;
-                score += 25;
+                score += 50;
                 localStorage.setItem('cytech_score', score);
                 updateStatsUI();
                 speakAlertText("¡Estación superada!");
@@ -334,7 +408,6 @@
             updateStatsUI();
         }
 
-        // Inicializar interfaz al cargar
         updateStatsUI();
     </script>
 </body>
