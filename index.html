@@ -450,7 +450,27 @@
                 <div id="streak-container" class="streak-badge">🔥 Racha: 1 Días</div>
                 <div id="league-container" class="league-badge-top" onclick="showLeaguesScreen()">🏆 Liga Bronce</div>
             </div>
-            
+ <div id="challenge-screen" style="display: none;">
+    <div class="interactive-challenge">
+        <h3>🛠️ Ensambla el Comando Correcto</h3>
+        <p>Toca los bloques en el orden adecuado para construir la instrucción:</p>
+        
+        <!-- Zona de respuesta -->
+        <div id="assembly-zone" class="assembly-zone"></div>
+
+        <div class="divider"></div>
+
+        <!-- Banco de bloques -->
+        <div id="blocks-bank" class="blocks-bank">
+            <div class="code-block" onclick="selectBlock(this)" data-value="ls">ls</div>
+            <div class="code-block" onclick="selectBlock(this)" data-value="-la">-la</div>
+            <div class="code-block" onclick="selectBlock(this)" data-value="cd">cd</div>
+            <div class="code-block" onclick="selectBlock(this)" data-value="/var">/var</div>
+        </div>
+
+        <button class="btn-verify" onclick="verifyBlocks()">Verificar Comando 🚀</button>
+    </div>
+</div>           
             <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">Selecciona una estación global del ciberespacio:</p>
             
             <div class="world-map-container">
