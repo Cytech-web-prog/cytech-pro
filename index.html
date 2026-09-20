@@ -1040,7 +1040,37 @@
 
         function randomInRange(min, max) {
             return Math.random() * (max - min) + min;
+   // --- Lógica del Reto Interactivo de Bloques ---
+    const correctSequence = ["cd", "/var", "ls", "-la"]; 
+
+    function selectBlock(blockElement) {
+        const assemblyZone = document.getElementById("assembly-zone");
+        const blocksBank = document.getElementById("blocks-bank");
+
+        if (blockElement.parentElement === blocksBank) {
+            assemblyZone.appendChild(blockElement);
+        } else {
+            blocksBank.appendChild(blockElement);
         }
-    </script>
+    }
+
+    function verifyBlocks() {
+        const assemblyZone = document.getElementById("assembly-zone");
+        const userBlocks = assemblyZone.children;
+        
+        let currentSequence = [];
+        for (let block of userBlocks) {
+            currentSequence.push(block.getAttribute("data-value"));
+        }
+
+        let isCorrect = JSON.stringify(currentSequence) === JSON.stringify(correctSequence);
+
+        if (isCorrect) {
+            alert("¡Estación Hackeada con Éxito! 🎉 Bloques correctos.");
+        } else {
+            alert("Secuencia incorrecta. ¡Inténtalo de nuevo, hacker! ⚠️");
+        }
+    }
+</script>     
 </body>
 </html>
