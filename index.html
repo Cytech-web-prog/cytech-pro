@@ -1,1113 +1,486 @@
-  <!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CyTech Pro - Christ Ydrogo</title>
-    <!-- Librería de Confeti -->
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <style>
-        :root {
-            --bg-color: #0b0f19;
-            --card-bg: #111827;
-            --primary: #38bdf8;
-            --primary-glow: rgba(56, 189, 248, 0.4);
-            --accent: #818cf8;
-            --text-main: #f3f4f6;
-            --text-muted: #9ca3af;
-        }
-
-        body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background: var(--bg-color);
-            color: var(--text-main);
-            text-align: center;
-            padding: 15px;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        .container {
-/* Tus estilos anteriores */
-        box-sizing: border-box;
+// --- MOTOR DE VOZ DE ALERTA (SpeechSynthesis API) ---
+function speakAlert(text) {
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'es-ES';
+        utterance.rate = 1.05;
+        utterance.pitch = 1.0;
+        window.speechSynthesis.speak(utterance);
     }
+}
 
-    /* --- Estilos para los Retos Interactivos de Bloques --- */
-    .assembly-zone {
-        min-height: 60px;
-        background: rgba(255, 255, 255, 0.05);
-        border: 2px dashed #00f0ff;
-        border-radius: 10px;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        padding: 10px;
-        margin-bottom: 20px;
+// --- MOTOR DE SONIDOS DIGITALES (Web Audio API) ---
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+function playSound(type) {
+    if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
     }
-
-    .blocks-bank {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        justify-content: center;
-        margin-bottom: 20px;
-    }
-
-    .code-block {
-        background: #1e1e2f;
-        color: #00f0ff;
-        border: 1px solid #00f0ff;
-        padding: 8px 14px;
-        border-radius: 6px;
-        cursor: pointer;
-        font-family: monospace;
-        font-weight: bold;
-        transition: all 0.2s ease;
-    }
-
-    .code-block:active {
-        transform: scale(0.95);
-        background: #00f0ff;
-        color: #121212;
-    }
-     
-        }
-
-        /* Pantalla de Inicio / Mapa Global de Ruta */
-        #welcome-screen {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            animation: fadeIn 0.6s ease-in-out;
-        }
-
-        .logo-badge {
-            background: linear-gradient(135deg, #38bdf8, #6366f1);
-            color: #fff;
-            font-weight: 800;
-            font-size: 24px;
-            width: 60px;
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            margin-bottom: 10px;
-            box-shadow: 0 0 20px var(--primary-glow);
-        }
-
-        h1 {
-            color: var(--text-main);
-            font-size: 24px;
-            margin: 0 0 5px 0;
-            font-weight: 700;
-        }
-
-        .brand-subtitle {
-            color: var(--primary);
-            font-size: 13px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 12px;
-            font-weight: 600;
-        }
-
-        .badges-top-row {
-            display: flex;
-            gap: 8px;
-            justify-content: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .streak-badge, .league-badge-top {
-            background: rgba(245, 158, 11, 0.1);
-            border: 1px solid rgba(245, 158, 11, 0.3);
-            color: #f59e0b;
-            padding: 5px 10px;
-            border-radius: 10px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .league-badge-top {
-            background: rgba(56, 189, 248, 0.1);
-            border-color: rgba(56, 189, 248, 0.3);
-            color: var(--primary);
-            cursor: pointer;
-        }
-
-        /* Estilo del Mapa Global de Nodos */
-        .world-map-container {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            width: 100%;
-            margin-bottom: 15px;
-            position: relative;
-        }
-
-        .map-node {
-            background: #1e293b;
-            border: 2px solid #334155;
-            padding: 12px 15px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: left;
-        }
-
-        .map-node:hover {
-            border-color: var(--primary);
-            background: rgba(56, 189, 248, 0.05);
-        }
-
-        .map-node.active {
-            border-color: var(--primary);
-            background: linear-gradient(135deg, rgba(2, 132, 199, 0.2), rgba(79, 70, 229, 0.2));
-            box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
-        }
-
-        .node-info h4 {
-            margin: 0;
-            font-size: 14px;
-            color: var(--text-main);
-        }
-
-        .node-info span {
-            font-size: 11px;
-            color: var(--text-muted);
-        }
-
-        .node-icon {
-            font-size: 22px;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #0284c7, #4f46e5);
-            color: white;
-            border: none;
-            padding: 14px 20px;
-            font-size: 16px;
-            font-weight: bold;
-            border-radius: 12px;
-            cursor: pointer;
-            width: 100%;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
-            margin-top: 5px;
-        }
-
-        .btn-primary:active {
-            transform: scale(0.98);
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--text-main);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            padding: 10px 15px;
-            font-size: 13px;
-            border-radius: 12px;
-            cursor: pointer;
-            width: 100%;
-            font-weight: 600;
-            margin-top: 10px;
-        }
-
-        /* Pantalla de Juego */
-        #game-screen {
-            display: none;
-            animation: fadeIn 0.4s ease-in-out;
-        }
-
-        .game-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            padding-bottom: 10px;
-        }
-
-        #level-title {
-            font-size: 12px;
-            color: var(--primary);
-            font-weight: bold;
-            text-align: left;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .stats-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            background: rgba(255,255,255,0.03);
-            padding: 8px 12px;
-            border-radius: 10px;
-            font-size: 14px;
-        }
-
-        .hearts {
-            color: #ef4444;
-            font-size: 16px;
-            letter-spacing: 2px;
-        }
-
-        #question-counter {
-            color: var(--text-muted);
-            font-size: 13px;
-        }
-
-        #question-text {
-            font-size: 17px;
-            margin-bottom: 20px;
-            line-height: 1.5;
-            text-align: left;
-            color: #e2e8f0;
-            font-weight: 500;
-        }
-
-        .options-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        button.option-btn {
-            background: #1e293b;
-            color: var(--text-main);
-            border: 2px solid #334155;
-            padding: 13px 15px;
-            font-size: 14px;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-align: left;
-            font-weight: 500;
-        }
-
-        button.option-btn:hover {
-            background: #2563eb;
-            border-color: #38bdf8;
-        }
-
-        #next-btn {
-            background: #10b981;
-            color: white;
-            border: none;
-            padding: 13px 20px;
-            font-size: 15px;
-            border-radius: 12px;
-            cursor: pointer;
-            margin-top: 15px;
-            display: none;
-            width: 100%;
-            font-weight: bold;
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-        }
-
-        /* Pantallas de Nivel Superado y Ligas */
-        #level-complete-screen, #victory-screen, #leagues-screen {
-            display: none;
-            animation: fadeIn 0.5s ease-in-out;
-            text-align: center;
-        }
-
-        .rank-badge-box {
-            background: rgba(56, 189, 248, 0.08);
-            border: 1px solid rgba(56, 189, 248, 0.3);
-            padding: 18px;
-            border-radius: 15px;
-            margin: 20px 0;
-        }
-
-        .btn-skip {
-            background: rgba(56, 189, 248, 0.1);
-            color: var(--primary);
-            border: 1px dashed var(--primary);
-            padding: 10px 15px;
-            font-size: 13px;
-            border-radius: 10px;
-            cursor: pointer;
-            margin-top: 12px;
-            width: 100%;
-            font-weight: 600;
-        }
-
-        .footer-score {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 15px;
-            font-size: 14px;
-            color: var(--text-muted);
-            border-top: 1px solid rgba(255,255,255,0.05);
-            padding-top: 12px;
-        }
-
-        .trophy-icon {
-            font-size: 60px;
-            margin-bottom: 10px;
-            animation: bounce 1.5s infinite;
-        }
-
-        .victory-title {
-            color: #38bdf8;
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .victory-stats {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 15px;
-            border-radius: 12px;
-            margin: 15px 0;
-            text-align: left;
-            font-size: 14px;
-            line-height: 1.8;
-        }
-
-        /* Estilo de la tabla de Ligas Globales y Leaderboard */
-        .league-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 12px 15px;
-            margin: 12px 0;
-            text-align: left;
-        }
-
-        .league-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            font-size: 13px;
-        }
-
-        .league-row:last-child {
-            border-bottom: none;
-        }
-
-        .leaderboard-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
-            margin-top: 5px;
-            text-align: left;
-        }
-
-        .leaderboard-table th {
-            color: var(--text-muted);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding-bottom: 6px;
-            font-weight: 600;
-        }
-
-        .leaderboard-table td {
-            padding: 8px 4px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-        }
-
-        .leaderboard-table tr.user-row {
-            background: rgba(56, 189, 248, 0.08);
-            font-weight: bold;
-            color: var(--primary);
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(6px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <!-- PANTALLA DE BIENVENIDA: MAPA GLOBAL DE TECNOLOGÍA -->
-        <div id="welcome-screen">
-            <div class="logo-badge">Cy</div>
-            <h1>CyTech Pro</h1>
-            <div class="brand-subtitle">Christ Ydrogo</div>
-            
-            <div class="badges-top-row">
-                <div id="streak-container" class="streak-badge">🔥 Racha: 1 Días</div>
-                <div id="league-container" class="league-badge-top" onclick="showLeaguesScreen()">🏆 Liga Bronce</div>
-            </div>
- <div id="challenge-screen" style="display: none;">
-    <div class="interactive-challenge">
-        <h3>🛠️ Ensambla el Comando Correcto</h3>
-        <p>Toca los bloques en el orden adecuado para construir la instrucción:</p>
-        
-        <!-- Zona de respuesta -->
-        <div id="assembly-zone" class="assembly-zone"></div>
-
-        <div class="divider"></div>
-
-        <!-- Banco de bloques -->
-        <div id="blocks-bank" class="blocks-bank">
-            <div class="code-block" onclick="selectBlock(this)" data-value="ls">ls</div>
-            <div class="code-block" onclick="selectBlock(this)" data-value="-la">-la</div>
-            <div class="code-block" onclick="selectBlock(this)" data-value="cd">cd</div>
-            <div class="code-block" onclick="selectBlock(this)" data-value="/var">/var</div>
-        </div>
-
-        <button class="btn-verify" onclick="verifyBlocks()">Verificar Comando 🚀</button>
-    </div>
-</div>           
-            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">Selecciona una estación global del ciberespacio:</p>
-            
-            <div class="world-map-container">
-                <div class="map-node active" onclick="selectLevelAndStart(0)">
-                    <div class="node-info">
-                        <h4>Estación 1: Redes Globales</h4>
-                        <span>América - Protocolos y Conectividad</span>
-                    </div>
-                    <div class="node-icon">🔌</div>
-                </div>
-                <div class="map-node" onclick="selectLevelAndStart(1)">
-                    <div class="node-info">
-                        <h4>Estación 2: Núcleo de Software</h4>
-                        <span>Europa - Programación y Desarrollo</span>
-                    </div>
-                    <div class="node-icon">💻</div>
-                </div>
-                <div class="map-node" onclick="selectLevelAndStart(2)">
-                    <div class="node-info">
-                        <h4>Estación 3: Servidores SQL</h4>
-                        <span>Asia - Bases de Datos</span>
-                    </div>
-                    <div class="node-icon">📊</div>
-                </div>
-                <div class="map-node" onclick="selectLevelAndStart(3)">
-                    <div class="node-info">
-                        <h4>Estación 4: Terminal Root</h4>
-                        <span>África - Linux y Comandos</span>
-                    </div>
-                    <div class="node-icon">🐧</div>
-                </div>
-                <div class="map-node" onclick="selectLevelAndStart(4)">
-                    <div class="node-info">
-                        <h4>Estación 5: Filosofía Libre</h4>
-                        <span>Oceanía - Software Libre y Cultura</span>
-                    </div>
-                    <div class="node-icon">🌍</div>
-                </div>
-            </div>
-
-            <button class="btn-primary" onclick="startGame(0)">Iniciar Ruta Global 🚀</button>
-            <button class="btn-secondary" onclick="showLeaguesScreen()">🏆 Salón de la Fama y Leaderboard</button>
-        </div>
-
-        <!-- PANTALLA DE JUEGO -->
-        <div id="game-screen">
-            <div class="game-header">
-                <div id="level-title">Nivel 1</div>
-                <div id="question-counter">1/20</div>
-            </div>
-
-            <div class="stats-bar">
-                <span>Vidas: <span id="hearts-display" class="hearts">❤️❤️❤️</span></span>
-                <span>Fallos: <strong id="fails-val" style="color: #f87171;">0</strong></span>
-            </div>
-
-            <div id="quiz-box">
-                <p id="question-text">Cargando pregunta...</p>
-                <div class="options-grid" id="options-container"></div>
-            </div>
-
-            <button id="next-btn" onclick="nextQuestion()">Siguiente Pregunta</button>
-            <button class="btn-skip" onclick="skipToNextLevel()">⏩ Saltar Estación (Modo Prueba)</button>
-            
-            <div class="footer-score">
-                <span>Puntaje: <strong id="score-val" style="color: var(--primary);">0</strong>XP</span>
-                <span id="streak-live-display" style="font-size: 12px; color: #f59e0b; font-weight: bold;">🔥 1</span>
-            </div>
-        </div>
-
-        <!-- PANTALLA INTERMEDIA DE NIVEL SUPERADO -->
-        <div id="level-complete-screen">
-            <div style="font-size: 50px; margin-bottom: 10px;">🎉</div>
-            <div class="victory-title">¡Estación Hackeada!</div>
-            <p id="completed-level-name" style="color: var(--text-muted); font-size: 14px; margin-bottom: 10px;"></p>
-            
-            <div class="rank-badge-box">
-                <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px;">Nuevo Rango Obtenido</div>
-                <div id="earned-rank-text" style="font-size: 18px; font-weight: bold; color: #34d399;"></div>
-            </div>
-
-            <button class="btn-primary" onclick="proceedToNextLevel()">Siguiente Estación 🚀</button>
-        </div>
-
-        <!-- PANTALLA DE LIGAS Y LEADERBOARD GLOBAL -->
-        <div id="leagues-screen">
-            <div style="font-size: 40px; margin-bottom: 2px;">🏆</div>
-            <div class="victory-title">Salón de la Fama</div>
-            <p style="color: var(--text-muted); font-size: 12px; margin-bottom: 10px;">Ranking Global del Ciberespacio</p>
-            
-            <div class="league-card">
-                <div class="league-row">
-                    <span>🏆 Liga Actual:</span>
-                    <strong id="league-name-display" style="color: var(--primary);">Bronce</strong>
-                </div>
-                <div class="league-row">
-                    <span>⚡ XP Total:</span>
-                    <strong id="total-xp-display" style="color: #34d399;">0 XP</strong>
-                </div>
-                <div class="league-row">
-                    <span>🔥 Racha Máxima:</span>
-                    <strong id="best-streak-display" style="color: #f59e0b;">1 Días</strong>
-                </div>
-                <div class="league-row">
-                    <span>⭐ Partidas Perfectas:</span>
-                    <strong id="perfect-games-display" style="color: #818cf8;">0</strong>
-                </div>
-            </div>
-
-            <div class="league-card">
-                <div style="font-size: 13px; font-weight: bold; margin-bottom: 6px; color: var(--text-main); text-align: left;">🌐 Tabla de Clasificación Global</div>
-                <table class="leaderboard-table">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Hacker</th>
-                            <th style="text-align: right;">XP</th>
-                        </tr>
-                    </thead>
-                    <tbody id="leaderboard-tbody">
-                        <!-- Inyectado dinámicamente -->
-                    </tbody>
-                </table>
-            </div>
-
-            <button class="btn-primary" onclick="backToWelcome()">Volver al Menú Principal</button>
-        </div>
-
-        <!-- PANTALLA DE VICTORIA FINAL -->
-        <div id="victory-screen">
-            <div class="trophy-icon">🏆</div>
-            <div class="victory-title">¡Red Global Conquistada!</div>
-            <p style="color: var(--text-muted); font-size: 13px;">Has superado exitosamente todas las estaciones de CyTech Pro.</p>
-            
-            <div class="victory-stats">
-                <div>🎯 <strong>Puntaje Final:</strong> <span id="final-score" style="color: #38bdf8;">0</span> / 100 XP</div>
-                <div>❌ <strong>Total de Fallos:</strong> <span id="final-fails" style="color: #f87171;">0</span></div>
-                <div>❤️ <strong>Vidas Restantes:</strong> <span id="final-lives" style="color: #ef4444;">3</span> / 3</div>
-                <div>⭐ <strong>Rango Supremo:</strong> <span style="color: #34d399; font-weight: bold;">Maestro de la Tecnología</span></div>
-            </div>
-
-            <button class="btn-primary" onclick="location.reload()">Volver al Mapa Global</button>
-        </div>
-    </div>
-
-    <script src="questions.js"></script>
-    <script>
-        // --- MOTOR DE VOZ DE ALERTA (SpeechSynthesis API) ---
-        function speakAlert(text) {
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'es-ES';
-                utterance.rate = 1.05;
-                utterance.pitch = 1.0;
-                window.speechSynthesis.speak(utterance);
-            }
-        }
-
-        // --- MOTOR DE SONIDOS DIGITALES (Web Audio API) ---
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-        function playSound(type) {
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-
-            const now = audioCtx.currentTime;
-
-            if (type === 'start') {
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(300, now);
-                osc.frequency.exponentialRampToValueAtTime(600, now + 0.15);
-                gain.gain.setValueAtTime(0.2, now);
-                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
-                osc.start(now);
-                osc.stop(now + 0.3);
-            } else if (type === 'correct') {
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(523.25, now);
-                osc.frequency.setValueAtTime(659.25, now + 0.1);
-                gain.gain.setValueAtTime(0.2, now);
-                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
-                osc.start(now);
-                osc.stop(now + 0.35);
-            } else if (type === 'wrong') {
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(150, now);
-                osc.frequency.linearRampToValueAtTime(90, now + 0.25);
-                gain.gain.setValueAtTime(0.25, now);
-                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
-                osc.start(now);
-                osc.stop(now + 0.3);
-            } else if (type === 'victory') {
-                const notes = [523.25, 659.25, 783.99, 1046.50];
-                notes.forEach((freq, index) => {
-                    const subOsc = audioCtx.createOscillator();
-                    const subGain = audioCtx.createGain();
-                    subOsc.connect(subGain);
-                    subGain.connect(audioCtx.destination);
-                    subOsc.type = 'sine';
-                    subOsc.frequency.setValueAtTime(freq, now + index * 0.12);
-                    subGain.gain.setValueAtTime(0.2, now + index * 0.12);
-                    subGain.gain.exponentialRampToValueAtTime(0.01, now + index * 0.12 + 0.3);
-                    subOsc.start(now + index * 0.12);
-                    subOsc.stop(now + index * 0.12 + 0.3);
-                });
-            }
-        }
-
-        // --- DEFINICIÓN DE NIVELES Y RANGOS ---
-        const levels = [
-            { 
-                key: 'redes', 
-                name: 'Estación 1: Redes y Protocolos', 
-                ranks: { newbie: 'Novato de Subred 🔌', mid: 'Técnico de Conectividad 🌐', elite: 'Arquitecto de Redes Globales 🛡️✨' } 
-            },
-            { 
-                key: 'programacion', 
-                name: 'Estación 2: Programación y Desarrollo', 
-                ranks: { newbie: 'Depurador de Bugs 🐛', mid: 'Ingeniero de Software Junior ⌨️', elite: 'Maestro del Código Limpio 💻🚀' } 
-            },
-            { 
-                key: 'baseDeDatos', 
-                name: 'Estación 3: Bases de Datos', 
-                ranks: { newbie: 'Consultor de Tablas 📋', mid: 'Administrador de Registros 🗄️', elite: 'Señor de las Consultas SQL 📊⚡' } 
-            },
-            { 
-                key: 'linux', 
-                name: 'Estación 4: Linux y Comandos', 
-                ranks: { newbie: 'Aprendiz de Terminal 💻', mid: 'Operador de Shell 🖥️', elite: 'Dios del Root y los Comandos 🐧👑' } 
-            },
-            { 
-                key: 'softwareLibre', 
-                name: 'Estación 5: Software Libre y Cultura', 
-                ranks: { newbie: 'Colaborador Open Source 🤝', mid: 'Evangelista del Software Libre 📖', elite: 'Gurú de la Filosofía Libre 🌍🏆' } 
-            }
-        ];
-
-        let currentLevelIndex = 0;
-        let currentQuestionIndex = 0;
-        let score = 0;
-        let fails = 0;
-        let lives = 3;
-        let currentQuestions = [];
-        let globalStreak = 1;
-        let totalXP = 0;
-
-        // --- SISTEMA DE RACHAS Y LIGAS DIARIAS ---
-        function checkStreakAndLeagues() {
-            const lastPlay = localStorage.getItem('cytech_last_play');
-            const today = new Date().toDateString();
-            let streak = parseInt(localStorage.getItem('cytech_streak') || '0', 10);
-            
-            if (lastPlay) {
-                const lastDate = new Date(lastPlay);
-                const diffDays = Math.floor((new Date(today) - lastDate) / (1000 * 60 * 60 * 24));
-                
-                if (diffDays === 1) {
-                    streak += 1; 
-                } else if (diffDays > 1) {
-                    streak = 1;  
-                }
-            } else {
-                streak = 1;
-            }
-            localStorage.setItem('cytech_last_play', today);
-            localStorage.setItem('cytech_streak', streak);
-
-            // Cargar XP y récords
-            totalXP = parseInt(localStorage.getItem('cytech_total_xp') || '0', 10);
-            
-            return streak;
-        }
-
-        function updateLeagueUI() {
-            globalStreak = checkStreakAndLeagues();
-            document.getElementById('streak-container').innerText = `🔥 Racha: ${globalStreak} Días`;
-
-            let leagueName = "Bronce 🥉";
-            if (totalXP >= 300) leagueName = "Diamante 💎";
-            else if (totalXP >= 150) leagueName = "Oro 🥇";
-            else if (totalXP >= 50) leagueName = "Plata 🥈";
-
-            document.getElementById('league-container').innerText = `🏆 Liga ${leagueName}`;
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            updateLeagueUI();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    const now = audioCtx.currentTime;
+
+    if (type === 'start') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(300, now);
+        osc.frequency.exponentialRampToValueAtTime(600, now + 0.15);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+        osc.start(now);
+        osc.stop(now + 0.3);
+    } else if (type === 'correct') {
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(523.25, now);
+        osc.frequency.setValueAtTime(659.25, now + 0.1);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+        osc.start(now);
+        osc.stop(now + 0.35);
+    } else if (type === 'wrong') {
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(150, now);
+        osc.frequency.linearRampToValueAtTime(90, now + 0.25);
+        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+        osc.start(now);
+        osc.stop(now + 0.3);
+    } else if (type === 'victory') {
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+        notes.forEach((freq, index) => {
+            const subOsc = audioCtx.createOscillator();
+            const subGain = audioCtx.createGain();
+            subOsc.connect(subGain);
+            subGain.connect(audioCtx.destination);
+            subOsc.type = 'sine';
+            subOsc.frequency.setValueAtTime(freq, now + index * 0.12);
+            subGain.gain.setValueAtTime(0.2, now + index * 0.12);
+            subGain.gain.exponentialRampToValueAtTime(0.01, now + index * 0.12 + 0.3);
+            subOsc.start(now + index * 0.12);
+            subOsc.stop(now + index * 0.12 + 0.3);
         });
-
-        function showLeaguesScreen() {
-            document.getElementById('welcome-screen').style.display = 'none';
-            document.getElementById('leagues-screen').style.display = 'block';
-
-            let leagueName = "Bronce 🥉";
-            if (totalXP >= 300) leagueName = "Diamante 💎";
-            else if (totalXP >= 150) leagueName = "Oro 🥇";
-            else if (totalXP >= 50) leagueName = "Plata 🥈";
-
-            document.getElementById('league-name-display').innerText = leagueName;
-            document.getElementById('total-xp-display').innerText = `${totalXP} XP`;
-            document.getElementById('best-streak-display').innerText = `${globalStreak} Días`;
-            
-            const perfectGames = localStorage.getItem('cytech_perfect_games') || '0';
-            document.getElementById('perfect-games-display').innerText = perfectGames;
-
-            renderLeaderboard();
-        }
-
-        // --- RENDERIZAR TABLA DE CLASIFICACIÓN GLOBAL ---
-        function renderLeaderboard() {
-            const tbody = document.getElementById('leaderboard-tbody');
-            tbody.innerHTML = '';
-
-            // Lista ficticia de competidores globales combinada con el usuario actual (Christ Ydrogo)
-            let competitors = [
-                { name: 'CyberQueen_99', xp: 420 },
-                { name: 'NeoRoot', xp: 350 },
-                { name: 'Christ Ydrogo (Tú)', xp: totalXP, isUser: true },
-                { name: 'ByteMaster', xp: 210 },
-                { name: 'LinuxUser_VE', xp: 95 },
-                { name: 'CodeNinja', xp: 40 }
-            ];
-
-            // Ordenar de mayor a menor XP
-            competitors.sort((a, b) => b.xp - a.xp);
-
-            competitors.forEach((comp, index) => {
-                const tr = document.createElement('tr');
-                if (comp.isUser) {
-                    tr.className = 'user-row';
-                }
-
-                const rankMedal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}`;
-
-                tr.innerHTML = `
-                    <td>${rankMedal}</td>
-                    <td>${comp.name}</td>
-                    <td style="text-align: right; font-weight: bold;">${comp.xp} XP</td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        function backToWelcome() {
-            document.getElementById('leagues-screen').style.display = 'none';
-            document.getElementById('welcome-screen').style.display = 'flex';
-            updateLeagueUI();
-        }
-
-        // Selección directa al hacer clic en un nodo del mapa
-        function selectLevelAndStart(index) {
-            currentLevelIndex = index;
-            startGame(index);
-        }
-
-        // --- ALGORITMO DE MEZCLA ALEATORIA ---
-        function shuffleArray(array) {
-            let arr = [...array];
-            for (let i = arr.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [arr[i], arr[j]] = [arr[j], arr[i]];
-            }
-            return arr;
-        }
-
-        function startGame(startIndex = 0) {
-            if (typeof categoriesData === 'undefined') {
-                alert("Error: No se pudo cargar questions.js");
-                return;
-            }
-            currentLevelIndex = startIndex;
-            playSound('start');
-            speakAlert("¡Conectando con la red global! Iniciando desafío.");
-            document.getElementById('welcome-screen').style.display = 'none';
-            document.getElementById('victory-screen').style.display = 'none';
-            document.getElementById('level-complete-screen').style.display = 'none';
-            document.getElementById('leagues-screen').style.display = 'none';
-            document.getElementById('game-screen').style.display = 'block';
-            resetGameStats();
-            loadLevel();
-        }
-
-        function resetGameStats() {
-            score = 0;
-            fails = 0;
-            lives = 3;
-            updateStatsUI();
-        }
-
-        function updateStatsUI() {
-            document.getElementById('score-val').innerText = score;
-            document.getElementById('fails-val').innerText = fails;
-            document.getElementById('streak-live-display').innerText = `🔥 ${globalStreak}`;
-            let heartsStr = '';
-            for(let i = 0; i < lives; i++) heartsStr += '❤️';
-            for(let i = lives; i < 3; i++) heartsStr += '🖤';
-            document.getElementById('hearts-display').innerText = heartsStr;
-        }
-
-        function loadLevel() {
-            if (currentLevelIndex < levels.length) {
-                const levelInfo = levels[currentLevelIndex];
-                const rawQuestions = categoriesData[levelInfo.key];
-                currentQuestions = shuffleArray(rawQuestions);
-                
-                currentQuestionIndex = 0;
-                document.getElementById('level-title').innerText = levelInfo.name;
-                showQuestion();
-            } else {
-                showVictoryScreen();
-            }
-        }
-
-        function showQuestion() {
-            document.getElementById('next-btn').style.display = 'none';
-            if (currentQuestionIndex < currentQuestions.length) {
-                const q = currentQuestions[currentQuestionIndex];
-                document.getElementById('question-counter').innerText = `${currentQuestionIndex + 1}/20`;
-                document.getElementById('question-text').innerText = q.question;
-                
-                const optionsContainer = document.getElementById('options-container');
-                optionsContainer.innerHTML = '';
-                
-                const shuffledOptions = shuffleArray(q.options);
-
-                shuffledOptions.forEach(option => {
-                    const btn = document.createElement('button');
-                    btn.className = 'option-btn';
-                    btn.innerText = option;
-                    btn.onclick = () => selectAnswer(btn, option, q.correct);
-                    optionsContainer.appendChild(btn);
-                });
-                
-                updateStatsUI();
-            } else {
-                // Guardar XP total acumulado
-                totalXP += score;
-                localStorage.setItem('cytech_total_xp', totalXP);
-
-                if (fails === 0) {
-                    let perf = parseInt(localStorage.getItem('cytech_perfect_games') || '0', 10);
-                    localStorage.setItem('cytech_perfect_games', perf + 1);
-                }
-
-                const completedLevel = levels[currentLevelIndex];
-                let earnedRank = completedLevel.ranks.elite;
-                if (fails >= 5) {
-                    earnedRank = completedLevel.ranks.newbie;
-                } else if (fails >= 2) {
-                    earnedRank = completedLevel.ranks.mid;
-                }
-
-                showLevelCompleteScreen(completedLevel.name, earnedRank);
-            }
-        }
-
-        function showLevelCompleteScreen(levelName, rankTitle) {
-            document.getElementById('game-screen').style.display = 'none';
-            document.getElementById('completed-level-name').innerText = `Has hackeado con éxito ${levelName}.`;
-            document.getElementById('earned-rank-text').innerText = rankTitle;
-            document.getElementById('level-complete-screen').style.display = 'block';
-
-            playSound('victory');
-            speakAlert("¡Estación superada! Excelente dominio tecnológico.");
-            triggerMassiveConfetti();
-        }
-
-        function proceedToNextLevel() {
-            currentLevelIndex++;
-            document.getElementById('level-complete-screen').style.display = 'none';
-            document.getElementById('game-screen').style.display = 'block';
-            loadLevel();
-        }
-
-        function selectAnswer(button, selected, correct) {
-            const buttons = document.querySelectorAll('.option-btn');
-            buttons.forEach(btn => {
-                btn.disabled = true;
-                if (btn.innerText === correct) {
-                    btn.style.background = '#059669';
-                    btn.style.borderColor = '#34d399';
-                } else if (btn === button && selected !== correct) {
-                    btn.style.background = '#dc2626';
-                    btn.style.borderColor = '#f87171';
-                }
-            });
-
-            if (selected === correct) {
-                score++;
-                playSound('correct');
-                if (Math.random() > 0.6) {
-                    speakAlert("¡Correcto!");
-                }
-            } else {
-                fails++;
-                lives--;
-                playSound('wrong');
-
-                if (lives === 1) {
-                    speakAlert("¡Alerta! Te queda una sola vida.");
-                } else if (lives <= 0) {
-                    speakAlert("Juego terminado. Te has quedado sin vidas.");
-                    updateStatsUI();
-                    setTimeout(() => {
-                        alert("¡Te has quedado sin vidas! Game Over. Volviendo al mapa global.");
-                        location.reload();
-                    }, 400);
-                    return;
-                } else {
-                    speakAlert("¡Fallaste! Cuidado.");
-                }
-            }
-            
-            updateStatsUI();
-            document.getElementById('next-btn').style.display = 'block';
-        }
-
-        function nextQuestion() {
-            currentQuestionIndex++;
-            showQuestion();
-        }
-
-        function skipToNextLevel() {
-            score += (20 - currentQuestionIndex);
-            totalXP += score;
-            localStorage.setItem('cytech_total_xp', totalXP);
-
-            const completedLevel = levels[currentLevelIndex];
-            const earnedRank = completedLevel.ranks.elite;
-            showLevelCompleteScreen(completedLevel.name, earnedRank);
-        }
-
-        function showVictoryScreen() {
-            document.getElementById('game-screen').style.display = 'none';
-            document.getElementById('victory-screen').style.display = 'block';
-            document.getElementById('final-score').innerText = score;
-            document.getElementById('final-fails').innerText = fails;
-            document.getElementById('final-lives').innerText = lives;
-            
-            playSound('victory');
-            speakAlert("¡Increíble! Has conquistado todo el mapa global tecnológico.");
-            triggerMassiveConfetti();
-        }
-
-        // --- EFECTO DE CONFETI MASIVO ---
-        function triggerMassiveConfetti() {
-            const duration = 3.5 * 1000;
-            const animationEnd = Date.now() + duration;
-            const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 1000 };
-
-            const interval = setInterval(function() {
-                const timeLeft = animationEnd - Date.now();
-                if (timeLeft <= 0) {
-                    return clearInterval(interval);
-                }
-                const particleCount = 50 * (timeLeft / duration);
-                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
-                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
-            }, 250);
-        }
-
-        function randomInRange(min, max) {
-            return Math.random() * (max - min) + min;
-   // --- Lógica del Reto Interactivo de Bloques ---
-    const correctSequence = ["cd", "/var", "ls", "-la"]; 
-
-    function selectBlock(blockElement) {
-        const assemblyZone = document.getElementById("assembly-zone");
-        const blocksBank = document.getElementById("blocks-bank");
-
-        if (blockElement.parentElement === blocksBank) {
-            assemblyZone.appendChild(blockElement);
-        } else {
-            blocksBank.appendChild(blockElement);
-        }
     }
+}
 
-    function verifyBlocks() {
-        const assemblyZone = document.getElementById("assembly-zone");
-        const userBlocks = assemblyZone.children;
+// --- DEFINICIÓN DE NIVELES Y RANGOS ---
+const levels = [
+    { 
+        key: 'redes', 
+        name: 'Estación 1: Redes y Protocolos', 
+        ranks: { newbie: 'Novato de Subred 🔌', mid: 'Técnico de Conectividad 🌐', elite: 'Arquitecto de Redes Globales 🛡️✨' } 
+    },
+    { 
+        key: 'programacion', 
+        name: 'Estación 2: Programación y Desarrollo', 
+        ranks: { newbie: 'Depurador de Bugs 🐛', mid: 'Ingeniero de Software Junior ⌨️', elite: 'Maestro del Código Limpio 💻🚀' } 
+    },
+    { 
+        key: 'baseDeDatos', 
+        name: 'Estación 3: Bases de Datos', 
+        ranks: { newbie: 'Consultor de Tablas 📋', mid: 'Administrador de Registros 🗄️', elite: 'Señor de las Consultas SQL 📊⚡' } 
+    },
+    { 
+        key: 'linux', 
+        name: 'Estación 4: Linux y Comandos', 
+        ranks: { newbie: 'Aprendiz de Terminal 💻', mid: 'Operador de Shell 🖥️', elite: 'Dios del Root y los Comandos 🐧👑' } 
+    },
+    { 
+        key: 'softwareLibre', 
+        name: 'Estación 5: Software Libre y Cultura', 
+        ranks: { newbie: 'Colaborador Open Source 🤝', mid: 'Evangelista del Software Libre 📖', elite: 'Gurú de la Filosofía Libre 🌍🏆' } 
+    }
+];
+
+let currentLevelIndex = 0;
+let currentQuestionIndex = 0;
+let score = 0;
+let fails = 0;
+let lives = 3;
+let currentQuestions = [];
+let globalStreak = 1;
+let totalXP = 0;
+
+// --- SISTEMA DE RACHAS Y LIGAS DIARIAS ---
+function checkStreakAndLeagues() {
+    const lastPlay = localStorage.getItem('cytech_last_play');
+    const today = new Date().toDateString();
+    let streak = parseInt(localStorage.getItem('cytech_streak') || '0', 10);
+    
+    if (lastPlay) {
+        const lastDate = new Date(lastPlay);
+        const diffDays = Math.floor((new Date(today) - lastDate) / (1000 * 60 * 60 * 24));
         
-        let currentSequence = [];
-        for (let block of userBlocks) {
-            currentSequence.push(block.getAttribute("data-value"));
+        if (diffDays === 1) {
+            streak += 1; 
+        } else if (diffDays > 1) {
+            streak = 1;  
         }
-
-        let isCorrect = JSON.stringify(currentSequence) === JSON.stringify(correctSequence);
-
-        if (isCorrect) {
-            alert("¡Estación Hackeada con Éxito! 🎉 Bloques correctos.");
-        } else {
-            alert("Secuencia incorrecta. ¡Inténtalo de nuevo, hacker! ⚠️");
-        }
- // --- Lógica del Reto Interactivo de Bloques ---
-    const correctSequence = ["cd", "/var", "ls", "-la"]; 
-
-    // Función para iniciar la estación y mostrar el reto
-    function selectLevelAndStart(levelIndex) {
-        const challengeScreen = document.getElementById("challenge-screen");
-        if (challengeScreen) {
-            challengeScreen.style.display = "block";
-        }
+    } else {
+        streak = 1;
     }
+    localStorage.setItem('cytech_last_play', today);
+    localStorage.setItem('cytech_streak', streak);
 
-    function selectBlock(blockElement) {
-        const assemblyZone = document.getElementById("assembly-zone");
-        const blocksBank = document.getElementById("blocks-bank");
+    totalXP = parseInt(localStorage.getItem('cytech_total_xp') || '0', 10);
+    
+    return streak;
+}
 
-        if (blockElement.parentElement === blocksBank) {
-            assemblyZone.appendChild(blockElement);
-        } else {
-            blocksBank.appendChild(blockElement);
+function updateLeagueUI() {
+    globalStreak = checkStreakAndLeagues();
+    const streakContainer = document.getElementById('streak-container');
+    if (streakContainer) streakContainer.innerText = `🔥 Racha: ${globalStreak} Días`;
+
+    let leagueName = "Bronce 🥉";
+    if (totalXP >= 300) leagueName = "Diamante 💎";
+    else if (totalXP >= 150) leagueName = "Oro 🥇";
+    else if (totalXP >= 50) leagueName = "Plata 🥈";
+
+    const leagueContainer = document.getElementById('league-container');
+    if (leagueContainer) leagueContainer.innerText = `🏆 Liga ${leagueName}`;
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    updateLeagueUI();
+});
+
+function showLeaguesScreen() {
+    document.getElementById('welcome-screen').style.display = 'none';
+    document.getElementById('leagues-screen').style.display = 'block';
+
+    let leagueName = "Bronce 🥉";
+    if (totalXP >= 300) leagueName = "Diamante 💎";
+    else if (totalXP >= 150) leagueName = "Oro 🥇";
+    else if (totalXP >= 50) leagueName = "Plata 🥈";
+
+    document.getElementById('league-name-display').innerText = leagueName;
+    document.getElementById('total-xp-display').innerText = `${totalXP} XP`;
+    document.getElementById('best-streak-display').innerText = `${globalStreak} Días`;
+    
+    const perfectGames = localStorage.getItem('cytech_perfect_games') || '0';
+    document.getElementById('perfect-games-display').innerText = perfectGames;
+
+    renderLeaderboard();
+}
+
+// --- RENDERIZAR TABLA DE CLASIFICACIÓN GLOBAL ---
+function renderLeaderboard() {
+    const tbody = document.getElementById('leaderboard-tbody');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    let competitors = [
+        { name: 'CyberQueen_99', xp: 420 },
+        { name: 'NeoRoot', xp: 350 },
+        { name: 'Christ Ydrogo (Tú)', xp: totalXP, isUser: true },
+        { name: 'ByteMaster', xp: 210 },
+        { name: 'LinuxUser_VE', xp: 95 },
+        { name: 'CodeNinja', xp: 40 }
+    ];
+
+    competitors.sort((a, b) => b.xp - a.xp);
+
+    competitors.forEach((comp, index) => {
+        const tr = document.createElement('tr');
+        if (comp.isUser) {
+            tr.className = 'user-row';
         }
-    }
 
-    function verifyBlocks() {
-        const assemblyZone = document.getElementById("assembly-zone");
-        const userBlocks = assemblyZone.children;
+        const rankMedal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}`;
+
+        tr.innerHTML = `
+            <td>${rankMedal}</td>
+            <td>${comp.name}</td>
+            <td style="text-align: right; font-weight: bold;">${comp.xp} XP</td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function backToWelcome() {
+    document.getElementById('leagues-screen').style.display = 'none';
+    document.getElementById('welcome-screen').style.display = 'flex';
+    updateLeagueUI();
+}
+
+// --- ALGORITMO DE MEZCLA ALEATORIA ---
+function shuffleArray(array) {
+    let arr = [...array];
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+}
+
+// --- SELECCIÓN Y INICIO DE ESTACIÓN ---
+function selectLevelAndStart(levelIndex) {
+    currentLevelIndex = levelIndex;
+    
+    const welcomeScreen = document.getElementById("welcome-screen");
+    const challengeScreen = document.getElementById("challenge-screen");
+    
+    if (welcomeScreen) {
+        welcomeScreen.style.display = 'none';
+    }
+    
+    // Si tienes una pantalla de reto de bloques específica para este nivel, la muestra; si no, arranca la trivia
+    if (challengeScreen && levelIndex === 3) { // Ejemplo para Linux u otra estación
+        challengeScreen.style.display = 'block';
+    } else {
+        startGame(levelIndex);
+    }
+}
+
+function startGame(startIndex = 0) {
+    if (typeof categoriesData === 'undefined') {
+        alert("Error: No se pudo cargar questions.js");
+        return;
+    }
+    currentLevelIndex = startIndex;
+    playSound('start');
+    speakAlert("¡Conectando con la red global! Iniciando desafío.");
+    document.getElementById('welcome-screen').style.display = 'none';
+    document.getElementById('victory-screen').style.display = 'none';
+    document.getElementById('level-complete-screen').style.display = 'none';
+    document.getElementById('leagues-screen').style.display = 'none';
+    const challengeScreen = document.getElementById('challenge-screen');
+    if (challengeScreen) challengeScreen.style.display = 'none';
+    
+    document.getElementById('game-screen').style.display = 'block';
+    resetGameStats();
+    loadLevel();
+}
+
+function resetGameStats() {
+    score = 0;
+    fails = 0;
+    lives = 3;
+    updateStatsUI();
+}
+
+function updateStatsUI() {
+    const scoreVal = document.getElementById('score-val');
+    if (scoreVal) scoreVal.innerText = score;
+    
+    const failsVal = document.getElementById('fails-val');
+    if (failsVal) failsVal.innerText = fails;
+    
+    const streakLiveDisplay = document.getElementById('streak-live-display');
+    if (streakLiveDisplay) streakLiveDisplay.innerText = `🔥 ${globalStreak}`;
+    
+    let heartsStr = '';
+    for(let i = 0; i < lives; i++) heartsStr += '❤️';
+    for(let i = lives; i < 3; i++) heartsStr += '🖤';
+    const heartsDisplay = document.getElementById('hearts-display');
+    if (heartsDisplay) heartsDisplay.innerText = heartsStr;
+}
+
+function loadLevel() {
+    if (currentLevelIndex < levels.length) {
+        const levelInfo = levels[currentLevelIndex];
+        const rawQuestions = categoriesData[levelInfo.key];
+        currentQuestions = shuffleArray(rawQuestions);
         
-        let currentSequence = [];
-        for (let block of userBlocks) {
-            currentSequence.push(block.getAttribute("data-value"));
+        currentQuestionIndex = 0;
+        document.getElementById('level-title').innerText = levelInfo.name;
+        showQuestion();
+    } else {
+        showVictoryScreen();
+    }
+}
+
+function showQuestion() {
+    document.getElementById('next-btn').style.display = 'none';
+    if (currentQuestionIndex < currentQuestions.length) {
+        const q = currentQuestions[currentQuestionIndex];
+        document.getElementById('question-counter').innerText = `${currentQuestionIndex + 1}/20`;
+        document.getElementById('question-text').innerText = q.question;
+        
+        const optionsContainer = document.getElementById('options-container');
+        optionsContainer.innerHTML = '';
+        
+        const shuffledOptions = shuffleArray(q.options);
+
+        shuffledOptions.forEach(option => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerText = option;
+            btn.onclick = () => selectAnswer(btn, option, q.correct);
+            optionsContainer.appendChild(btn);
+        });
+        
+        updateStatsUI();
+    } else {
+        totalXP += score;
+        localStorage.setItem('cytech_total_xp', totalXP);
+
+        if (fails === 0) {
+            let perf = parseInt(localStorage.getItem('cytech_perfect_games') || '0', 10);
+            localStorage.setItem('cytech_perfect_games', perf + 1);
         }
 
-        let isCorrect = JSON.stringify(currentSequence) === JSON.stringify(correctSequence);
+        const completedLevel = levels[currentLevelIndex];
+        let earnedRank = completedLevel.ranks.elite;
+        if (fails >= 5) {
+            earnedRank = completedLevel.ranks.newbie;
+        } else if (fails >= 2) {
+            earnedRank = completedLevel.ranks.mid;
+        }
 
-        if (isCorrect) {
-            alert("¡Estación Hackeada con Éxito! 🎉 Bloques correctos.");
+        showLevelCompleteScreen(completedLevel.name, earnedRank);
+    }
+}
+
+function showLevelCompleteScreen(levelName, rankTitle) {
+    document.getElementById('game-screen').style.display = 'none';
+    document.getElementById('completed-level-name').innerText = `Has hackeado con éxito ${levelName}.`;
+    document.getElementById('earned-rank-text').innerText = rankTitle;
+    document.getElementById('level-complete-screen').style.display = 'block';
+
+    playSound('victory');
+    speakAlert("¡Estación superada! Excelente dominio tecnológico.");
+    triggerMassiveConfetti();
+}
+
+function proceedToNextLevel() {
+    currentLevelIndex++;
+    document.getElementById('level-complete-screen').style.display = 'none';
+    document.getElementById('game-screen').style.display = 'block';
+    loadLevel();
+}
+
+function selectAnswer(button, selected, correct) {
+    const buttons = document.querySelectorAll('.option-btn');
+    buttons.forEach(btn => {
+        btn.disabled = true;
+        if (btn.innerText === correct) {
+            btn.style.background = '#059669';
+            btn.style.borderColor = '#34d399';
+        } else if (btn === button && selected !== correct) {
+            btn.style.background = '#dc2626';
+            btn.style.borderColor = '#f87171';
+        }
+    });
+
+    if (selected === correct) {
+        score++;
+        playSound('correct');
+        if (Math.random() > 0.6) {
+            speakAlert("¡Correcto!");
+        }
+    } else {
+        fails++;
+        lives--;
+        playSound('wrong');
+
+        if (lives === 1) {
+            speakAlert("¡Alerta! Te queda una sola vida.");
+        } else if (lives <= 0) {
+            speakAlert("Juego terminado. Te has quedado sin vidas.");
+            updateStatsUI();
+            setTimeout(() => {
+                alert("¡Te has quedado sin vidas! Game Over. Volviendo al mapa global.");
+                location.reload();
+            }, 400);
+            return;
         } else {
-            alert("Secuencia incorrecta. ¡Inténtalo de nuevo, hacker! ⚠️");
-        }    }
-</script>     
-</body>
-</html>
+            speakAlert("¡Fallaste! Cuidado.");
+        }
+    }
+    
+    updateStatsUI();
+    document.getElementById('next-btn').style.display = 'block';
+}
+
+function nextQuestion() {
+    currentQuestionIndex++;
+    showQuestion();
+}
+
+function skipToNextLevel() {
+    score += (20 - currentQuestionIndex);
+    totalXP += score;
+    localStorage.setItem('cytech_total_xp', totalXP);
+
+    const completedLevel = levels[currentLevelIndex];
+    const earnedRank = completedLevel.ranks.elite;
+    showLevelCompleteScreen(completedLevel.name, earnedRank);
+}
+
+function showVictoryScreen() {
+    document.getElementById('game-screen').style.display = 'none';
+    document.getElementById('victory-screen').style.display = 'block';
+    document.getElementById('final-score').innerText = score;
+    document.getElementById('final-fails').innerText = fails;
+    document.getElementById('final-lives').innerText = lives;
+    
+    playSound('victory');
+    speakAlert("¡Increíble! Has conquistado todo el mapa global tecnológico.");
+    triggerMassiveConfetti();
+}
+
+// --- EFECTO DE CONFETI MASIVO ---
+function triggerMassiveConfetti() {
+    const duration = 3.5 * 1000;
+    const animationEnd = Date.now() + duration;
+    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 1000 };
+
+    const interval = setInterval(function() {
+        const timeLeft = animationEnd - Date.now();
+        if (timeLeft <= 0) {
+            return clearInterval(interval);
+        }
+        const particleCount = 50 * (timeLeft / duration);
+        if (typeof confetti === 'function') {
+            confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+            confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+        }
+    }, 250);
+}
+
+function randomInRange(min, max) {
+    return Math.random() * (max - min) + min;
+}
+
+// --- LÓGICA DEL RETO INTERACTIVO DE BLOQUES ---
+const correctSequence = ["cd", "/var", "ls", "-la"]; 
+
+function selectBlock(blockElement) {
+    const assemblyZone = document.getElementById("assembly-zone");
+    const blocksBank = document.getElementById("blocks-bank");
+
+    if (!assemblyZone || !blocksBank) return;
+
+    if (blockElement.parentElement === blocksBank) {
+        assemblyZone.appendChild(blockElement);
+    } else {
+        blocksBank.appendChild(blockElement);
+    }
+}
+
+function verifyBlocks() {
+    const assemblyZone = document.getElementById("assembly-zone");
+    if (!assemblyZone) return;
+    
+    const userBlocks = assemblyZone.children;
+    let currentSequence = [];
+    for (let block of userBlocks) {
+        currentSequence.push(block.getAttribute("data-value"));
+    }
+
+    let isCorrect = JSON.stringify(currentSequence) === JSON.stringify(correctSequence);
+
+    if (isCorrect) {
+        playSound('correct');
+        speakAlert("¡Estación Hackeada con Éxito!");
+        alert("¡Estación Hackeada con Éxito! 🎉 Bloques correctos.");
+    } else {
+        playSound('wrong');
+        speakAlert("Secuencia incorrecta.");
+        alert("Secuencia incorrecta. ¡Inténtalo de nuevo, hacker! ⚠️");
+    }
+}
