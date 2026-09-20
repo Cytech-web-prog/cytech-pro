@@ -31,14 +31,49 @@
         }
 
         .container {
-            width: 100%;
-            max-width: 480px;
-            background: var(--card-bg);
-            padding: 25px 20px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(56, 189, 248, 0.15);
-            box-sizing: border-box;
+/* Tus estilos anteriores */
+        box-sizing: border-box;
+    }
+
+    /* --- Estilos para los Retos Interactivos de Bloques --- */
+    .assembly-zone {
+        min-height: 60px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 2px dashed #00f0ff;
+        border-radius: 10px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 10px;
+        margin-bottom: 20px;
+    }
+
+    .blocks-bank {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+    .code-block {
+        background: #1e1e2f;
+        color: #00f0ff;
+        border: 1px solid #00f0ff;
+        padding: 8px 14px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-family: monospace;
+        font-weight: bold;
+        transition: all 0.2s ease;
+    }
+
+    .code-block:active {
+        transform: scale(0.95);
+        background: #00f0ff;
+        color: #121212;
+    }
+     
         }
 
         /* Pantalla de Inicio / Mapa Global de Ruta */
