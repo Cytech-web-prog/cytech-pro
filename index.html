@@ -1,486 +1,152 @@
-// --- MOTOR DE VOZ DE ALERTA (SpeechSynthesis API) ---
-function speakAlert(text) {
-    if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'es-ES';
-        utterance.rate = 1.05;
-        utterance.pitch = 1.0;
-        window.speechSynthesis.speak(utterance);
-    }
-}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyTech Pro</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #0d1117; color: #c9d1d9; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+        .container { width: 100%; max-width: 600px; background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 25px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
+        h1, h2 { color: #58a6ff; margin-bottom: 15px; text-align: center; }
+        p { margin-bottom: 20px; line-height: 1.5; text-align: center; }
+        .btn { display: block; width: 100%; background: #238636; color: white; border: none; padding: 12px; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; text-align: center; transition: background 0.2s; }
+        .btn:hover { background: #2ea043; }
+        .option-btn { background: #21262d; border: 1px solid #30363d; color: #c9d1d9; margin-top: 10px; text-align: left; padding: 12px 15px; }
+        .option-btn:hover { background: #30363d; border-color: #8b949e; }
+        #stats-bar { display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 14px; background: #21262d; padding: 10px; border-radius: 6px; border: 1px solid #30363d; }
+    </style>
+</head>
+<body>
 
-// --- MOTOR DE SONIDOS DIGITALES (Web Audio API) ---
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    <div class="container" id="welcome-screen">
+        <h1>CYTECH PRO</h1>
+        <p>Bienvenida a la plataforma interactiva de trivia tecnológica. Pon a prueba tus conocimientos en redes, programación, bases de datos, Linux y cultura libre.</p>
+        <button class="btn" onclick="startChallenge()">Iniciar Estaciones</button>
+    </div>
 
-function playSound(type) {
-    if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
-    }
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
+    <div class="container" id="challenge-screen" style="display: none;">
+        <div id="stats-bar">
+            <span id="score-display">Puntos: 0</span>
+            <span id="streak-display">🔥 Racha: 0</span>
+            <span id="hearts-display">❤️❤️❤️</span>
+        </div>
+        <h2 id="level-title">Estación</h2>
+        <p id="question-text" style="font-size: 18px; font-weight: 500; margin-bottom: 25px; text-align: left;"></p>
+        <div id="options-container"></div>
+    </div>
 
-    const now = audioCtx.currentTime;
+    <div class="container" id="game-screen" style="display: none;">
+        <h2>¡Estación Superada!</h2>
+        <p id="game-screen-text">Has completado los retos con éxito.</p>
+        <button class="btn" onclick="location.reload()">Volver al Inicio</button>
+    </div>
 
-    if (type === 'start') {
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(300, now);
-        osc.frequency.exponentialRampToValueAtTime(600, now + 0.15);
-        gain.gain.setValueAtTime(0.2, now);
-        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
-        osc.start(now);
-        osc.stop(now + 0.3);
-    } else if (type === 'correct') {
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(523.25, now);
-        osc.frequency.setValueAtTime(659.25, now + 0.1);
-        gain.gain.setValueAtTime(0.2, now);
-        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
-        osc.start(now);
-        osc.stop(now + 0.35);
-    } else if (type === 'wrong') {
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(150, now);
-        osc.frequency.linearRampToValueAtTime(90, now + 0.25);
-        gain.gain.setValueAtTime(0.25, now);
-        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
-        osc.start(now);
-        osc.stop(now + 0.3);
-    } else if (type === 'victory') {
-        const notes = [523.25, 659.25, 783.99, 1046.50];
-        notes.forEach((freq, index) => {
-            const subOsc = audioCtx.createOscillator();
-            const subGain = audioCtx.createGain();
-            subOsc.connect(subGain);
-            subGain.connect(audioCtx.destination);
-            subOsc.type = 'sine';
-            subOsc.frequency.setValueAtTime(freq, now + index * 0.12);
-            subGain.gain.setValueAtTime(0.2, now + index * 0.12);
-            subGain.gain.exponentialRampToValueAtTime(0.01, now + index * 0.12 + 0.3);
-            subOsc.start(now + index * 0.12);
-            subOsc.stop(now + index * 0.12 + 0.3);
-        });
-    }
-}
+    <!-- Archivo externo de preguntas -->
+    <script src="questions.js"></script>
 
-// --- DEFINICIÓN DE NIVELES Y RANGOS ---
-const levels = [
-    { 
-        key: 'redes', 
-        name: 'Estación 1: Redes y Protocolos', 
-        ranks: { newbie: 'Novato de Subred 🔌', mid: 'Técnico de Conectividad 🌐', elite: 'Arquitecto de Redes Globales 🛡️✨' } 
-    },
-    { 
-        key: 'programacion', 
-        name: 'Estación 2: Programación y Desarrollo', 
-        ranks: { newbie: 'Depurador de Bugs 🐛', mid: 'Ingeniero de Software Junior ⌨️', elite: 'Maestro del Código Limpio 💻🚀' } 
-    },
-    { 
-        key: 'baseDeDatos', 
-        name: 'Estación 3: Bases de Datos', 
-        ranks: { newbie: 'Consultor de Tablas 📋', mid: 'Administrador de Registros 🗄️', elite: 'Señor de las Consultas SQL 📊⚡' } 
-    },
-    { 
-        key: 'linux', 
-        name: 'Estación 4: Linux y Comandos', 
-        ranks: { newbie: 'Aprendiz de Terminal 💻', mid: 'Operador de Shell 🖥️', elite: 'Dios del Root y los Comandos 🐧👑' } 
-    },
-    { 
-        key: 'softwareLibre', 
-        name: 'Estación 5: Software Libre y Cultura', 
-        ranks: { newbie: 'Colaborador Open Source 🤝', mid: 'Evangelista del Software Libre 📖', elite: 'Gurú de la Filosofía Libre 🌍🏆' } 
-    }
-];
+    <!-- Motor del juego -->
+    <script>
+        let currentLevelIndex = 0;
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let fails = 0;
+        let lives = 3;
+        let currentQuestions = [];
 
-let currentLevelIndex = 0;
-let currentQuestionIndex = 0;
-let score = 0;
-let fails = 0;
-let lives = 3;
-let currentQuestions = [];
-let globalStreak = 1;
-let totalXP = 0;
-
-// --- SISTEMA DE RACHAS Y LIGAS DIARIAS ---
-function checkStreakAndLeagues() {
-    const lastPlay = localStorage.getItem('cytech_last_play');
-    const today = new Date().toDateString();
-    let streak = parseInt(localStorage.getItem('cytech_streak') || '0', 10);
-    
-    if (lastPlay) {
-        const lastDate = new Date(lastPlay);
-        const diffDays = Math.floor((new Date(today) - lastDate) / (1000 * 60 * 60 * 24));
-        
-        if (diffDays === 1) {
-            streak += 1; 
-        } else if (diffDays > 1) {
-            streak = 1;  
-        }
-    } else {
-        streak = 1;
-    }
-    localStorage.setItem('cytech_last_play', today);
-    localStorage.setItem('cytech_streak', streak);
-
-    totalXP = parseInt(localStorage.getItem('cytech_total_xp') || '0', 10);
-    
-    return streak;
-}
-
-function updateLeagueUI() {
-    globalStreak = checkStreakAndLeagues();
-    const streakContainer = document.getElementById('streak-container');
-    if (streakContainer) streakContainer.innerText = `🔥 Racha: ${globalStreak} Días`;
-
-    let leagueName = "Bronce 🥉";
-    if (totalXP >= 300) leagueName = "Diamante 💎";
-    else if (totalXP >= 150) leagueName = "Oro 🥇";
-    else if (totalXP >= 50) leagueName = "Plata 🥈";
-
-    const leagueContainer = document.getElementById('league-container');
-    if (leagueContainer) leagueContainer.innerText = `🏆 Liga ${leagueName}`;
-}
-
-window.addEventListener('DOMContentLoaded', () => {
-    updateLeagueUI();
-});
-
-function showLeaguesScreen() {
-    document.getElementById('welcome-screen').style.display = 'none';
-    document.getElementById('leagues-screen').style.display = 'block';
-
-    let leagueName = "Bronce 🥉";
-    if (totalXP >= 300) leagueName = "Diamante 💎";
-    else if (totalXP >= 150) leagueName = "Oro 🥇";
-    else if (totalXP >= 50) leagueName = "Plata 🥈";
-
-    document.getElementById('league-name-display').innerText = leagueName;
-    document.getElementById('total-xp-display').innerText = `${totalXP} XP`;
-    document.getElementById('best-streak-display').innerText = `${globalStreak} Días`;
-    
-    const perfectGames = localStorage.getItem('cytech_perfect_games') || '0';
-    document.getElementById('perfect-games-display').innerText = perfectGames;
-
-    renderLeaderboard();
-}
-
-// --- RENDERIZAR TABLA DE CLASIFICACIÓN GLOBAL ---
-function renderLeaderboard() {
-    const tbody = document.getElementById('leaderboard-tbody');
-    if (!tbody) return;
-    tbody.innerHTML = '';
-
-    let competitors = [
-        { name: 'CyberQueen_99', xp: 420 },
-        { name: 'NeoRoot', xp: 350 },
-        { name: 'Christ Ydrogo (Tú)', xp: totalXP, isUser: true },
-        { name: 'ByteMaster', xp: 210 },
-        { name: 'LinuxUser_VE', xp: 95 },
-        { name: 'CodeNinja', xp: 40 }
-    ];
-
-    competitors.sort((a, b) => b.xp - a.xp);
-
-    competitors.forEach((comp, index) => {
-        const tr = document.createElement('tr');
-        if (comp.isUser) {
-            tr.className = 'user-row';
+        function speakAlertText(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'es-ES';
+                utterance.rate = 1.05;
+                window.speechSynthesis.speak(utterance);
+            }
         }
 
-        const rankMedal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}`;
-
-        tr.innerHTML = `
-            <td>${rankMedal}</td>
-            <td>${comp.name}</td>
-            <td style="text-align: right; font-weight: bold;">${comp.xp} XP</td>
-        `;
-        tbody.appendChild(tr);
-    });
-}
-
-function backToWelcome() {
-    document.getElementById('leagues-screen').style.display = 'none';
-    document.getElementById('welcome-screen').style.display = 'flex';
-    updateLeagueUI();
-}
-
-// --- ALGORITMO DE MEZCLA ALEATORIA ---
-function shuffleArray(array) {
-    let arr = [...array];
-    for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
-    }
-    return arr;
-}
-
-// --- SELECCIÓN Y INICIO DE ESTACIÓN ---
-function selectLevelAndStart(levelIndex) {
-    currentLevelIndex = levelIndex;
-    
-    const welcomeScreen = document.getElementById("welcome-screen");
-    const challengeScreen = document.getElementById("challenge-screen");
-    
-    if (welcomeScreen) {
-        welcomeScreen.style.display = 'none';
-    }
-    
-    // Si tienes una pantalla de reto de bloques específica para este nivel, la muestra; si no, arranca la trivia
-    if (challengeScreen && levelIndex === 3) { // Ejemplo para Linux u otra estación
-        challengeScreen.style.display = 'block';
-    } else {
-        startGame(levelIndex);
-    }
-}
-
-function startGame(startIndex = 0) {
-    if (typeof categoriesData === 'undefined') {
-        alert("Error: No se pudo cargar questions.js");
-        return;
-    }
-    currentLevelIndex = startIndex;
-    playSound('start');
-    speakAlert("¡Conectando con la red global! Iniciando desafío.");
-    document.getElementById('welcome-screen').style.display = 'none';
-    document.getElementById('victory-screen').style.display = 'none';
-    document.getElementById('level-complete-screen').style.display = 'none';
-    document.getElementById('leagues-screen').style.display = 'none';
-    const challengeScreen = document.getElementById('challenge-screen');
-    if (challengeScreen) challengeScreen.style.display = 'none';
-    
-    document.getElementById('game-screen').style.display = 'block';
-    resetGameStats();
-    loadLevel();
-}
-
-function resetGameStats() {
-    score = 0;
-    fails = 0;
-    lives = 3;
-    updateStatsUI();
-}
-
-function updateStatsUI() {
-    const scoreVal = document.getElementById('score-val');
-    if (scoreVal) scoreVal.innerText = score;
-    
-    const failsVal = document.getElementById('fails-val');
-    if (failsVal) failsVal.innerText = fails;
-    
-    const streakLiveDisplay = document.getElementById('streak-live-display');
-    if (streakLiveDisplay) streakLiveDisplay.innerText = `🔥 ${globalStreak}`;
-    
-    let heartsStr = '';
-    for(let i = 0; i < lives; i++) heartsStr += '❤️';
-    for(let i = lives; i < 3; i++) heartsStr += '🖤';
-    const heartsDisplay = document.getElementById('hearts-display');
-    if (heartsDisplay) heartsDisplay.innerText = heartsStr;
-}
-
-function loadLevel() {
-    if (currentLevelIndex < levels.length) {
-        const levelInfo = levels[currentLevelIndex];
-        const rawQuestions = categoriesData[levelInfo.key];
-        currentQuestions = shuffleArray(rawQuestions);
-        
-        currentQuestionIndex = 0;
-        document.getElementById('level-title').innerText = levelInfo.name;
-        showQuestion();
-    } else {
-        showVictoryScreen();
-    }
-}
-
-function showQuestion() {
-    document.getElementById('next-btn').style.display = 'none';
-    if (currentQuestionIndex < currentQuestions.length) {
-        const q = currentQuestions[currentQuestionIndex];
-        document.getElementById('question-counter').innerText = `${currentQuestionIndex + 1}/20`;
-        document.getElementById('question-text').innerText = q.question;
-        
-        const optionsContainer = document.getElementById('options-container');
-        optionsContainer.innerHTML = '';
-        
-        const shuffledOptions = shuffleArray(q.options);
-
-        shuffledOptions.forEach(option => {
-            const btn = document.createElement('button');
-            btn.className = 'option-btn';
-            btn.innerText = option;
-            btn.onclick = () => selectAnswer(btn, option, q.correct);
-            optionsContainer.appendChild(btn);
-        });
-        
-        updateStatsUI();
-    } else {
-        totalXP += score;
-        localStorage.setItem('cytech_total_xp', totalXP);
-
-        if (fails === 0) {
-            let perf = parseInt(localStorage.getItem('cytech_perfect_games') || '0', 10);
-            localStorage.setItem('cytech_perfect_games', perf + 1);
+        function startChallenge() {
+            document.getElementById('welcome-screen').style.display = 'none';
+            document.getElementById('challenge-screen').style.display = 'block';
+            loadLevel();
         }
 
-        const completedLevel = levels[currentLevelIndex];
-        let earnedRank = completedLevel.ranks.elite;
-        if (fails >= 5) {
-            earnedRank = completedLevel.ranks.newbie;
-        } else if (fails >= 2) {
-            earnedRank = completedLevel.ranks.mid;
+        function loadLevel() {
+            if (typeof levels === 'undefined' || !levels[currentLevelIndex]) {
+                document.getElementById('challenge-screen').style.display = 'none';
+                document.getElementById('game-screen').style.display = 'block';
+                return;
+            }
+            let levelInfo = levels[currentLevelIndex];
+            document.getElementById('level-title').innerText = levelInfo.name;
+            currentQuestions = [...levelInfo.questions].sort(() => Math.random() - 0.5);
+            currentQuestionIndex = 0;
+            showQuestion();
         }
 
-        showLevelCompleteScreen(completedLevel.name, earnedRank);
-    }
-}
-
-function showLevelCompleteScreen(levelName, rankTitle) {
-    document.getElementById('game-screen').style.display = 'none';
-    document.getElementById('completed-level-name').innerText = `Has hackeado con éxito ${levelName}.`;
-    document.getElementById('earned-rank-text').innerText = rankTitle;
-    document.getElementById('level-complete-screen').style.display = 'block';
-
-    playSound('victory');
-    speakAlert("¡Estación superada! Excelente dominio tecnológico.");
-    triggerMassiveConfetti();
-}
-
-function proceedToNextLevel() {
-    currentLevelIndex++;
-    document.getElementById('level-complete-screen').style.display = 'none';
-    document.getElementById('game-screen').style.display = 'block';
-    loadLevel();
-}
-
-function selectAnswer(button, selected, correct) {
-    const buttons = document.querySelectorAll('.option-btn');
-    buttons.forEach(btn => {
-        btn.disabled = true;
-        if (btn.innerText === correct) {
-            btn.style.background = '#059669';
-            btn.style.borderColor = '#34d399';
-        } else if (btn === button && selected !== correct) {
-            btn.style.background = '#dc2626';
-            btn.style.borderColor = '#f87171';
-        }
-    });
-
-    if (selected === correct) {
-        score++;
-        playSound('correct');
-        if (Math.random() > 0.6) {
-            speakAlert("¡Correcto!");
-        }
-    } else {
-        fails++;
-        lives--;
-        playSound('wrong');
-
-        if (lives === 1) {
-            speakAlert("¡Alerta! Te queda una sola vida.");
-        } else if (lives <= 0) {
-            speakAlert("Juego terminado. Te has quedado sin vidas.");
+        function showQuestion() {
+            if (currentQuestionIndex >= currentQuestions.length) {
+                currentLevelIndex++;
+                loadLevel();
+                return;
+            }
+            let q = currentQuestions[currentQuestionIndex];
+            document.getElementById('question-text').innerText = `${currentQuestionIndex + 1}. ${q.question}`;
+            
+            let optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+            
+            let shuffledOptions = [...q.options].sort(() => Math.random() - 0.5);
+            shuffledOptions.forEach(option => {
+                let btn = document.createElement('button');
+                btn.className = 'btn option-btn';
+                btn.innerText = option;
+                btn.onclick = () => selectAnswer(btn, option, q.answer);
+                optionsContainer.appendChild(btn);
+            });
             updateStatsUI();
+        }
+
+        function selectAnswer(button, selected, correct) {
+            let allBtns = document.querySelectorAll('#options-container .option-btn');
+            allBtns.forEach(b => b.disabled = true);
+
+            if (selected === correct) {
+                button.style.background = '#238636';
+                score += 10;
+                speakAlertText("¡Correcto!");
+            } else {
+                button.style.background = '#da3633';
+                lives--;
+                speakAlertText("Incorrecto");
+                allBtns.forEach(b => {
+                    if (b.innerText === correct) b.style.background = '#238636';
+                });
+            }
+
+            updateStatsUI();
+
+            if (lives <= 0) {
+                speakAlertText("Juego terminado. Te has quedado sin vidas.");
+                setTimeout(() => {
+                    alert("¡Juego terminado! Te has quedado sin vidas.");
+                    location.reload();
+                }, 1500);
+                return;
+            }
+
             setTimeout(() => {
-                alert("¡Te has quedado sin vidas! Game Over. Volviendo al mapa global.");
-                location.reload();
-            }, 400);
-            return;
-        } else {
-            speakAlert("¡Fallaste! Cuidado.");
+                currentQuestionIndex++;
+                showQuestion();
+            }, 1200);
         }
-    }
-    
-    updateStatsUI();
-    document.getElementById('next-btn').style.display = 'block';
-}
 
-function nextQuestion() {
-    currentQuestionIndex++;
-    showQuestion();
-}
-
-function skipToNextLevel() {
-    score += (20 - currentQuestionIndex);
-    totalXP += score;
-    localStorage.setItem('cytech_total_xp', totalXP);
-
-    const completedLevel = levels[currentLevelIndex];
-    const earnedRank = completedLevel.ranks.elite;
-    showLevelCompleteScreen(completedLevel.name, earnedRank);
-}
-
-function showVictoryScreen() {
-    document.getElementById('game-screen').style.display = 'none';
-    document.getElementById('victory-screen').style.display = 'block';
-    document.getElementById('final-score').innerText = score;
-    document.getElementById('final-fails').innerText = fails;
-    document.getElementById('final-lives').innerText = lives;
-    
-    playSound('victory');
-    speakAlert("¡Increíble! Has conquistado todo el mapa global tecnológico.");
-    triggerMassiveConfetti();
-}
-
-// --- EFECTO DE CONFETI MASIVO ---
-function triggerMassiveConfetti() {
-    const duration = 3.5 * 1000;
-    const animationEnd = Date.now() + duration;
-    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 1000 };
-
-    const interval = setInterval(function() {
-        const timeLeft = animationEnd - Date.now();
-        if (timeLeft <= 0) {
-            return clearInterval(interval);
+        function updateStatsUI() {
+            document.getElementById('score-display').innerText = `Puntos: ${score}`;
+            document.getElementById('streak-display').innerText = `🔥 Racha: ${Math.floor(score / 20)}`;
+            let heartsStr = '';
+            for (let i = 0; i < lives; i++) heartsStr += '❤️';
+            document.getElementById('hearts-display').innerText = heartsStr;
         }
-        const particleCount = 50 * (timeLeft / duration);
-        if (typeof confetti === 'function') {
-            confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
-            confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
-        }
-    }, 250);
-}
-
-function randomInRange(min, max) {
-    return Math.random() * (max - min) + min;
-}
-
-// --- LÓGICA DEL RETO INTERACTIVO DE BLOQUES ---
-const correctSequence = ["cd", "/var", "ls", "-la"]; 
-
-function selectBlock(blockElement) {
-    const assemblyZone = document.getElementById("assembly-zone");
-    const blocksBank = document.getElementById("blocks-bank");
-
-    if (!assemblyZone || !blocksBank) return;
-
-    if (blockElement.parentElement === blocksBank) {
-        assemblyZone.appendChild(blockElement);
-    } else {
-        blocksBank.appendChild(blockElement);
-    }
-}
-
-function verifyBlocks() {
-    const assemblyZone = document.getElementById("assembly-zone");
-    if (!assemblyZone) return;
-    
-    const userBlocks = assemblyZone.children;
-    let currentSequence = [];
-    for (let block of userBlocks) {
-        currentSequence.push(block.getAttribute("data-value"));
-    }
-
-    let isCorrect = JSON.stringify(currentSequence) === JSON.stringify(correctSequence);
-
-    if (isCorrect) {
-        playSound('correct');
-        speakAlert("¡Estación Hackeada con Éxito!");
-        alert("¡Estación Hackeada con Éxito! 🎉 Bloques correctos.");
-    } else {
-        playSound('wrong');
-        speakAlert("Secuencia incorrecta.");
-        alert("Secuencia incorrecta. ¡Inténtalo de nuevo, hacker! ⚠️");
-    }
-}
+    </script>
+</body>
+</html>
