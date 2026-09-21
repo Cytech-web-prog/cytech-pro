@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CyTech Pro</title>
+    <title>CyTech Pro - Ruta Tecnológica</title>
     <style>
         :root {
             --bg-color: #0b0f19;
@@ -12,7 +12,9 @@
             --text-color: #c9d1d9;
             --gold: #f1e05a;
             --neon-blue: #58a6ff;
+            --border-color: #30363d;
         }
+
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
@@ -23,15 +25,18 @@
             flex-direction: column;
             align-items: center;
         }
+
         .container {
             width: 100%;
             max-width: 420px;
             background: var(--card-bg);
             border-radius: 16px;
             padding: 20px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
             box-sizing: border-box;
+            border: 1px solid var(--border-color);
         }
+
         .header-stats {
             display: flex;
             justify-content: space-around;
@@ -41,10 +46,17 @@
             margin-bottom: 20px;
             font-size: 0.85rem;
             font-weight: bold;
+            border: 1px solid var(--border-color);
         }
-        h2 { font-size: 1.1rem; color: var(--neon-blue); margin-bottom: 15px; text-align: center; }
+
+        h2 { 
+            font-size: 1.1rem; 
+            color: var(--neon-blue); 
+            margin-bottom: 15px; 
+            text-align: center; 
+        }
         
-        /* Mapa en Zigzag */
+        /* Contenedor del Mapa en Zigzag */
         .path-container {
             display: flex;
             flex-direction: column;
@@ -53,6 +65,7 @@
             padding: 20px 0;
             position: relative;
         }
+
         .node {
             width: 70px;
             height: 70px;
@@ -63,31 +76,35 @@
             justify-content: center;
             font-weight: bold;
             cursor: pointer;
-            border: 3px solid #30363d;
+            border: 3px solid var(--border-color);
             background: #21262d;
             color: #8b949e;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
             transition: transform 0.2s;
             text-align: center;
             font-size: 0.75rem;
         }
+
         .node.unlocked {
             background: #1f6feb;
             border-color: var(--neon-blue);
             color: #fff;
         }
+
         .node.completed {
-            background: #238636;
+            background: var(--accent-color);
             border-color: #2ea043;
             color: #fff;
         }
+
         .node.locked {
             background: #161b22;
-            border-color: #30363d;
+            border-color: var(--border-color);
             color: #484f58;
             cursor: not-allowed;
         }
-        /* Efecto Zigzag con desplazamiento lateral */
+
+        /* Efecto de desplazamiento lateral en zigzag */
         .node:nth-child(odd) { transform: translateX(-40px); }
         .node:nth-child(even) { transform: translateX(40px); }
 
@@ -103,31 +120,41 @@
             margin-top: 10px;
             text-align: center;
             font-size: 0.95rem;
+            box-sizing: border-box;
         }
+
         .btn-secondary {
             background: #21262d;
-            border: 1px solid #30363d;
+            border: 1px solid var(--border-color);
             color: var(--text-color);
         }
         
-        /* Pantallas del Juego */
+        /* Pantallas de la Aplicación */
         .screen { display: none; }
         .screen.active { display: block; }
         
-        .question { font-size: 1rem; margin-bottom: 20px; line-height: 1.4; }
+        .question { 
+            font-size: 1rem; 
+            margin-bottom: 20px; 
+            line-height: 1.4; 
+        }
+
         .btn-option {
             width: 100%;
             background: #21262d;
             color: var(--text-color);
-            border: 1px solid #30363d;
+            border: 1px solid var(--border-color);
             padding: 12px;
             margin-bottom: 10px;
             border-radius: 8px;
             text-align: left;
             cursor: pointer;
             font-size: 0.95rem;
+            box-sizing: border-box;
         }
+
         .btn-option:active { background: #30363d; }
+
         .btn-skip {
             width: 100%;
             background: transparent;
@@ -138,29 +165,31 @@
             border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
+            box-sizing: border-box;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
+    <!-- Panel superior de estadísticas globales -->
     <div class="header-stats">
         <span style="color: #ff7b72;">🔥 <span id="streak-val">1</span> Días</span>
         <span style="color: var(--neon-blue);">⚡ <span id="xp-val">6301</span> XP</span>
         <span style="color: var(--gold);">🪙 <span id="bits-val">170</span> Bits</span>
     </div>
 
-    <!-- PANTALLA PRINCIPAL: MAPA DE MUNDOS (11 NIVELES) -->
+    <!-- PANTALLA 1: MAPA DE NIVELES (ZIGZAG) -->
     <div id="map-screen" class="screen active">
         <h2>Ruta de Aprendizaje Tecnológico</h2>
         <div class="path-container" id="path-nodes">
-            <!-- Los nodos se generan dinámicamente mediante JS para los 11 mundos -->
+            <!-- Los nodos se generan de forma dinámica desde JavaScript -->
         </div>
         <button class="btn-menu" onclick="switchScreen('leaderboard-screen')">🏆 Salón de la Fama & Ligas</button>
         <button class="btn-menu btn-secondary" onclick="switchScreen('store-screen')">🛒 Tienda Hacker (Gastar Bits)</button>
     </div>
 
-    <!-- PANTALLA DE JUEGO / RETO -->
+    <!-- PANTALLA 2: INTERFAZ DE PREGUNTAS Y RETOS -->
     <div id="game-screen" class="screen">
         <div id="level-title" style="font-weight: bold; margin-bottom: 10px; color: var(--neon-blue);">NIVEL</div>
         <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 15px; color: #8b949e;">
@@ -181,11 +210,11 @@
         </div>
     </div>
 
-    <!-- SALÓN DE LA FAMA -->
+    <!-- PANTALLA 3: SALÓN DE LA FAMA -->
     <div id="leaderboard-screen" class="screen">
         <h2>🏆 Salón de la Fama</h2>
         <p style="font-size: 0.9rem; text-align: center; color: #8b949e;">Liga Diamante - Desarrolladores Pro</p>
-        <div style="background: #161b22; border-radius: 8px; padding: 10px; margin-bottom: 15px;">
+        <div style="background: #161b22; border-radius: 8px; padding: 10px; margin-bottom: 15px; border: 1px solid var(--border-color);">
             <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #30363d;">
                 <span>🥇 1. Carlos M.</span><span>7420 XP</span>
             </div>
@@ -199,18 +228,18 @@
         <button class="btn-menu" onclick="switchScreen('map-screen')">Volver al Mapa</button>
     </div>
 
-    <!-- TIENDA HACKER -->
+    <!-- PANTALLA 4: TIENDA HACKER -->
     <div id="store-screen" class="screen">
         <h2>🛒 Tienda Hacker</h2>
         <p style="font-size: 0.9rem; text-align: center; color: #8b949e;">Mejora tus herramientas con tus Bits.</p>
-        <div style="background: #161b22; border-radius: 8px; padding: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+        <div style="background: #161b22; border-radius: 8px; padding: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-color);">
             <div>
                 <div style="font-weight: bold;">Vida Extra (+1 ❤️)</div>
                 <div style="font-size: 0.8rem; color: var(--gold);">50 Bits</div>
             </div>
             <button class="btn-menu" style="width: auto; padding: 8px 12px; margin:0;" onclick="buyItem('vida')">Comprar</button>
         </div>
-        <div style="background: #161b22; border-radius: 8px; padding: 12px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
+        <div style="background: #161b22; border-radius: 8px; padding: 12px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-color);">
             <div>
                 <div style="font-weight: bold;">Salto de Nivel Automático</div>
                 <div style="font-size: 0.8rem; color: var(--gold);">120 Bits</div>
@@ -222,7 +251,9 @@
 </div>
 
 <script>
-    // Configuración de los 11 Mundos Tecnológicos
+    /* ========================================================
+       CONFIGURACIÓN DE LOS MUNDOS Y PREGUNTAS TECNOLÓGICAS
+       ======================================================== */
     const worlds = [
         { id: 0, title: "Nivel 0: Introducción Web", q: "¿Qué lenguaje estructura las páginas web?", opts: ["CSS", "HTML", "Python", "SQL"], ans: 1 },
         { id: 1, title: "Nivel 1: Estilos CSS", q: "¿Para qué se utiliza principalmente CSS?", opts: ["Dar diseño y estilos visuales", "Gestionar bases de datos", "Crear servidores", "Compilar código binario"], ans: 0 },
@@ -237,13 +268,15 @@
         { id: 10, title: "Nivel 11: Cloud & DevOps", q: "¿Qué plataforma permite alojar páginas estáticas gratis?", opts: ["GitHub Pages", "Un servidor local", "Una memoria USB", "Bluetooth"], ans: 0 }
     ];
 
+    /* Variables de Estado del Juego */
     let currentLevelIndex = 0;
     let currentQuestionIdx = 0;
     let lives = 3;
     let bits = 170;
     let xp = 6301;
-    let maxUnlocked = parseInt(localStorage.getItem('cytech_max_unlocked') || '10'); // Desbloquea todos por defecto
+    let maxUnlocked = parseInt(localStorage.getItem('cytech_max_unlocked') || '10');
 
+    /* Función central para alternar vistas o pantallas */
     function switchScreen(screenId) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById(screenId).classList.add('active');
@@ -252,6 +285,7 @@
         }
     }
 
+    /* Renderizado de los Nodos del Mapa en la interfaz */
     function renderMap() {
         const pathContainer = document.getElementById('path-nodes');
         pathContainer.innerHTML = '';
@@ -272,6 +306,7 @@
         });
     }
 
+    /* Inicio de un nivel específico al hacer clic en un nodo */
     function startLevel(index) {
         currentLevelIndex = index;
         currentQuestionIdx = 0;
@@ -280,6 +315,7 @@
         loadQuestion();
     }
 
+    /* Carga de la pregunta actual según el mundo */
     function loadQuestion() {
         const world = worlds[currentLevelIndex];
         document.getElementById('level-title').innerText = world.title;
@@ -299,6 +335,7 @@
         });
     }
 
+    /* Verificación de la respuesta seleccionada */
     function checkAnswer(selected, correct) {
         if (selected === correct) {
             xp += 50;
@@ -306,7 +343,6 @@
             updateStatsUI();
             alert("¡Correcto! +50 XP");
             
-            // Avanzar automáticamente al siguiente nivel o terminar
             if (currentLevelIndex < worlds.length - 1) {
                 currentLevelIndex++;
                 if (currentLevelIndex > maxUnlocked) {
@@ -331,8 +367,8 @@
         }
     }
 
+    /* Función para saltar nivel (Modo Prueba) */
     function skipLevel() {
-        // Avanza directamente al siguiente mundo superando la prueba
         xp += 100;
         bits += 30;
         updateStatsUI();
@@ -350,11 +386,13 @@
         }
     }
 
+    /* Actualizador global de los valores visuales superiores */
     function updateStatsUI() {
         document.getElementById('xp-val').innerText = xp;
         document.getElementById('bits-val').innerText = bits;
     }
 
+    /* Lógica de compra dentro de la Tienda Hacker */
     function buyItem(item) {
         if (item === 'vida' && bits >= 50) {
             bits -= 50;
@@ -372,6 +410,7 @@
         renderMap();
     }
 
+    /* Restablecer todo el progreso guardado */
     function resetProgress() {
         if (confirm("¿Deseas reiniciar tu progreso?")) {
             localStorage.clear();
@@ -381,7 +420,7 @@
         }
     }
 
-    // Inicializar la aplicación al cargar la página
+    /* Inicialización automática de la aplicación al cargar el DOM */
     window.onload = function() {
         renderMap();
         updateStatsUI();
