@@ -255,17 +255,83 @@
        CONFIGURACIÓN DE LOS MUNDOS Y PREGUNTAS TECNOLÓGICAS
        ======================================================== */
     const worlds = [
-        { id: 0, title: "Nivel 0: Introducción Web", q: "¿Qué lenguaje estructura las páginas web?", opts: ["CSS", "HTML", "Python", "SQL"], ans: 1 },
-        { id: 1, title: "Nivel 1: Estilos CSS", q: "¿Para qué se utiliza principalmente CSS?", opts: ["Dar diseño y estilos visuales", "Gestionar bases de datos", "Crear servidores", "Compilar código binario"], ans: 0 },
-        { id: 2, title: "Nivel 2: JavaScript Básico", q: "¿Cómo se declara una variable en JavaScript moderno?", opts: ["variable x;", "v x;", "let x;", "define x;"], ans: 2 },
-        { id: 3, title: "Nivel 3: Base de Datos", q: "¿Cuál es la función de la cláusula `GROUP BY`?", opts: ["Unir dos tablas diferentes", "Filtrar por fechas", "Crear índices de búsqueda", "Agrupar filas con valores idénticos"], ans: 3 },
-        { id: 4, title: "Nivel 5: Git & Control de Versiones", q: "¿Qué comando de Git guarda los cambios localmente?", opts: ["git push", "git commit", "git pull", "git clone"], ans: 1 },
-        { id: 5, title: "Nivel 6: Terminal Linux", q: "¿Qué comando permite listar archivos en Linux?", opts: ["cd", "mkdir", "ls", "pwd"], ans: 2 },
-        { id: 6, title: "Nivel 7: APIs & Redes", q: "¿Qué formato es el estándar más usado para APIs web?", opts: ["XML", "JSON", "CSV", "YAML"], ans: 1 },
-        { id: 7, title: "Nivel 8: Algoritmos", q: "¿Qué estructura de datos opera como LIFO (Último en entrar, primero en salir)?", opts: ["Cola (Queue)", "Pila (Stack)", "Árbol", "Grafo"], ans: 1 },
-        { id: 8, title: "Nivel 9: Inteligencia Artificial", q: "¿Qué es un modelo de lenguaje grande (LLM)?", opts: ["Un disco duro", "Un sistema entrenado con texto masivo", "Un editor de código", "Un protocolo de red"], ans: 1 },
-        { id: 9, title: "Nivel 10: Prompt Engineering", q: "¿Qué técnica ayuda a que una IA responda de forma más precisa?", opts: ["Dar instrucciones claras y contexto", "Escribir en código binario", "Reiniciar el router", "Usar variables globales"], ans: 0 },
-        { id: 10, title: "Nivel 11: Cloud & DevOps", q: "¿Qué plataforma permite alojar páginas estáticas gratis?", opts: ["GitHub Pages", "Un servidor local", "Una memoria USB", "Bluetooth"], ans: 0 }
+        { 
+            id: 0, 
+            title: "Nivel 0: Introducción Web", 
+            q: "¿Qué lenguaje estructura las páginas web?", 
+            opts: ["CSS", "HTML", "Python", "SQL"], 
+            ans: 1 
+        },
+        { 
+            id: 1, 
+            title: "Nivel 1: Estilos CSS", 
+            q: "¿Para qué se utiliza principalmente CSS?", 
+            opts: ["Dar diseño y estilos visuales", "Gestionar bases de datos", "Crear servidores", "Compilar código binario"], 
+            ans: 0 
+        },
+        { 
+            id: 2, 
+            title: "Nivel 2: JavaScript Básico", 
+            q: "¿Cómo se declara una variable en JavaScript moderno?", 
+            opts: ["variable x;", "v x;", "let x;", "define x;"], 
+            ans: 2 
+        },
+        { 
+            id: 3, 
+            title: "Nivel 3: Base de Datos", 
+            q: "¿Cuál es la función de la cláusula `GROUP BY`?", 
+            opts: ["Unir dos tablas diferentes", "Filtrar por fechas", "Crear índices de búsqueda", "Agrupar filas con valores idénticos"], 
+            ans: 3 
+        },
+        { 
+            id: 4, 
+            title: "Nivel 5: Git & Control de Versiones", 
+            q: "¿Qué comando de Git guarda los cambios localmente?", 
+            opts: ["git push", "git commit", "git pull", "git clone"], 
+            ans: 1 
+        },
+        { 
+            id: 5, 
+            title: "Nivel 6: Terminal Linux", 
+            q: "¿Qué comando permite listar archivos en Linux?", 
+            opts: ["cd", "mkdir", "ls", "pwd"], 
+            ans: 2 
+        },
+        { 
+            id: 6, 
+            title: "Nivel 7: APIs & Redes", 
+            q: "¿Qué formato es el estándar más usado para APIs web?", 
+            opts: ["XML", "JSON", "CSV", "YAML"], 
+            ans: 1 
+        },
+        { 
+            id: 7, 
+            title: "Nivel 8: Algoritmos", 
+            q: "¿Qué estructura de datos opera como LIFO (Último en entrar, primero en salir)?", 
+            opts: ["Cola (Queue)", "Pila (Stack)", "Árbol", "Grafo"], 
+            ans: 1 
+        },
+        { 
+            id: 8, 
+            title: "Nivel 9: Inteligencia Artificial", 
+            q: "¿Qué es un modelo de lenguaje grande (LLM)?", 
+            opts: ["Un disco duro", "Un sistema entrenado con texto masivo", "Un editor de código", "Un protocolo de red"], 
+            ans: 1 
+        },
+        { 
+            id: 9, 
+            title: "Nivel 10: Prompt Engineering", 
+            q: "¿Qué técnica ayuda a que una IA responda de forma más precisa?", 
+            opts: ["Dar instrucciones claras y contexto", "Escribir en código binario", "Reiniciar el router", "Usar variables globales"], 
+            ans: 0 
+        },
+        { 
+            id: 10, 
+            title: "Nivel 11: Cloud & DevOps", 
+            q: "¿Qué plataforma permite alojar páginas estáticas gratis?", 
+            opts: ["GitHub Pages", "Un servidor local", "Una memoria USB", "Bluetooth"], 
+            ans: 0 
+        }
     ];
 
     /* Variables de Estado del Juego */
