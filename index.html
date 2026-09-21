@@ -4,20 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CyTech Pro - Ciberespacio</title>
+    <!-- Librería de Confeti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #0b0f19; color: #c9d1d9; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 15px; }
         .container { width: 100%; max-width: 480px; background: #131b2e; border: 1px solid #1f2d4a; border-radius: 16px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); position: relative; }
         h1, h2 { color: #58a6ff; text-align: center; }
-        .avatar-container { width: 65px; height: 65px; background: linear-gradient(135deg, #238636, #58a6ff); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px auto; font-size: 24px; font-weight: bold; color: white; box-shadow: 0 0 15px rgba(88, 166, 255, 0.4); }
-        .user-title { text-align: center; font-size: 13px; color: #8b949e; letter-spacing: 1px; margin-bottom: 15px; font-weight: bold; }
-        .streak-badge { background: #1f2d4a; border: 1px solid #30363d; border-radius: 20px; padding: 6px 15px; display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: #ff7b72; margin: 0 auto 20px auto; display: flex; width: fit-content; }
-        .station-card { background: #1a233a; border: 1px solid #283e63; border-radius: 12px; padding: 14px; margin-bottom: 12px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: space-between; }
-        .station-card:hover { border-color: #58a6ff; background: #202c4a; }
-        .station-card.locked { opacity: 0.5; cursor: not-allowed; border-color: #30363d; }
-        .station-card.locked:hover { background: #1a233a; border-color: #30363d; }
-        .station-info h3 { font-size: 15px; color: #58a6ff; margin-bottom: 3px; }
-        .station-info p { font-size: 12px; color: #8b949e; text-align: left; }
+        .avatar-container { width: 60px; height: 60px; background: linear-gradient(135deg, #238636, #58a6ff); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px auto; font-size: 22px; font-weight: bold; color: white; box-shadow: 0 0 15px rgba(88, 166, 255, 0.4); }
+        .user-title { text-align: center; font-size: 12px; color: #8b949e; letter-spacing: 1px; margin-bottom: 10px; font-weight: bold; }
+        .stats-top { display: flex; justify-content: center; gap: 15px; margin-bottom: 20px; font-size: 13px; }
+        .badge-pill { background: #1f2d4a; border: 1px solid #30363d; border-radius: 20px; padding: 5px 12px; display: inline-flex; align-items: center; gap: 6px; }
+
+        /* Estilo tipo Ruta de Nodos en Zigzag (Duolingo Tech) */
+        .path-container { display: flex; flex-direction: column; align-items: center; gap: 15px; position: relative; margin: 20px 0; padding: 10px 0; }
+        .node-wrapper { display: flex; width: 100%; justify-content: center; position: relative; }
+        .node-wrapper:nth-child(odd) { justify-content: flex-start; padding-left: 20px; }
+        .node-wrapper:nth-child(even) { justify-content: flex-end; padding-right: 20px; }
+
+        .node-btn { width: 75px; height: 75px; border-radius: 50%; background: #1f6feb; border: 4px solid #388bfd; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 6px 20px rgba(31, 111, 235, 0.4); transition: transform 0.2s, background 0.2s; position: relative; z-index: 2; }
+        .node-btn:hover { transform: scale(1.1); }
+        .node-btn.locked { background: #21262d; border-color: #30363d; cursor: not-allowed; box-shadow: none; }
+        .node-btn.completed { background: #238636; border-color: #3fb950; }
+        .node-icon { font-size: 24px; }
+        .node-level { font-size: 10px; font-weight: bold; color: white; margin-top: 2px; }
+
         .btn-primary { display: block; width: 100%; background: linear-gradient(135deg, #1f6feb, #238636); color: white; border: none; padding: 14px; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 15px; text-align: center; box-shadow: 0 4px 15px rgba(35, 134, 54, 0.4); }
         .btn-primary:hover { opacity: 0.9; }
         .stats-bar { display: flex; justify-content: space-between; background: #1a233a; padding: 10px 14px; border-radius: 8px; border: 1px solid #283e63; margin-bottom: 15px; font-size: 13px; }
@@ -33,49 +44,51 @@
 </head>
 <body>
 
-    <!-- VISTA 1: DASHBOARD PRINCIPAL / MAPA DE NODOS -->
+    <!-- VISTA 1: CAMINO EN ZIGZAG (MAPA TIPO DUOLINGO TECH) -->
     <div class="container" id="welcome-screen">
         <div class="avatar-container">Cy</div>
         <h1>CyTech Pro</h1>
         <div class="user-title">CHRIST YDROGO</div>
-        <div class="streak-badge">🔥 Racha Diaria: <span id="main-streak">1</span> Días</div>
         
-        <p style="font-size: 13px; color: #8b949e; margin-bottom: 15px; text-align: center;">Mapa de Nodos del Ciberespacio:</p>
+        <div class="stats-top">
+            <div class="badge-pill" style="color: #ff7b72;">🔥 <span id="main-streak">1</span> Días</div>
+            <div class="badge-pill" style="color: #3fb950;">⚡ <span id="main-xp">111</span> XP</div>
+        </div>
         
-        <div class="station-card" id="node-0" onclick="startLevel(0)">
-            <div class="station-info">
-                <h3>Estación 1: Redes Globales</h3>
-                <p>América - Protocolos y Conectividad</p>
+        <p style="font-size: 12px; color: #8b949e; margin-bottom: 10px; text-align: center;">Ruta de Aprendizaje Tecnológico:</p>
+        
+        <!-- Contenedor del Camino en Zigzag -->
+        <div class="path-container">
+            <div class="node-wrapper">
+                <div class="node-btn" id="node-0" onclick="startLevel(0)" title="Estación 1: Redes Globales">
+                    <span class="node-icon">🔌</span>
+                    <span class="node-level">Nivel 1</span>
+                </div>
             </div>
-            <span id="icon-0">🔌</span>
-        </div>
-        <div class="station-card locked" id="node-1" onclick="startLevel(1)">
-            <div class="station-info">
-                <h3>Estación 2: Núcleo de Software</h3>
-                <p>Europa - Programación y Desarrollo</p>
+            <div class="node-wrapper">
+                <div class="node-btn locked" id="node-1" onclick="startLevel(1)" title="Estación 2: Núcleo de Software">
+                    <span class="node-icon">💻</span>
+                    <span class="node-level">Nivel 2</span>
+                </div>
             </div>
-            <span id="icon-1">🔒</span>
-        </div>
-        <div class="station-card locked" id="node-2" onclick="startLevel(2)">
-            <div class="station-info">
-                <h3>Estación 3: Servidores SQL</h3>
-                <p>Asia - Bases de Datos</p>
+            <div class="node-wrapper">
+                <div class="node-btn locked" id="node-2" onclick="startLevel(2)" title="Estación 3: Servidores SQL">
+                    <span class="node-icon">📊</span>
+                    <span class="node-level">Nivel 3</span>
+                </div>
             </div>
-            <span id="icon-2">🔒</span>
-        </div>
-        <div class="station-card locked" id="node-3" onclick="startLevel(3)">
-            <div class="station-info">
-                <h3>Estación 4: Terminal Root</h3>
-                <p>África - Linux y Comandos</p>
+            <div class="node-wrapper">
+                <div class="node-btn locked" id="node-3" onclick="startLevel(3)" title="Estación 4: Terminal Root">
+                    <span class="node-icon">🐧</span>
+                    <span class="node-level">Nivel 4</span>
+                </div>
             </div>
-            <span id="icon-3">🔒</span>
-        </div>
-        <div class="station-card locked" id="node-4" onclick="startLevel(4)">
-            <div class="station-info">
-                <h3>Estación 5: Filosofía Libre</h3>
-                <p>Oceanía - Software Libre y Cultura</p>
+            <div class="node-wrapper">
+                <div class="node-btn locked" id="node-4" onclick="startLevel(4)" title="Estación 5: Filosofía Libre">
+                    <span class="node-icon">🌍</span>
+                    <span class="node-level">Nivel 5</span>
+                </div>
             </div>
-            <span id="icon-4">🔒</span>
         </div>
 
         <button class="btn-primary" onclick="showLeaderboard()">🏆 Salón de la Fama</button>
@@ -118,7 +131,8 @@
             <div id="rank-title" style="font-size: 16px; font-weight: bold; color: #3fb950;">Técnico de Conectividad 🌐</div>
         </div>
 
-        <button class="btn-primary" onclick="completeStationAndReturn()">Volver al Mapa de Nodos 🚀</button>
+        <button class="btn-primary" id="next-station-btn" onclick="proceedToNextStation()">Siguiente Estación 🚀</button>
+        <button class="option-btn" style="margin-top: 10px; text-align: center;" onclick="returnToDashboard()">Volver a la Ruta</button>
     </div>
 
     <!-- VISTA 4: SALÓN DE LA FAMA -->
@@ -144,11 +158,10 @@
             <tr><td>6</td><td>CodeNinja</td><td>40 XP</td></tr>
         </table>
 
-        <button class="btn-primary" onclick="returnToDashboard()">Volver al Menú Principal</button>
+        <button class="btn-primary" onclick="returnToDashboard()">Volver a la Ruta</button>
     </div>
 
     <script>
-        // Base de datos completa con explicaciones pedagógicas integradas
         const levels = [
             {
                 name: "Estación 1: Redes Globales",
@@ -282,7 +295,6 @@
             }
         ];
 
-        // Estado global persistente
         let currentLevelIndex = 0;
         let currentQuestionIndex = 0;
         let score = parseInt(localStorage.getItem('cytech_score') || '111');
@@ -302,17 +314,30 @@
             }
         }
 
+        function launchConfetti() {
+            if (typeof confetti === 'function') {
+                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+            }
+        }
+
         function updateNodeUI() {
             document.getElementById('main-streak').innerText = streak;
+            document.getElementById('main-xp').innerText = score;
             for (let i = 0; i < levels.length; i++) {
-                let card = document.getElementById(`node-${i}`);
-                let icon = document.getElementById(`icon-${i}`);
+                let node = document.getElementById(`node-${i}`);
                 if (i <= maxLevelUnlocked) {
-                    card.classList.remove('locked');
-                    icon.innerText = i < maxLevelUnlocked ? "✅" : (i === 0 ? "🔌" : "💻");
+                    node.classList.remove('locked');
+                    if (i < maxLevelUnlocked) {
+                        node.classList.add('completed');
+                        node.querySelector('.node-icon').innerText = "✅";
+                    } else {
+                        node.classList.remove('completed');
+                        node.querySelector('.node-icon').innerText = i === 0 ? "🔌" : (i === 1 ? "💻" : (i === 2 ? "📊" : (i === 3 ? "🐧" : "🌍")));
+                    }
                 } else {
-                    card.classList.add('locked');
-                    icon.innerText = "🔒";
+                    node.classList.add('locked');
+                    node.classList.remove('completed');
+                    node.querySelector('.node-icon').innerText = "🔒";
                 }
             }
         }
@@ -326,6 +351,8 @@
             fails = 0;
             lives = 3;
             document.getElementById('welcome-screen').style.display = 'none';
+            document.getElementById('leaderboard-screen').style.display = 'none';
+            document.getElementById('game-screen').style.display = 'none';
             document.getElementById('challenge-screen').style.display = 'block';
             
             let levelInfo = levels[currentLevelIndex];
@@ -343,10 +370,19 @@
                 document.getElementById('rank-title').innerText = levels[currentLevelIndex].rankName;
                 score += 50;
                 
-                // Desbloquear siguiente estación si aplica
+                launchConfetti();
+
                 if (currentLevelIndex >= maxLevelUnlocked && maxLevelUnlocked < levels.length - 1) {
                     maxLevelUnlocked = currentLevelIndex + 1;
                     localStorage.setItem('cytech_unlocked', maxLevelUnlocked);
+                }
+
+                let nextBtn = document.getElementById('next-station-btn');
+                if (currentLevelIndex < levels.length - 1) {
+                    nextBtn.innerText = "Siguiente Estación 🚀";
+                    nextBtn.style.display = 'block';
+                } else {
+                    nextBtn.innerText = "¡Has completado todas las estaciones! 🏆";
                 }
 
                 localStorage.setItem('cytech_score', score);
@@ -414,7 +450,6 @@
                 return;
             }
 
-            // Mostrar botón para avanzar manualmente o con pausa
             document.getElementById('next-btn').style.display = 'block';
         }
 
@@ -427,6 +462,15 @@
             speakAlertText("Nivel saltado en modo prueba");
             currentQuestionIndex++;
             showQuestion();
+        }
+
+        function proceedToNextStation() {
+            let nextIndex = currentLevelIndex + 1;
+            if (nextIndex < levels.length) {
+                startLevel(nextIndex);
+            } else {
+                returnToDashboard();
+            }
         }
 
         function updateStatsUI() {
@@ -443,14 +487,10 @@
 
         function showLeaderboard() {
             document.getElementById('welcome-screen').style.display = 'none';
+            document.getElementById('challenge-screen').style.display = 'none';
+            document.getElementById('game-screen').style.display = 'none';
             document.getElementById('leaderboard-screen').style.display = 'block';
             updateStatsUI();
-        }
-
-        function completeStationAndReturn() {
-            document.getElementById('game-screen').style.display = 'none';
-            document.getElementById('welcome-screen').style.display = 'block';
-            updateNodeUI();
         }
 
         function returnToDashboard() {
@@ -461,7 +501,6 @@
             updateNodeUI();
         }
 
-        // Inicializar interfaz y nodos al cargar
         updateNodeUI();
     </script>
 </body>
