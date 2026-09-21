@@ -3,660 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CyTech Pro - Ciberespacio</title>
-    <!-- Librería de Confeti -->
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <title>CyTech Pro</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #0b0f19; color: #c9d1d9; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 15px; }
-        .container { width: 100%; max-width: 480px; background: #131b2e; border: 1px solid #1f2d4a; border-radius: 16px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); position: relative; }
-        h1, h2 { color: #58a6ff; text-align: center; }
-        .avatar-container { width: 60px; height: 60px; background: linear-gradient(135deg, #238636, #58a6ff); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px auto; font-size: 22px; font-weight: bold; color: white; box-shadow: 0 0 15px rgba(88, 166, 255, 0.4); }
-        .user-title { text-align: center; font-size: 12px; color: #8b949e; letter-spacing: 1px; margin-bottom: 10px; font-weight: bold; }
-        .stats-top { display: flex; justify-content: center; gap: 10px; margin-bottom: 15px; font-size: 12px; flex-wrap: wrap; }
-        .badge-pill { background: #1f2d4a; border: 1px solid #30363d; border-radius: 20px; padding: 5px 10px; display: inline-flex; align-items: center; gap: 5px; }
-
-        /* Estilo tipo Ruta de Nodos en Zigzag */
-        .path-container { display: flex; flex-direction: column; align-items: center; gap: 12px; position: relative; margin: 15px 0; padding: 5px 0; }
-        .node-wrapper { display: flex; width: 100%; justify-content: center; position: relative; }
-        .node-wrapper:nth-child(odd) { justify-content: flex-start; padding-left: 30px; }
-        .node-wrapper:nth-child(even) { justify-content: flex-end; padding-right: 30px; }
-
-        .node-btn { width: 70px; height: 70px; border-radius: 50%; background: #1f6feb; border: 4px solid #388bfd; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 6px 20px rgba(31, 111, 235, 0.4); transition: transform 0.2s, background 0.2s; position: relative; z-index: 2; }
-        .node-btn:hover { transform: scale(1.1); }
-        .node-btn.locked { background: #21262d; border-color: #30363d; cursor: not-allowed; box-shadow: none; }
-        .node-btn.completed { background: #238636; border-color: #3fb950; }
-        .node-icon { font-size: 22px; }
-        .node-level { font-size: 9px; font-weight: bold; color: white; margin-top: 2px; }
-
-        .btn-primary { display: block; width: 100%; background: linear-gradient(135deg, #1f6feb, #238636); color: white; border: none; padding: 13px; border-radius: 10px; font-size: 14px; font-weight: bold; cursor: pointer; margin-top: 12px; text-align: center; box-shadow: 0 4px 15px rgba(35, 134, 54, 0.4); }
-        .btn-primary:hover { opacity: 0.9; }
-        
-        .btn-secondary { display: block; width: 100%; background: #21262d; border: 1px solid #30363d; color: #c9d1d9; padding: 11px; border-radius: 10px; font-size: 13px; font-weight: bold; cursor: pointer; margin-top: 8px; text-align: center; }
-        .btn-secondary:hover { background: #30363d; }
-
-        .stats-bar { display: flex; justify-content: space-between; background: #1a233a; padding: 10px 14px; border-radius: 8px; border: 1px solid #283e63; margin-bottom: 15px; font-size: 13px; }
-        .question-text { font-size: 16px; font-weight: 500; margin-bottom: 15px; line-height: 1.4; text-align: left; }
-        .option-btn { background: #1a233a; border: 1px solid #283e63; color: #c9d1d9; width: 100%; padding: 12px 15px; border-radius: 10px; margin-bottom: 10px; text-align: left; cursor: pointer; font-size: 14px; transition: 0.2s; }
-        .option-btn:hover { background: #243254; border-color: #58a6ff; }
-        .explanation-box { background: #1f2d4a; border-left: 4px solid #58a6ff; padding: 12px; border-radius: 6px; font-size: 13px; margin-top: 15px; margin-bottom: 15px; display: none; line-height: 1.4; text-align: left; }
-        .table-global { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
-        .table-global th, .table-global td { padding: 8px; text-align: left; border-bottom: 1px solid #21262d; }
-        .table-global th { color: #8b949e; }
-        .user-row { background: rgba(88, 166, 255, 0.15); font-weight: bold; color: #58a6ff; }
-        
-        .store-item { display: flex; justify-content: space-between; align-items: center; background: #1a233a; border: 1px solid #283e63; padding: 12px; border-radius: 10px; margin-bottom: 10px; }
+        :root {
+            --bg-color: #0d1117;
+            --card-bg: #161b22;
+            --accent-color: #238636;
+            --text-color: #c9d1d9;
+            --gold: #f1e05a;
+        }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+        h2 { font-size: 1.1rem; color: #58a6ff; margin-bottom: 15px; }
+        .stats { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 15px; color: var(--gold); }
+        .question { font-size: 1rem; margin-bottom: 20px; line-height: 1.4; }
+        .btn-option {
+            width: 100%;
+            background: #21262d;
+            color: var(--text-color);
+            border: 1px solid #30363d;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            text-align: left;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+        .btn-option:active { background: #30363d; }
+        .btn-skip {
+            width: 100%;
+            background: transparent;
+            color: var(--gold);
+            border: 1px dashed var(--gold);
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
 
-    <!-- VISTA 1: MAPA DE NODOS / DASHBOARD -->
-    <div class="container" id="welcome-screen">
-        <div class="avatar-container">Cy</div>
-        <h1>CyTech Pro</h1>
-        <div class="user-title">CHRIST YDROGO</div>
-        
-        <div class="stats-top">
-            <div class="badge-pill" style="color: #ff7b72;">🔥 <span id="main-streak">1</span> Días</div>
-            <div class="badge-pill" style="color: #3fb950;">⚡ <span id="main-xp">111</span> XP</div>
-            <div class="badge-pill" style="color: #d29922;">🪙 <span id="main-coins">50</span> Bits</div>
-        </div>
-        
-        <p style="font-size: 12px; color: #8b949e; margin-bottom: 5px; text-align: center;">Ruta de Aprendizaje Tecnológico:</p>
-        
-        <!-- Camino en Zigzag (8 Niveles Ampliados) -->
-        <div class="path-container" id="path-container">
-            <!-- Se genera dinámicamente por JS según los niveles -->
-        </div>
-
-        <button class="btn-primary" onclick="showLeaderboard()">🏆 Salón de la Fama & Ligas</button>
-        <button class="btn-secondary" onclick="showStore()">🛒 Tienda Hacker (Gastar Bits)</button>
+<div class="container" id="game-screen">
+    <div id="level-title" style="font-weight: bold; margin-bottom: 5px;">NIVEL 3: BASE DE DATOS</div>
+    <div class="stats">
+        <span id="lives-container">Vidas: ❤️❤️❤️</span>
+        <span id="bits-container">🪙 174 Bits</span>
+    </div>
+    
+    <div class="question" id="question-text">¿Cuál es la función de la cláusula `GROUP BY`?</div>
+    
+    <div id="options-container">
+        <button class="btn-option" onclick="checkAnswer(0)">Unir dos tablas diferentes</button>
+        <button class="btn-option" onclick="checkAnswer(1)">Filtrar por fechas</button>
+        <button class="btn-option" onclick="checkAnswer(2)">Crear índices de búsqueda</button>
+        <button class="btn-option" onclick="checkAnswer(3)">Agrupar filas que tienen los mismos valores en columnas resumidas</button>
     </div>
 
-    <!-- VISTA 2: PANTALLA DE JUEGO / TRIVIA -->
-    <div class="container" id="challenge-screen" style="display: none;">
-        <div class="stats-bar">
-            <span id="level-indicator" style="font-weight: bold; color: #58a6ff;">NIVEL 1</span>
-            <span id="question-counter">1/20</span>
-        </div>
-        <div class="stats-bar" style="margin-bottom: 15px;">
-            <span id="hearts-display">Vidas: ❤️❤️❤️</span>
-            <span id="coins-ingame" style="color: #d29922;">🪙 50 Bits</span>
-        </div>
-        
-        <p class="question-text" id="question-text"></p>
-        <div id="options-container"></div>
-        
-        <div class="explanation-box" id="explanation-box"></div>
-
-        <button class="btn-primary" id="next-btn" style="display: none; margin-top: 10px;" onclick="nextQuestion()">Siguiente Pregunta ➡️</button>
-        
-        <button class="option-btn" style="border: 1px dashed #d29922; color: #d29922; text-align: center; margin-top: 15px;" onclick="skipQuestion()">⚡ Saltar Nivel (Modo Prueba)</button>
-        
-        <div style="display: flex; justify-content: space-between; margin-top: 15px; font-size: 13px; color: #8b949e;">
-            <span id="score-display">Puntaje: 0</span>
-            <span>Christ Ydrogo</span>
-        </div>
+    <button class="btn-skip" onclick="skipLevel()">⚡ Saltar Nivel (Modo Prueba)</button>
+    
+    <div style="margin-top: 20px; font-size: 0.8rem; display: flex; justify-content: space-between; color: #8b949e;">
+        <span>Puntaje: <span id="score-val">631</span></span>
+        <span>Christ Ydrogo</span>
     </div>
+</div>
 
-    <!-- VISTA 3: ESTACIÓN HACKEADA / VICTORIA -->
-    <div class="container" id="game-screen" style="display: none; text-align: center;">
-        <div style="font-size: 40px; margin-bottom: 10px;">🎉</div>
-        <h2 style="color: #58a6ff; margin-bottom: 10px;">¡Estación Hackeada!</h2>
-        <p id="victory-text" style="font-size: 14px; color: #8b949e; margin-bottom: 20px;">Has completado las 20 preguntas con éxito.</p>
+<script>
+    // Variables de control del juego
+    let currentLevel = 3;
+    let maxLevelUnlocked = 10; // Desbloquea todos los mundos por completo
+    
+    // Lista de simulacion de mundos/preguntas para probar el salto
+    const levelsData = [
+        { title: "NIVEL 1: INTRODUCCIÓN", q: "¿Qué significa HTML?", opts: ["Hyper Text Markup Language", "Home Tool Markup Language", "Hyperlinks and Text Markup Language"] },
+        { title: "NIVEL 2: ESTILOS CSS", q: "¿Para qué sirve CSS?", opts: ["Estructurar la web", "Dar diseño y estilos", "Gestionar bases de datos"] },
+        { title: "NIVEL 3: BASE DE DATOS", q: "¿Cuál es la función de la cláusula `GROUP BY`?", opts: ["Unir dos tablas diferentes", "Filtrar por fechas", "Crear índices de búsqueda", "Agrupar filas que tienen los mismos valores en columnas resumidas"] },
+        { title: "NIVEL 4: JAVASCRIPT AVANZADO", q: "¿Qué es un Closure en JS?", opts: ["Una función que recuerda su ámbito léxico", "Un error de sintaxis", "Un bucle infinito"] }
+    ];
+
+    function skipLevel() {
+        // Incrementa el nivel al siguiente
+        currentLevel++;
+        if (currentLevel >= levelsData.length) {
+            currentLevel = 0; // Reinicia o cicla si llega al final
+        }
         
-        <div style="background: #1a233a; border: 1px solid #283e63; border-radius: 10px; padding: 15px; margin-bottom: 20px;">
-            <div style="font-size: 11px; color: #8b949e; letter-spacing: 1px; margin-bottom: 5px;">RECOMPENSA OBTENIDA</div>
-            <div id="reward-text" style="font-size: 16px; font-weight: bold; color: #3fb950;">+50 XP y +20 Cripto-Bits 🪙</div>
-        </div>
-
-        <button class="btn-primary" id="next-station-btn" onclick="proceedToNextStation()">Siguiente Estación 🚀</button>
-        <button class="btn-secondary" onclick="returnToDashboard()">Volver al Mapa</button>
-    </div>
-
-    <!-- VISTA 4: SALÓN DE LA FAMA -->
-    <div class="container" id="leaderboard-screen" style="display: none;">
-        <div style="text-align: center; font-size: 30px; margin-bottom: 5px;">🏆</div>
-        <h2>Salón de la Fama</h2>
-        <p style="font-size: 12px; color: #8b949e; text-align: center; margin-bottom: 15px;">Tabla de Clasificación Semanal</p>
+        // Actualiza los elementos en pantalla inmediatamente
+        let currentData = levelsData[currentLevel];
+        document.getElementById('level-title').innerText = currentData.title;
+        document.getElementById('question-text').innerText = currentData.q;
         
-        <div class="stats-bar" style="flex-direction: column; gap: 5px; font-size: 12px;">
-            <div>🏆 Liga Actual: <span style="color: #58a6ff; font-weight: bold;">Plata 🥈</span></div>
-            <div>⚡ XP Total: <span id="lb-xp" style="color: #3fb950; font-weight: bold;">111 XP</span></div>
-            <div>🔥 Racha: <span id="lb-streak" style="color: #ff7b72;">1 Días</span></div>
-        </div>
-
-        <table class="table-global">
-            <tr><th>#</th><th>Hacker</th><th>XP</th></tr>
-            <tr><td>🥇</td><td>CyberQueen_99</td><td>420 XP</td></tr>
-            <tr><td>🥈</td><td>NeoRoot</td><td>350 XP</td></tr>
-            <tr><td>🥉</td><td>ByteMaster</td><td>210 XP</td></tr>
-            <tr class="user-row"><td>4</td><td>Christ Ydrogo (Tú)</td><td id="lb-user-xp">111 XP</td></tr>
-            <tr><td>5</td><td>LinuxUser_VE</td><td>95 XP</td></tr>
-        </table>
-
-        <button class="btn-primary" style="margin-top: 15px;" onclick="returnToDashboard()">Volver al Mapa</button>
-    </div>
-
-    <!-- VISTA 5: TIENDA HACKER -->
-    <div class="container" id="store-screen" style="display: none;">
-        <div style="text-align: center; font-size: 30px; margin-bottom: 5px;">🛒</div>
-        <h2>Tienda Hacker</h2>
-        <p style="font-size: 12px; color: #8b949e; text-align: center; margin-bottom: 15px;">Usa tus Cripto-Bits para comprar mejoras</p>
+        // Actualiza los botones de opciones dinámicamente
+        let optContainer = document.getElementById('options-container');
+        optContainer.innerHTML = "";
+        currentData.opts.forEach((opt, index) => {
+            optContainer.innerHTML += `<button class="btn-option" onclick="checkAnswer(${index})">${opt}</button>`;
+        });
         
-        <div style="text-align: center; margin-bottom: 15px; font-size: 14px; color: #d29922; font-weight: bold;">
-            🪙 Tienes: <span id="store-coins">50</span> Cripto-Bits
-        </div>
+        console.log("Nivel cambiado a: " + currentLevel);
+    }
 
-        <div class="store-item">
-            <div>
-                <div style="font-weight: bold; font-size: 13px;">❤️ Recarga de Corazones</div>
-                <div style="font-size: 11px; color: #8b949e;">Restaura tus 3 vidas al máximo</div>
-            </div>
-            <button class="btn-primary" style="width: auto; padding: 8px 12px; margin: 0;" onclick="buyItem('hearts', 15)">15 🪙</button>
-        </div>
+    function checkAnswer(index) {
+        alert("¡Respuesta registrada!");
+    }
+</script>
 
-        <div class="store-item">
-            <div>
-                <div style="font-weight: bold; font-size: 13px;">🛡️ Escudo de Racha</div>
-                <div style="font-size: 11px; color: #8b949e;">Protege tu racha diaria por 1 día</div>
-            </div>
-            <button class="btn-primary" style="width: auto; padding: 8px 12px; margin: 0;" onclick="buyItem('shield', 30)">30 🪙</button>
-        </div>
-
-        <button class="btn-primary" style="margin-top: 20px;" onclick="returnToDashboard()">Volver al Mapa</button>
-    </div>
-
-    <script>
-        const levels = [
-            {
-                name: "Redes",
-                icon: "🌐",
-                rankName: "Técnico de Conectividad",
-                questions: [
-                    { question: "¿Cuál de los siguientes dispositivos conecta redes diferentes y enruta los paquetes de datos?", options: ["Router", "Hub", "Cable coaxial", "Switch"], answer: "Router", explanation: "El Router opera en la capa 3 (Red) y direcciona paquetes entre redes distintas." },
-                    { question: "¿Qué protocolo se utiliza principalmente para asegurar páginas web mediante cifrado?", options: ["HTTPS", "HTTP", "FTP", "SMTP"], answer: "HTTPS", explanation: "HTTPS utiliza TLS/SSL para cifrar el tráfico web y proteger la privacidad." },
-                    { question: "¿Cuál es el puerto estándar por defecto para conexiones web seguras (HTTPS)?", options: ["443", "80", "21", "8080"], answer: "443", explanation: "El puerto 443 está asignado de forma estándar al tráfico web seguro bajo HTTPS." },
-                    { question: "¿Qué significan las siglas IP en redes de computadoras?", options: ["Internet Protocol", "Internal Protocol", "Interconnection Port", "Information Packet"], answer: "Internet Protocol", explanation: "IP significa Protocolo de Internet, pilar fundamental del direccionamiento de red." },
-                    { question: "¿Cuál es la función principal del protocolo DNS?", options: ["Traducir nombres de dominio a direcciones IP", "Enviar correos", "Asignar IPs dinámicas", "Bloquear virus"], answer: "Traducir nombres de dominio a direcciones IP", explanation: "El DNS actúa como la libreta de contactos de internet convirtiendo nombres legibles en IPs numéricas." },
-                    { question: "¿Qué capa del modelo OSI se encarga del direccionamiento físico y control de acceso al medio (MAC)?", options: ["Capa de Enlace de Datos", "Capa de Red", "Capa de Transporte", "Capa Física"], answer: "Capa de Enlace de Datos", explanation: "La capa de enlace gestiona las tramas físicas y las direcciones MAC de las tarjetas de red." },
-                    { question: "¿Cuál es la dirección IP de loopback (localhost) en IPv4?", options: ["127.0.0.1", "192.168.1.1", "10.0.0.1", "255.255.255.0"], answer: "127.0.0.1", explanation: "127.0.0.1 es la dirección estándar para que un equipo se comunique consigo mismo." },
-                    { question: "¿Qué protocolo se utiliza para la asignación dinámica de direcciones IP en una red?", options: ["DHCP", "DNS", "TCP", "FTP"], answer: "DHCP", explanation: "DHCP automatiza la entrega de configuraciones IP a los dispositivos que se conectan." },
-                    { question: "¿Cuántos bits componen una dirección IP versión 4 (IPv4)?", options: ["32 bits", "64 bits", "128 bits", "16 bits"], answer: "32 bits", explanation: "IPv4 utiliza 32 bits divididos en 4 bloques u octetos." },
-                    { question: "¿Cuál es el propósito principal del protocolo ICMP?", options: ["Enviar mensajes de control y diagnóstico (como ping)", "Transferir archivos grandes", "Navegar por páginas web", "Gestionar correo electrónico"], answer: "Enviar mensajes de control y diagnóstico (como ping)", explanation: "ICMP reporta errores y verifica la conectividad mediante herramientas como ping." },
-                    { question: "¿Qué dispositivo de red opera exclusivamente en la capa física amplificando la señal?", options: ["Hub", "Router", "Switch gestionable", "Firewall"], answer: "Hub", explanation: "El Hub es un repetidor multipuerto básico que reenvía los datos a todas sus salidas." },
-                    { question: "¿Qué protocolo de la capa de transporte garantiza la entrega fiable de los datos mediante confirmación?", options: ["TCP", "UDP", "IP", "ICMP"], answer: "TCP", explanation: "TCP establece conexión orientada a sesión garantizando que ningún paquete se pierda." },
-                    { question: "¿Cuál de los siguientes protocolos pertenece a la capa de aplicación para el envío de correo?", options: ["SMTP", "FTP", "SSH", "SNMP"], answer: "SMTP", explanation: "SMTP (Simple Mail Transfer Protocol) gestiona el envío de correos electrónicos." },
-                    { question: "¿Qué clase de dirección IP privada pertenece al rango 192.168.x.x?", options: ["Clase C", "Clase A", "Clase B", "Clase D"], answer: "Clase C", explanation: "Las redes domésticas suelen usar rangos privados de Clase C." },
-                    { question: "¿Qué es una máscara de subred?", options: ["Un número que distingue la parte de red de la parte de hosts en una IP", "Una contraseña de enrutador", "Un tipo de cifrado inalámbrico", "Una dirección MAC virtual"], answer: "Un número que distingue la parte de red de la parte de hosts en una IP", explanation: "La máscara delimita qué porción de la IP identifica a la red y cuál al dispositivo." },
-                    { question: "¿Qué puerto utiliza por defecto el protocolo seguro SSH para administración remota?", options: ["22", "80", "21", "443"], answer: "22", explanation: "El puerto 22 está reservado para sesiones de terminal segura SSH." },
-                    { question: "¿Qué tecnología permite conectar redes locales geográficamente distantes a través de Internet de forma segura?", options: ["VPN (Red Privada Virtual)", "LAN Inalámbrica", "Bluetooth", "Fibra óptica directa"], answer: "VPN (Red Privada Virtual)", explanation: "Las VPNs crean un túnel cifrado sobre redes públicas." },
-                    { question: "¿Qué significa que un puerto esté 'abierto' en un análisis de red?", options: ["Que hay un servicio escuchando y aceptando conexiones en ese puerto", "Que la red no tiene contraseña", "Que el cable está desconectado", "Que el router está dañado"], answer: "Que hay un servicio escuchando y aceptando conexiones en ese puerto", explanation: "Un puerto abierto indica un demonio o servicio activo esperando peticiones." },
-                    { question: "¿Cuál es el estándar IEEE para redes inalámbricas Wi-Fi?", options: ["IEEE 802.11", "IEEE 802.3", "IEEE 802.15", "IEEE 802.1Q"], answer: "IEEE 802.11", explanation: "La familia 802.11 define los protocolos de comunicación inalámbrica Wi-Fi." },
-                    { question: "¿Qué equipo se utiliza para interconectar múltiples segmentos de red operando de forma inteligente aprendiendo direcciones MAC?", options: ["Switch", "Hub", "Gateway analógico", "Modem dial-up"], answer: "Switch", explanation: "El Switch conmuta tramas enviándolas únicamente al puerto de destino." }
-                ]
-            },
-            {
-                name: "Programación",
-                icon: "💻",
-                rankName: "Ingeniero de Software Junior",
-                questions: [
-                    { question: "¿Qué lenguaje se utiliza principalmente para dar Estilo y Diseño a una página web?", options: ["CSS", "HTML", "Python", "SQL"], answer: "CSS", explanation: "CSS define la presentación visual y diseño estético de las páginas web." },
-                    { question: "¿Cuál de los siguientes es un tipo de datos booleano en programación?", options: ["true / false", "'Verdadero'", "12345", "[ ]"], answer: "true / false", explanation: "Los booleanos representan valores de verdadero o falso." },
-                    { question: "¿Qué estructura de control se utiliza para repetir un bloque de código varias veces?", options: ["for / while", "if / else", "switch", "try / catch"], answer: "for / while", explanation: "Los bucles permiten iterar sentencias múltiples veces de forma automática." },
-                    { question: "¿Qué significa la sigla DOM en el desarrollo web?", options: ["Document Object Model", "Digital Oriented Method", "Data Operation Module", "Direct Output Main"], answer: "Document Object Model", explanation: "El DOM representa la estructura de la página web como objetos modificables por script." },
-                    { question: "¿Cuál operador se usa para comparar tanto el valor como el tipo estricto en JavaScript?", options: ["===", "==", "=", "!=="], answer: "===", explanation: "El operador triple igual comprueba igualdad estricta sin conversión de tipos." },
-                    { question: "¿Qué etiqueta HTML se utiliza para enlazar un archivo de estilo CSS externo?", options: ["<link>", "<script>", "<style>", "<css>"], answer: "<link>", explanation: "La etiqueta link se coloca en el head para cargar hojas de estilo." },
-                    { question: "¿Cuál de los siguientes no es un lenguaje de programación orientado a objetos?", options: ["C", "Java", "Python", "C++"], answer: "C", explanation: "C es un lenguaje estructurado de programación procedural." },
-                    { question: "¿Qué significa la sigla API en desarrollo de software?", options: ["Application Programming Interface", "Advanced Program Integration", "Automated Protocol Interaction", "Application Process Index"], answer: "Application Programming Interface", explanation: "Una API permite la comunicación estructurada entre diferentes sistemas de software." },
-                    { question: "¿Qué método de JavaScript se usa para añadir un elemento al final de un arreglo (array)?", options: ["push()", "pop()", "shift()", "concat()"], answer: "push()", explanation: "push añade uno o más elementos al final del array." },
-                    { question: "¿Cuál es el propósito de la etiqueta `<head>` en un documento HTML?", options: ["Contener metadatos, título y enlaces a recursos de la página", "Mostrar el texto principal visible", "Crear un pie de página", "Diseñar botones flotantes"], answer: "Contener metadatos, título y enlaces a recursos de la página", explanation: "El head agrupa información de configuración y metadatos no visibles directamente en el cuerpo." },
-                    { question: "¿Qué paradigma de programación se basa en funciones puras y evita el estado mutable?", options: ["Programación Funcional", "Programación Imperativa", "Programación Lineal", "Programación Estructurada"], answer: "Programación Funcional", explanation: "La programación funcional prioriza funciones puras y evita efectos secundarios." },
-                    { question: "¿Qué herramienta se utiliza ampliamente para el control de versiones de código?", options: ["Git", "Photoshop", "Docker", "Apache"], answer: "Git", explanation: "Git es el sistema de control de versiones distribuido más popular del mundo." },
-                    { question: "¿Qué significa JSON?", options: ["JavaScript Object Notation", "Java Source Open Network", "Junction Script Oriented Name", "JavaScript Online Node"], answer: "JavaScript Object Notation", explanation: "JSON es un formato ligero de intercambio de datos legible por humanos." },
-                    { question: "¿Cuál de las siguientes opciones define correctamente a una variable constante en JavaScript moderno?", options: ["const", "let", "var", "static"], answer: "const", explanation: "const declara constantes cuyo valor no puede ser reasignado." },
-                    { question: "¿Qué función cumple el bucle `while` en programación?", options: ["Ejecutar un bloque mientras se cumpla una condición booleana", "Ejecutar código una sola vez", "Declarar variables globales", "Manejar excepciones de errores"], answer: "Ejecutar un bloque mientras se cumpla una condición booleana", explanation: "while evalúa la condición antes de cada iteración." },
-                    { question: "¿Qué es un framework en el desarrollo de software?", options: ["Un conjunto de herramientas y librerías predefinidas para estructurar proyectos", "Un sistema operativo móvil", "Un conector físico de red", "Un protocolo de seguridad web"], answer: "Un conjunto de herramientas y librerías predefinidas para estructurar proyectos", explanation: "Un framework provee una base sólida y arquitectura reutilizable." },
-                    { question: "¿Cómo se llama el proceso de encontrar y corregir errores en el código fuente?", options: ["Depuración (Debugging)", "Compilación", "Minificación", "Despliegue"], answer: "Depuración (Debugging)", explanation: "El debugging aísla y soluciona fallos lógicos o sintácticos." },
-                    { question: "¿Qué propiedad de CSS se utiliza para cambiar el color de texto de un elemento?", options: ["color", "background-color", "font-style", "text-decoration"], answer: "color", explanation: "La propiedad color establece el tinte del texto." },
-                    { question: "¿Qué es una función callback en JavaScript?", options: ["Una función que se pasa como argumento a otra para ser ejecutada más tarde", "Una función que se ejecuta al apagar la PC", "Un error de sintaxis", "Un comando de consola"], answer: "Una función que se pasa como argumento a otra para ser ejecutada más tarde", explanation: "Los callbacks permiten la ejecución asíncrona y modular." },
-                    { question: "¿Cuál es el resultado de evaluar `typeof 42` en JavaScript?", options: ["'number'", "'string'", "'boolean'", "'object'"], answer: "'number'", explanation: "typeof devuelve el tipo de dato primitivo como cadena de texto." }
-                ]
-            },
-            {
-                name: "Base de Datos",
-                icon: "📊",
-                rankName: "Consultor de Tablas",
-                questions: [
-                    { question: "¿Qué lenguaje se utiliza para consultar bases de datos relacionales?", options: ["SQL", "HTML", "CSS", "JSON"], answer: "SQL", explanation: "SQL es el lenguaje estándar para gestionar bases de datos relacionales." },
-                    { question: "¿Qué comando SQL se utiliza para obtener registros de una tabla?", options: ["SELECT", "GET", "FETCH", "PULL"], answer: "SELECT", explanation: "SELECT recupera filas y columnas de una o más tablas." },
-                    { question: "¿Qué es una clave primaria (Primary Key)?", options: ["Un identificador único para cada registro", "Un campo duplicado", "Una contraseña de acceso", "Un tipo de dato decimal"], answer: "Un identificador único para cada registro", explanation: "La clave primaria garantiza unicidad e impide nulos en registros." },
-                    { question: "¿Cuál de las siguientes es una base de datos de tipo NoSQL?", options: ["MongoDB", "MySQL", "PostgreSQL", "Oracle"], answer: "MongoDB", explanation: "MongoDB almacena documentos orientados a esquemas flexibles JSON." },
-                    { question: "¿Qué comando se usa para añadir un nuevo registro en una tabla SQL?", options: ["INSERT INTO", "ADD", "UPDATE", "CREATE"], answer: "INSERT INTO", explanation: "INSERT INTO inserta nuevos registros en la tabla especificada." },
-                    { question: "¿Qué cláusula se utiliza en SQL para filtrar registros según una condición específica?", options: ["WHERE", "FILTER", "LIMIT", "GROUP BY"], answer: "WHERE", explanation: "WHERE acota los resultados aplicando condiciones lógicas." },
-                    { question: "¿Qué comando SQL se utiliza para eliminar una tabla completa de la base de datos?", options: ["DROP TABLE", "DELETE TABLE", "REMOVE TABLE", "CLEAR TABLE"], answer: "DROP TABLE", explanation: "DROP borra por completo la estructura y datos de la tabla." },
-                    { question: "¿Qué es una clave foránea (Foreign Key)?", options: ["Un campo que establece relación con la clave primaria de otra tabla", "Una contraseña externa", "Un índice secundario temporal", "Una copia de seguridad"], answer: "Un campo que establece relación con la clave primaria de otra tabla", explanation: "Las foreign keys aseguran la integridad referencial entre tablas." },
-                    { question: "¿Qué función de agregación SQL se utiliza para contar el número de filas?", options: ["COUNT()", "SUM()", "TOTAL()", "NUMBER()"], answer: "COUNT()", explanation: "COUNT devuelve el total de registros que coinciden con el criterio." },
-                    { question: "¿Cuál es la sentencia SQL utilizada para modificar registros existentes?", options: ["UPDATE", "MODIFY", "CHANGE", "ALTER"], answer: "UPDATE", explanation: "UPDATE actualiza columnas en filas existentes." },
-                    { question: "¿Qué cláusula se usa en SQL para ordenar los resultados obtenidos?", options: ["ORDER BY", "SORT BY", "ARRANGE", "GROUP BY"], answer: "ORDER BY", explanation: "ORDER BY ordena de forma ascendente o descendente." },
-                    { question: "¿Qué significa ACID en el contexto de bases de datos relacionales?", options: ["Atomicidad, Consistencia, Aislamiento, Durabilidad", "Acceso, Control, Integridad, Datos", "Automatización, Cifrado, Indexación, Distribución", "Ninguna de las anteriores"], answer: "Atomicidad, Consistencia, Aislamiento, Durabilidad", explanation: "ACID define las garantías de transacciones fiables en SGBDR." },
-                    { question: "¿Qué comando se emplea para eliminar registros específicos de una tabla sin borrar su estructura?", options: ["DELETE", "DROP", "TRUNCATE", "REMOVE"], answer: "DELETE", explanation: "DELETE borra filas permitiendo usar cláusula WHERE." },
-                    { question: "¿Qué tipo de unión (JOIN) devuelve todos los registros cuando hay coincidencia en al menos una de las tablas?", options: ["INNER JOIN", "FULL OUTER JOIN", "CROSS JOIN", "SELF JOIN"], answer: "INNER JOIN", explanation: "INNER JOIN filtra intersecciones coincidentes." },
-                    { question: "¿Qué sentencia se usa para crear una nueva base de datos en SQL?", options: ["CREATE DATABASE", "NEW DATABASE", "ADD DATABASE", "MAKE DB"], answer: "CREATE DATABASE", explanation: "CREATE DATABASE inicializa un nuevo contenedor de esquemas." },
-                    { question: "¿Cuál es la función de la cláusula `GROUP BY`?", options: ["Agrupar filas que tienen los mismos valores en columnas resumidas", "Unir dos tablas diferentes", "Filtrar por fechas", "Crear índices de búsqueda"], answer: "Agrupar filas que tienen los mismos valores en columnas resumidas", explanation: "GROUP BY permite aplicar funciones de agregación por grupos." },
-                    { question: "¿Qué operador se utiliza en SQL para buscar patrones de texto coincidentes (ej. con comodines %)?", options: ["LIKE", "EQUALS", "MATCH", "CONTAIN"], answer: "LIKE", explanation: "LIKE realiza búsquedas comodín con caracteres especiales." },
-                    { question: "¿Qué restricción (constraint) impide que un campo contenga valores nulos?", options: ["NOT NULL", "UNIQUE", "PRIMARY KEY", "DEFAULT"], answer: "NOT NULL", explanation: "NOT NULL exige obligatoriedad de datos en la columna." },
-                    { question: "¿Qué es la normalización de bases de datos?", options: ["El proceso de organizar los datos para reducir la redundancia y mejorar la integridad", "Un método para encriptar contraseñas", "El respaldo diario de información", "La compresión de archivos de audio"], answer: "El proceso de organizar los datos para reducir la redundancia y mejorar la integridad", explanation: "La normalización evita anomalías de actualización y duplicidad." },
-                    { question: "¿Qué comando se usa para borrar todos los registros de una tabla rápidamente reseteando contadores?", options: ["TRUNCATE TABLE", "DELETE ALL", "DROP TABLE", "CLEAR TABLE"], answer: "TRUNCATE TABLE", explanation: "TRUNCATE vacía la tabla de forma optimizada." }
-                ]
-            },
-            {
-                name: "Linux",
-                icon: "🐧",
-                rankName: "Operador de Shell",
-                questions: [
-                    { question: "¿Qué comando en Linux se utiliza para listar los archivos de un directorio?", options: ["ls", "dir", "show", "list"], answer: "ls", explanation: "ls lista contenidos de directorios en sistemas tipo Unix." },
-                    { question: "¿Qué comando permite cambiar de directorio actual en la terminal?", options: ["cd", "mv", "cp", "pwd"], answer: "cd", explanation: "cd (change directory) navega entre carpetas." },
-                    { question: "¿Cómo se llama el intérprete de comandos por defecto en la mayoría de distribuciones Linux modernas?", options: ["Bash", "Cmd", "PowerShell", "TerminalX"], answer: "Bash", explanation: "Bash es el intérprete estándar predeterminado." },
-                    { question: "¿Qué comando se usa para ver la ruta del directorio actual de trabajo?", options: ["pwd", "where", "path", "locate"], answer: "pwd", explanation: "pwd muestra la ruta absoluta actual." },
-                    { question: "¿Qué permiso representa el número '7' en la notación octal de Linux?", options: ["Lectura, escritura y ejecución", "Solo lectura", "Lectura y ejecución", "Sin permisos"], answer: "Lectura, escritura y ejecución", explanation: "7 suma lectura(4) + escritura(2) + ejecución(1)." },
-                    { question: "¿Qué comando se emplea para crear un nuevo directorio vacío?", options: ["mkdir", "touch", "create", "newdir"], answer: "mkdir", explanation: "mkdir crea carpetas nuevas." },
-                    { question: "¿Qué comando se utiliza para copiar archivos o directorios en Linux?", options: ["cp", "mv", "copy", "du"], answer: "cp", explanation: "cp duplica ficheros o carpetas." },
-                    { question: "¿Qué utilidad de Linux permite ver los procesos del sistema en tiempo real?", options: ["top", "ps", "kill", "jobs"], answer: "top", explanation: "top monitoriza uso de CPU y procesos activos." },
-                    { question: "¿Qué comando se usa para mover o renombrar archivos?", options: ["mv", "rn", "move", "cp"], answer: "mv", explanation: "mv reubica o cambia nombres de archivos." },
-                    { question: "¿Qué comando elimina archivos o directorios de forma permanente?", options: ["rm", "del", "erase", "clear"], answer: "rm", explanation: "rm borra ficheros del sistema." },
-                    { question: "¿Cuál es el propósito del comando `chmod`?", options: ["Cambiar los permisos de acceso de un archivo o directorio", "Modificar la contraseña de usuario", "Cambiar el propietario", "Comprimir directorios"], answer: "Cambiar los permisos de acceso de un archivo o directorio", explanation: "chmod ajusta los permisos de seguridad rwx." },
-                    { question: "¿Qué comando se utiliza para buscar texto dentro de archivos en Linux?", options: ["grep", "find", "search", "locate"], answer: "grep", explanation: "grep filtra expresiones regulares en textos." },
-                    { question: "¿Qué comando muestra el espacio libre y ocupado en los discos del sistema?", options: ["df", "du", "free", "lsblk"], answer: "df", explanation: "df reporta uso de particiones y sistemas de ficheros montados." },
-                    { question: "¿Qué significa el carácter `~` (tilde) en la terminal de Linux?", options: ["Representa el directorio home del usuario actual", "Representa la raíz del sistema (/)", "Indica error de comando", "Es un comodín de multiplicación"], answer: "Representa el directorio home del usuario actual", explanation: "~ apunta directamente a la carpeta personal del usuario." },
-                    { question: "¿Qué comando se usa para ver las primeras líneas de un archivo de texto?", options: ["head", "tail", "cat", "more"], answer: "head", explanation: "head imprime el inicio de un archivo." },
-                    { question: "¿Qué comando permite cambiar el propietario de un archivo en Linux?", options: ["chown", "chmod", "chgrp", "owner"], answer: "chown", explanation: "chown modifica el usuario dueño del archivo." },
-                    { question: "¿Qué utilidad de compresión de archivos utiliza comúnmente la extensión `.tar.gz`?", options: ["tar", "zip", "rar", "gzip puro"], answer: "tar", explanation: "tar empaqueta y comprime directorios eficientemente." },
-                    { question: "¿Qué comando se usa para actualizar la lista de paquetes en distribuciones basadas en Debian/Ubuntu (como Termux)?", options: ["pkg update / apt update", "apt install", "systemctl update", "update-system"], answer: "pkg update / apt update", explanation: "Actualiza los repositorios de paquetes instalados." },
-                    { question: "¿Qué significa el símbolo `>` en la terminal?", options: ["Redirecciona la salida estándar hacia un archivo sobrescribiéndolo", "Compara si un número es mayor", "Ejecuta un comando en segundo plano", "Concatena dos comandos"], answer: "Redirecciona la salida estándar hacia un archivo sobrescribiéndolo", explanation: "Redirige outputs hacia ficheros de texto." },
-                    { question: "¿Qué comando permite ver el manual de ayuda de cualquier comando en Linux?", options: ["man", "help", "info", "doc"], answer: "man", explanation: "man despliega las páginas de manual técnico." }
-                ]
-            },
-            {
-                name: "Software Libre",
-                icon: "🌍",
-                rankName: "Gurú de la Filosofía Libre",
-                questions: [
-                    { question: "¿Qué licencia de código abierto garantiza que las modificaciones posteriores también sean libres?", options: ["GPL (General Public License)", "Copyright", "Licencia Privativa", "Comercial Cerrada"], answer: "GPL (General Public License)", explanation: "GPL utiliza copyleft para asegurar libertad en obras derivadas." },
-                    { question: "¿Quién es considerado el principal creador del proyecto GNU?", options: ["Richard Stallman", "Linus Torvalds", "Steve Jobs", "Bill Gates"], answer: "Richard Stallman", explanation: "Stallman fundó GNU y el movimiento de software libre." },
-                    { question: "¿Qué mascota representa al sistema operativo Linux?", options: ["Un pingüino (Tux)", "Un zorro", "Un búho", "Un león"], answer: "Un pingüino (Tux)", explanation: "Tux es el entrañable pingüino mascota oficial de Linux." },
-                    { question: "¿Qué significa que un software sea de 'Código Abierto' (Open Source)?", options: ["Que su código fuente puede ser inspeccionado y modificado libremente", "Que es gratuito y nadie puede modificarlo", "Que solo funciona en servidores públicos", "Que no tiene soporte técnico"], answer: "Que su código fuente puede ser inspeccionado y modificado libremente", explanation: "Garantiza acceso libre al código fuente." },
-                    { question: "¿Qué kernel o núcleo de sistema operativo desarrolló Linus Torvalds en 1991?", options: ["Linux", "Windows NT", "Darwin", "Unix BSD"], answer: "Linux", explanation: "Torvalds lanzó el kernel Linux en 1991." },
-                    { question: "¿Cuál es el pilar fundamental de las cuatro libertades del software libre según la FSF?", options: ["La libertad de usar, estudiar, modificar y redistribuir el software", "La prohibición absoluta de cobro comercial", "La obligación de usar servidores GNU", "El derecho a ocultar el autor original"], answer: "La libertad de usar, estudiar, modificar y redistribuir el software", explanation: "Las 4 libertades esenciales garantizan el control del usuario sobre el software." },
-                    { question: "¿Qué organización fundó Richard Stallman en 1985 para promover el software libre?", options: ["FSF (Free Software Foundation)", "OSI (Open Source Initiative)", "GNU Project Foundation", "Linux Foundation"], answer: "FSF (Free Software Foundation)", explanation: "La FSF apoya legal y socialmente el software libre." },
-                    { question: "¿Qué significa copyleft en contraposición al copyright tradicional?", options: ["Un método legal para garantizar que las libertades de un software se mantengan en obras derivadas", "Una renuncia total a los derechos de autor sin reglas", "Un sistema para registrar marcas comerciales de pago", "Una licencia exclusiva para gobiernos"], answer: "Un método legal para garantizar que las libertades de un software se mantengan en obras derivadas", explanation: "Usa el copyright para proteger la libertad de modificación." },
-                    { question: "¿Qué distribución de Linux es una de las más populares orientadas a usuarios principiantes?", options: ["Ubuntu", "Slackware Gentoo", "LFS (Linux From Scratch)", "Arch avanzado"], answer: "Ubuntu", explanation: "Ubuntu destaca por su facilidad de uso y gran comunidad." },
-                    { question: "¿Qué diferencia principal existe entre Open Source y Software Libre?", options: ["El software libre enfatiza la filosofía ética y social de libertad; el open source se enfoca en aspectos prácticos de desarrollo", "Son exactamente lo mismo sin ninguna diferencia comercial", "El software libre nunca puede ser vendido", "El open source prohíbe modificar el código"], answer: "El software libre enfatiza la filosofía ética y social de libertad; el open source se enfoca en aspectos prácticos de desarrollo", explanation: "Difieren en su enfoque filosófico y ético subyacente." },
-                    { question: "¿Qué licencia permite utilizar código de forma muy libre con mínimas restricciones de atribución (ej. utilizada en React)?", options: ["Licencia MIT", "GPL v3", "AGPL", "Licencia Propietaria"], answer: "Licencia MIT", explanation: "MIT es una licencia permisiva muy ligera." },
-                    { question: "¿Cómo se llama la famosa conferencia anual que celebra el desarrollo y cultura de Linux y el software libre?", options: ["LinuxTag / DebConf / FOSDEM", "Microsoft Build", "WWDC", "Google I/O"], answer: "LinuxTag / DebConf / FOSDEM", explanation: "FOSDEM reúne a desarrolladores libres en Europa cada día." },
-                    { question: "¿Qué oficina o herramienta descentralizada promueve los estándares abiertos en la web?", options: ["W3C (World Wide Web Consortium)", "ICANN", "ISO exclusiva", "IEEE web division"], answer: "W3C (World Wide Web Consortium)", explanation: "W3C estandariza tecnologías web globales." },
-                    { question: "¿Qué significa que un formato de archivo sea 'abierto'?", options: ["Sus especificaciones son públicas y cualquier programa puede implementarlo sin pagar patentes", "Que el archivo no tiene contraseña", "Que solo se puede abrir con software de pago", "Que se borra solo a los 30 días"], answer: "Sus especificaciones son públicas y cualquier programa puede implementarlo sin pagar patentes", explanation: "Evita monopolios de formatos cerrados." },
-                    { question: "¿Qué proyecto colaborativo masivo de código abierto es la enciclopedia libre más grande del mundo?", options: ["Wikipedia", "Encarta", "Google Knowledge", "OpenEncyclopedia"], answer: "Wikipedia", explanation: "Wikipedia es el paradigma del conocimiento libre colaborativo." },
-                    { question: "¿Qué lenguaje y sistema de control de fuentes popularizó la filosofía de contribución abierta global?", options: ["Git / GitHub", "SVN Privado", "CVS Legacy", "Bitbucket Pro exclusivo"], answer: "Git / GitHub", explanation: "GitHub es la plataforma social de desarrollo abierto más grande." },
-                    { question: "¿Qué significa la sigla FOSS?", options: ["Free and Open Source Software", "Fast Online Secure System", "File Open Standard Source", "Free Operating System Server"], answer: "Free and Open Source Software", explanation: "FOSS agrupa los términos de software libre y código abierto." },
-                    { question: "¿Qué ventaja principal ofrece el uso de estándares abiertos en la administración pública?", options: ["Evita la dependencia de proveedores tecnológicos privativos (vendor lock-in)", "Aumenta el costo de licencias anuales", "Reduce la compatibilidad con equipos modernos", "Impide la auditoría ciudadana"], answer: "Evita la dependencia de proveedores tecnológicos privativos (vendor lock-in)", explanation: "Garantiza soberanía tecnológica y menor dependencia." },
-                    { question: "¿Quién acuñó el término 'Open Source' (Código Abierto) en 1998?", options: ["Christine Peterson", "Linus Torvalds", "Bill Gates", "Alan Turing"], answer: "Christine Peterson", explanation: "Peterson propuso el término en una reunión en California." },
-                    { question: "¿Qué movimiento cultural promueve el acceso libre al conocimiento científico y publicaciones de investigación?", options: ["Acceso Abierto (Open Access)", "Ciencia Privativa", "Propiedad Intelectual Cerrada", "Monopolio Académico"], answer: "Acceso Abierto (Open Access)", explanation: "Open Access difunde la ciencia sin barreras de pago." }
-                ]
-            },
-            {
-                name: "Ciberseguridad",
-                icon: "🛡️",
-                rankName: "Analista de Seguridad",
-                questions: [
-                    { question: "¿Qué triada fundamental compone los pilares de la seguridad de la información (Tríada CIA)?", options: ["Confidencialidad, Integridad y Disponibilidad", "Cifrado, Identificación y Acceso", "Control, Inspección y Auditoría", "Conexión, Internet y Aplicación"], answer: "Confidencialidad, Integridad y Disponibilidad", explanation: "La tríada CIA es el modelo estándar de seguridad informática." },
-                    { question: "¿Qué es un ataque de Phishing?", options: ["Un engaño mediante suplantación de identidad para robar credenciales", "Un ataque de denegación de servicio", "Un virus informático que borra discos", "Un escaneo de puertos abiertos"], answer: "Un engaño mediante suplantación de identidad para robar credenciales", explanation: "El phishing manipula psicológicamente al usuario para obtener datos sensibles." },
-                    { question: "¿Qué es el ransomware?", options: ["Un software malicioso que cifra los archivos exigiendo un rescate económico", "Un programa para optimizar la memoria RAM", "Un protocolo de navegación segura", "Una herramienta de copias de seguridad"], answer: "Un software malicioso que cifra los archivos exigiendo un rescate económico", explanation: "El ransomware secuestra digitalmente la información." },
-                    { question: "¿Qué herramienta se utiliza comúnmente para realizar escaneos de puertos y auditorías de red?", options: ["Nmap", "Photoshop", "Notepad++", "WinRAR"], answer: "Nmap", explanation: "Nmap es el escáner de redes y seguridad más utilizado por profesionales." },
-                    { question: "¿Qué es la autenticación de dos factores (2FA)?", options: ["Un método de verificación con dos pruebas de identidad distintas", "Tener dos contraseñas iguales", "Ingresar desde dos navegadores", "Usar dos redes Wi-Fi a la vez"], answer: "Un método de verificación con dos pruebas de identidad distintas", explanation: "2FA añade una capa extra de seguridad combinando algo que sabes y algo que posees." },
-                    { question: "¿Qué es un firewall (cortafuegos)?", options: ["Un sistema de defensa que filtra el tráfico de red según reglas de seguridad", "Un programa para acelerar la velocidad de internet", "Un disipador térmico para procesadores", "Un antivirus de correo"], answer: "Un sistema de defensa que filtra el tráfico de red según reglas de seguridad", explanation: "El firewall controla las entradas y salidas de datos de la red." },
-                    { question: "¿Qué significa el concepto de 'Ingeniería Social' en seguridad?", options: ["Manipular psicológicamente a las personas para que revelen información confidencial", "Crear redes sociales corporativas", "Programar interfaces gráficas", "Analizar estadísticas de usuario"], answer: "Manipular psicológicamente a las personas para que revelen información confidencial", explanation: "Explota la vulnerabilidad humana en lugar de la técnica." },
-                    { question: "¿Qué es una contraseña robusta o fuerte?", options: ["Una combinación de letras mayúsculas, minúsculas, números y símbolos", "Una fecha de cumpleaños fácil de recordar", "Una palabra común del diccionario", "Un número de cuatro dígitos"], answer: "Una combinación de letras mayúsculas, minúsculas, números y símbolos", explanation: "La complejidad dificulta ataques de fuerza bruta." },
-                    { question: "¿Qué es un ataque de Denegación de Servicio (DoS / DDoS)?", options: ["Saturar un servidor con tráfico masivo para dejarlo inaccesible", "Robar contraseñas de bases de datos", "Apagar la energía eléctrica de un data center", "Modificar páginas web visualmente"], answer: "Saturar un servidor con tráfico masivo para dejarlo inaccesible", explanation: "DDoS colapsa los recursos del objetivo impidiendo el servicio legítimo." },
-                    { question: "¿Qué es el cifrado simétrico?", options: ["El uso de una misma clave secreta tanto para cifrar como para descifrar", "Usar dos claves diferentes públicas y privadas", "No utilizar ninguna contraseña", "Enviar datos en texto plano"], answer: "El uso de una misma clave secreta tanto para cifrar como para descifrar", explanation: "Requiere compartir la clave de forma segura previamente." },
-                    { question: "¿Qué es un parche de seguridad?", options: ["Una actualización de software diseñada para corregir vulnerabilidades", "Un programa antivirus temporal", "Un cable de red reparado", "Una licencia de software"], answer: "Una actualización de software diseñada para corregir vulnerabilidades", explanation: "Los parches cierran brechas antes de que sean explotadas." },
-                    { question: "¿Qué es el principio de 'Mínimo Privilegio'?", options: ["Dar a los usuarios solo los permisos estrictamente necesarios para su trabajo", "No darle permisos a nadie", "Dar acceso total de administrador a todos", "Ocultar los archivos del sistema"], answer: "Dar a los usuarios solo los permisos estrictamente necesarios para su trabajo", explanation: "Limita el impacto potencial en caso de comprometer una cuenta." },
-                    { question: "¿Qué es un malware?", options: ["Cualquier software malicioso diseñado para dañar o infiltrarse en sistemas", "Un tipo de hardware defectuoso", "Un programa de código abierto", "Una aplicación de oficina"], answer: "Cualquier software malicioso diseñado para dañar o infiltrarse en sistemas", explanation: "Malware es la contracción de malicious software." },
-                    { question: "¿Qué es una red VPN en términos de seguridad?", options: ["Un túnel cifrado que protege tu conexión a través de internet público", "Una red de televisión por cable", "Un enrutador inalámbrico avanzado", "Un protocolo de correo"], answer: "Un túnel cifrado que protege tu conexión a través de internet público", explanation: "Oculta la dirección IP y protege el tráfico frente a escuchas." },
-                    { question: "¿Qué es el cifrado asimétrico (clave pública/privada)?", options: ["Un sistema que usa una clave para cifrar y otra diferente para descifrar", "Usar la misma contraseña siempre", "Cifrar solo la mitad de un archivo", "Un método obsoleto"], answer: "Un sistema que usa una clave para cifrar y otra diferente para descifrar", explanation: "Garantiza seguridad en la transmisión de claves públicas." },
-                    { question: "¿Qué es un ataque de 'Man-in-the-Middle' (MitM)?", options: ["Un atacante intercepta y posiblemente altera la comunicación entre dos partes", "Un usuario sentado en medio de una oficina", "Un error de conexión Wi-Fi", "Un fallo de hardware"], answer: "Un atacante intercepta y posiblemente altera la comunicación entre dos partes", explanation: "Permite espiar o modificar datos en tránsito de forma encubierta." },
-                    { question: "¿Qué es la criptografía?", options: ["La técnica de escribir y descifrar mensajes de forma cifrada para ocultar su contenido", "El estudio de las rocas antiguas", "Un tipo de base de datos", "Un lenguaje de programación"], answer: "La técnica de escribir y descifrar mensajes de forma cifrada para ocultar su contenido", explanation: "Protege la confidencialidad de la información digital." },
-                    { question: "¿Qué es una auditoría de seguridad informática?",options: ["Una evaluación exhaustiva de los sistemi y defensas de una organización", "Un juicio legal a hackers", "La compra de nuevos equipos", "La instalación de Windows"], answer: "Una evaluación exhaustiva de los sistemi y defensas de una organización", explanation: "Identifica brechas antes de que los delincuentes las aprovechen." },
-                    { question: "¿Qué es una 'Zero-Day' (Vulnerabilidad de día cero)?", options: ["Una falla de seguridad desconocida por el fabricante que es explotada por atacantes", "Un sistema que no tiene errores", "Una licencia que expira hoy", "Un respaldo de 24 horas"], answer: "Una falla de seguridad desconocida por el fabricante que es explotada por atacantes", explanation: "Se llama así porque los desarrolladores tienen cero días para repararla." },
-                    { question: "¿Qué es la esteganografía?", options: ["El arte de ocultar mensajes secretos dentro de otros archivos comunes (como imágenes)", "Un tipo de cifrado militar", "Un escáner de red", "Una técnica de diseño web"], answer: "El arte de ocultar mensajes secretos dentro de otros archivos comunes (como imágenes)", explanation: "Oculta la existencia misma del mensaje secreto." }
-                ]
-            },
-            {
-                name: "Programación Orientada a Objetos",
-                icon: "⚙️",
-                rankName: "Arquitecto de Objetos",
-                questions: [
-                    { question: "¿Qué es la Programación Orientada a Objetos (POO)?", options: ["Un paradigma basado en clases y objetos que agrupan datos y comportamientos", "Un lenguaje de diseño gráfico", "Una base de datos relacional", "Un sistema operativo"], answer: "Un paradigma basado en clases y objetos que agrupan datos y comportamientos", explanation: "La POO modela entidades del mundo real en código modular." },
-                    { question: "¿Qué es una clase en POO?", options: ["Una plantilla o molde para crear objetos con atributos y métodos", "Un archivo de texto plano", "Una variable numérica", "Una función matemática"], answer: "Una plantilla o molde para crear objetos con atributos y métodos", explanation: "La clase define la estructura que tendrán los objetos instanciados." },
-                    { question: "¿Qué es un objeto en POO?", options: ["Una instancia concreta de una clase", "Un error de compilación", "Una etiqueta HTML", "Un comando de terminal"], answer: "Una instancia concreta de una clase", explanation: "El objeto es el resultado físico o en memoria de aplicar el molde de la clase." },
-                    { question: "¿Cuál es el principio de Encapsulamiento?", options: ["Ocultar los detalles internos de un objeto y proteger sus datos mediante visibilidad", "Unir todos los archivos en uno solo", "Comprimir carpetas ZIP", "Duplicar clases automáticamente"], answer: "Ocultar los detalles internos de un objeto y proteger sus datos mediante visibilidad", explanation: "El encapsulamiento resguarda el estado interno controlando su acceso." },
-                    { question: "¿Qué es la Herencia en POO?", options: ["Un mecanismo para que una clase derive de otra heredando sus atributos y métodos", "Recibir dinero de una cuenta bancaria", "Copiar y pegar código manualmente", "Duplicar servidores"], answer: "Un mecanismo para que una clase derive de otra heredando sus atributos y métodos", explanation: "Permite reutilizar código y establecer jerarquías lógicas." },
-                    { question: "¿Qué es el Polimorfismo?", options: ["La capacidad de que diferentes objetos respondan de distintas formas al mismo método", "Tener múltiples pantallas", "Cambiar el color de una interfaz", "Usar varios lenguajes a la vez"], answer: "La capacidad de que diferentes objetos respondan de distintas formas al mismo método", explanation: "El polimorfismo otorga flexibilidad mediante comportamientos adaptativos." },
-                    { question: "¿Qué es un constructor?", options: ["Un método especial que se ejecuta automáticamente al crear una instancia de un objeto", "Un programa para construir casas", "Un comando de Linux", "Una tabla SQL"], answer: "Un método especial que se ejecuta automáticamente al crear una instancia de un objeto", explanation: "El constructor inicializa los estados y atributos iniciales del objeto." },
-                    { question: "¿Qué son los atributos (o propiedades)?", options: ["Las variables que definen las características de un objeto", "Las acciones que realiza el objeto", "Los errores del sistema", "Las librerías externas"], answer: "Las variables que definen las características de un objeto", explanation: "Los atributos almacenan el estado del objeto." },
-                    { question: "¿Qué son los métodos en una clase?", options: ["Las funciones o acciones que el objeto puede realizar", "Las contraseñas de acceso", "Las conexiones de red", "Los tipos de datos numéricos"], answer: "Las funciones o acciones que el objeto puede realizar", explanation: "Los métodos definen el comportamiento dinámico de los objetos." },
-                    { question: "¿Qué es una clase abstracta?", options: ["Una clase que no se puede instanciar directamente y sirve de plantilla base", "Una clase que no tiene código", "Un error de sintaxis", "Un archivo comprimido"], answer: "Una clase que no se puede instanciar directamente y sirve de plantilla base", explanation: "Define contratos y métodos comunes que las subclases deben implementar." },
-                    { question: "¿Qué es una interfaz en programación orientada a objetos?", options: ["Un contrato que define qué métodos debe implementar una clase sin incluir su código", "Una pantalla táctil", "Un conector USB", "Un diseño web en Figma"], answer: "Un contrato que define qué métodos debe implementar una clase sin incluir su código", explanation: "Establece comportamientos obligatorios en las clases que la adoptan." },
-                    { question: "¿Cuál es la utilidad de la palabra clave `this` (o `self`)?", options: ["Hacer referencia al objeto actual dentro de sus propios métodos", "Apagar el sistema", "Crear una nueva clase", "Borrar variables"], answer: "Hacer referencia al objeto actual dentro de sus propios métodos", explanation: "Permite acceder a los miembros internos de la instancia en curso." },
-                    { question: "¿Qué significa sobrecargar un método (Method Overloading)?", options: ["Crear varios métodos con el mismo nombre pero diferentes parámetros", "Hacer que el programa falle por uso excesivo", "Llamar a una función 100 veces", "Duplicar código"], answer: "Crear varios métodos con el mismo nombre pero diferentes parámetros", explanation: "Permite realizar acciones similares con distintos tipos o cantidades de datos." },
-                    { question: "¿Qué significa sobrescribir un método (Method Overriding)?", options: ["Modificar o redefinir en una subclase un método heredado de la clase padre", "Borrar un archivo de código", "Reescribir todo el sistema", "Cambiar la contraseña"], answer: "Modificar o redefinir en una subclase un método heredado de la clase padre", explanation: "Permite adaptar el comportamiento heredado a necesidades específicas." },
-                    { question: "¿Qué es el acoplamiento en diseño de software?", options: ["El grado de interdependencia entre distintos módulos o clases", "La velocidad del procesador", "La cantidad de memoria RAM usada", "El diseño de la base de datos"], answer: "El grado de interdependencia entre distintos módulos o clases", explanation: "Se busca un bajo acoplamiento para tener sistemas más independientes." },
-                    { question: "¿Qué es la cohesión?", options: ["El grado en que los elementos dentro de un módulo o clase están relacionados entre sí", "La fuerza de unión entre servidores", "Un tipo de cifrado", "Un bucle infinito"], answer: "El grado en que los elementos dentro de un módulo o clase están relacionados entre sí", explanation: "Una alta cohesión indica que una clase se centra en una sola tarea clara." },
-                    { question: "¿Cuál es la ventaja principal de la POO frente a la programación lineal?", options: ["Mayor modularidad, reutilización de código y facilidad de mantenimiento", "Los programas ocupan cero espacio", "No requiere escribir código", "Funciona sin electricidad"], answer: "Mayor modularidad, reutilización de código y facilidad de mantenimiento", explanation: "Facilita la escalabilidad en proyectos grandes y complejos." },
-                    { question: "¿Qué es la instanciación?", options: ["El proceso de crear un objeto a partir de una clase", "Un error de red", "Una consulta SQL", "Un comando de consola"], answer: "El proceso de crear un objeto a partir de una clase", explanation: "Instanciar es materializar la clase en memoria." },
-                    { question: "¿Qué es la visibilidad `private` en los atributos?", options: ["Impide que sean accedidos o modificados directamente desde fuera de la clase", "Los hace visibles para todo el mundo", "Borra los datos automáticamente", "Los convierte en públicos"], answer: "Impide que sean accedidos o modificados directamente desde fuera de la clase", explanation: "Protege la integridad interna aplicando encapsulamiento estricto." },
-                    { question: "¿Qué es una clase hija (o subclase)?", options: ["Una clase que hereda características de otra clase superior (padre)", "Un archivo secundario temporal", "Una función de respaldo", "Un error de lógica"], answer: "Una clase que hereda características de otra clase superior (padre)", explanation: "Forma parte de la jerarquía de herencia en la POO." }
-                ]
-            },
-            {
-                name: "Hacking Ético",
-                icon: "🔓",
-                rankName: "Pentester Profesional",
-                questions: [
-                    { question: "¿Qué es el Hacking Ético?", options: ["La práctica de hackear sistemas con autorización para encontrar vulnerabilidades y mejorarlas", "Robar datos bancarios de forma legal", "Instalar virus en ordenadores ajenos", "Crear páginas web comerciales"], answer: "La práctica de hackear sistemas con autorización para encontrar vulnerabilidades y mejorarlas", explanation: "Los hackers éticos (White Hats) protegen y auditan sistemas defensivamente." },
-                    { question: "¿Cómo se le conoce popularmente a un hacker malicioso que busca dañar o robar?", options: ["Black Hat", "White Hat", "Gray Hat", "Script Kiddie"], answer: "Black Hat", explanation: "Los sombreros negros actúan con intenciones criminales o maliciosas." },
-                    { question: "¿Qué es un test de penetración (Penetration Test)?", options: ["Una simulación autorizada de un ataque cibernético para evaluar la seguridad", "Una prueba de velocidad de internet", "Un examen de programación", "Una reparación de hardware"], answer: "Una simulación autorizada de un ataque cibernético para evaluar la seguridad", explanation: "El pentesting mide la resiliencia real de una infraestructura tecnológica." },
-                    { question: "¿Qué es el reconocimiento (Reconnaissance) en la fase de hacking?", options: ["La recopilación de información preliminar sobre el objetivo", "El momento de apagar los servidores", "La entrega de informes impresos", "La compra de licencias"], answer: "La recopilación de información preliminar sobre el objetivo", explanation: "Es la primera etapa de investigación y recolección de datos." },
-                    { question: "¿Qué es un exploit?", options: ["Un fragmento de código o script diseñado para aprovechar una vulnerabilidad de seguridad", "Un programa antivirus avanzado", "Un cable de red especial", "Una base de datos SQL"], answer: "Un fragmento de código o script diseñado para aprovechar una vulnerabilidad de seguridad", explanation: "El exploit materializa la brecha técnica en acceso o control." },
-                    { question: "¿Qué es el framework Metasploit?", options: ["Una herramienta estándar de la industria para desarrollar y ejecutar exploits", "Un editor de texto", "Un navegador web seguro", "Un sistema operativo móvil"], answer: "Una herramienta estándar de la industria para desarrollar y ejecutar exploits", explanation: "Metasploit es el framework de pruebas de penetración más conocido." },
-                    { question: "¿Qué es una recompensa por errores (Bug Bounty)?", options: ["Un programa donde las empresas pagan a hackers éticos por reportar fallos de seguridad", "Una multa por programar mal", "Un premio por terminar un curso", "Un tipo de virus informático"], answer: "Un programa donde las empresas pagan a hackers éticos por reportar fallos de seguridad", explanation: "Incentiva la colaboración comunitaria para asegurar aplicaciones." },
-                    { question: "¿Qué es la inyección SQL (SQL Injection)?", options: ["Una vulnerabilidad que permite insertar código malicioso en consultas de bases de datos", "Un comando para apagar servidores", "Un error de formato HTML", "Un tipo de cifrado de red"], answer: "Una vulnerabilidad que permite insertar código malicioso en consultas de bases de datos", explanation: "Permite a atacantes manipular o extraer datos de la BD sin autorización." },
-                    { question: "¿Qué es el Cross-Site Scripting (XSS)?", options: ["Una vulnerabilidad web que permite inyectar scripts maliciosos en páginas vistas por otros usuarios", "Un error de conexión Wi-Fi", "Un protocolo de correo", "Una falla de hardware"], answer: "Una vulnerabilidad web que permite inyectar scripts maliciosos en páginas vistas por otros usuarios", explanation: "XSS compromete las sesiones de los usuarios en navegadores." },
-                    { question: "¿Qué diferencia a un hacker White Hat de un Black Hat?", options: ["La autorización legal y el propósito defensivo de mejorar la seguridad", "El color de la ropa que visten", "El lenguaje de programación que usan", "La marca de computadora que prefieren"], answer: "La autorización legal y el propósito defensivo de mejorar la seguridad", explanation: "Los white hats tienen permiso explícito y buscan proteger." },
-                    { question: "¿Qué es un ataque de fuerza bruta?", options: ["Probar sistemáticamente todas las combinaciones posibles de contraseñas hasta acertar", "Romper físicamente un servidor con un martillo", "Desconectar los cables de red", "Enviar demasiados correos electrónicos"], answer: "Probar sistemáticamente todas las combinaciones posibles de contraseñas hasta acertar", explanation: "La fuerza bruta explota claves débiles mediante iteración masiva." },
-                    { question: "¿Qué es el footprinting?", options: ["La técnica de recopilar huellas digitales e información pública de una organización", "Un juego de video en terminal", "Un método de compresión", "Una técnica de diseño gráfico"], answer: "La técnica de recopilar huellas digitales e información pública de una organización", explanation: "Examina dominios, correos y servidores expuestos en internet." },
-                    { question: "¿Qué es un ataque de desbordamiento de búfer (Buffer Overflow)?", options: ["Introducir más datos en la memoria de los que el búfer puede soportar para alterar la ejecución", "Llenar el disco duro de archivos", "Abrir demasiadas pestañas en el navegador", "Imprimir muchos documentos a la vez"], answer: "Introducir más datos en la memoria de los que el búfer puede soportar para alterar la ejecución", explanation: "Permite corromper la pila de memoria y ejecutar código arbitrario." },
-                    { question: "¿Qué es el análisis de vulnerabilidades?", options: ["El proceso de escanear sistemas en busca de fallos de seguridad conocidos", "Borrar archivos temporales", "Instalar juegos en la red", "Medir la velocidad de la CPU"], answer: "El proceso de escanear sistemas en busca de fallos de seguridad conocidos", explanation: "Identifica puntos débiles automatizadamente." },
-                    { question: "¿Qué es un hacker Gray Hat?", options: ["Alguien que puede vulnerar sistemas sin permiso pero sin intención maliciosa, a veces avisando a los dueños", "Un hacker que solo trabaja de noche", "Un experto en hardware antiguo", "Un programador de páginas web"], answer: "Alguien que puede vulnerar sistemas sin permiso pero sin intención maliciosa, a veces avisando a los dueños", explanation: "Se mueven en la línea gris entre la legalidad y la ética." },
-                    { question: "¿Qué es el análisis estático de código?", options: ["Revisar el código fuente en busca de fallos de seguridad sin necesidad de ejecutarlo", "Probar el programa corriendo en un servidor real", "Verificar el diseño visual en Figma", "Medir el consumo eléctrico"], answer: "Revisar el código fuente en busca de fallos de seguridad sin necesidad de ejecutarlo", explanation: "Detecta vulnerabilidades directamente en el texto del código." },
-                    { question: "¿Qué es el spoofing?", options: ["La suplantación de identidad en red (ej. de IP, DNS o correo) para engañar sistemas", "Un juego de terminal", "Un método de compresión de video", "Una técnica de diseño web"], answer: "La suplantación de identidad en red (ej. de IP, DNS o correo) para engañar sistemas", explanation: "Falsifica los datos de origen para parecer una fuente legítima." },
-                    { question: "¿Qué es el informe de pentesting?", options: ["Un documento detallado con las vulnerabilidades halladas y las recomendaciones para solucionarlas", "Una factura de cobro de internet", "Un manual de usuario común", "Una lista de correos electrónicos"], answer: "Un documento detallado con las vulnerabilidades halladas y las recomendaciones para solucionarlas", explanation: "Es el entregable clave que guía la corrección de fallos en la empresa." },
-                    { question: "¿Qué es la mitigación de riesgos?", options: ["Implementar controles y medidas para reducir la probabilidad o impacto de una amenaza", "Ignorar los problemas de seguridad", "Borrar todos los equipos", "Comprar computadoras nuevas"], answer: "Implementar controles y medidas para reducir la probabilidad o impacto de una amenaza", explanation: "Minimiza los daños potenciales ante incidentes." },
-                    { question: "¿Cuál es la regla de oro del hacking ético profesional?", options: ["Tener siempre un contrato y autorización explícita por escrito antes de atacar", "Atacar los sistemas de madrugada", "No dejar nunca registros en la red", "Compartir las contraseñas robadas en internet"], answer: "Tener siempre un contrato y autorización explícita por escrito antes de atacar", explanation: "La legalidad y el consentimiento escrito diferencian el delito del trabajo profesional." }
-                ]
-            }
-        ];
-
-        let currentLevelIndex = 0;
-        let currentQuestionIndex = 0;
-        let score = parseInt(localStorage.getItem('cytech_score') || '111');
-        let streak = parseInt(localStorage.getItem('cytech_streak') || '1');
-        let coins = parseInt(localStorage.getItem('cytech_coins') || '50');
-        let maxLevelUnlocked = parseInt(localStorage.getItem('cytech_unlocked') || '0');
-        let lives = 3;
-        let currentQuestions = [];
-
-        function speakAlertText(text) {
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'es-ES';
-                utterance.rate = 1.05;
-                window.speechSynthesis.speak(utterance);
-            }
-        }
-
-        function launchConfetti() {
-            if (typeof confetti === 'function') {
-                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-            }
-        }
-
-        function renderPath() {
-            let container = document.getElementById('path-container');
-            container.innerHTML = '';
-            
-            levels.forEach((lvl, i) => {
-                let wrapper = document.createElement('div');
-                wrapper.className = 'node-wrapper';
-                
-                let btn = document.createElement('div');
-                btn.className = 'node-btn';
-                btn.id = `node-${i}`;
-                btn.onclick = () => startLevel(i);
-                btn.title = lvl.name;
-
-                let iconSpan = document.createElement('span');
-                iconSpan.className = 'node-icon';
-                
-                let levelSpan = document.createElement('span');
-                levelSpan.className = 'node-level';
-                levelSpan.innerText = `Nivel ${i + 1}`;
-
-                if (i <= maxLevelUnlocked) {
-                    if (i < maxLevelUnlocked) {
-                        btn.classList.add('completed');
-                        iconSpan.innerText = "✅";
-                    } else {
-                        iconSpan.innerText = lvl.icon;
-                    }
-                } else {
-                    btn.classList.add('locked');
-                    iconSpan.innerText = "🔒";
-                }
-
-                btn.appendChild(iconSpan);
-                btn.appendChild(levelSpan);
-                wrapper.appendChild(btn);
-                container.appendChild(wrapper);
-            });
-        }
-
-        function updateNodeUI() {
-            document.getElementById('main-streak').innerText = streak;
-            document.getElementById('main-xp').innerText = score;
-            document.getElementById('main-coins').innerText = coins;
-            document.getElementById('store-coins').innerText = coins;
-
-            for (let i = 0; i < levels.length; i++) {
-                let node = document.getElementById(`node-${i}`);
-                if (!node) continue;
-                let iconSpan = node.querySelector('.node-icon');
-
-                if (i <= maxLevelUnlocked) {
-                    node.classList.remove('locked');
-                    if (i < maxLevelUnlocked) {
-                        node.classList.add('completed');
-                        if (iconSpan) iconSpan.innerText = "✅";
-                    } else {
-                        node.classList.remove('completed');
-                        if (iconSpan) iconSpan.innerText = levels[i].icon;
-                    }
-                } else {
-                    node.classList.add('locked');
-                    node.classList.remove('completed');
-                    if (iconSpan) iconSpan.innerText = "🔒";
-                }
-            }
-        }
-
-        function startLevel(index) {
-            if (index > maxLevelUnlocked) {
-                alert("¡Esta estación está bloqueada! Supera las anteriores para desbloquearla.");
-                return;
-            }
-            currentLevelIndex = index;
-            lives = 3;
-            document.getElementById('welcome-screen').style.display = 'none';
-            document.getElementById('leaderboard-screen').style.display = 'none';
-            document.getElementById('store-screen').style.display = 'none';
-            document.getElementById('game-screen').style.display = 'none';
-            document.getElementById('challenge-screen').style.display = 'block';
-            
-            let levelInfo = levels[currentLevelIndex];
-            document.getElementById('level-indicator').innerText = `NIVEL ${currentLevelIndex + 1}: ${levelInfo.name.toUpperCase()}`;
-            currentQuestions = [...levelInfo.questions].sort(() => Math.random() - 0.5);
-            currentQuestionIndex = 0;
-            showQuestion();
-        }
-
-        function showQuestion() {
-            if (currentQuestionIndex >= currentQuestions.length) {
-                document.getElementById('challenge-screen').style.display = 'none';
-                document.getElementById('game-screen').style.display = 'block';
-                document.getElementById('victory-text').innerText = `Has hackeado con éxito el Nivel ${currentLevelIndex + 1}: ${levels[currentLevelIndex].name}.`;
-                
-                score += 50;
-                coins += 20; // Recompensa en Cripto-Bits
-                
-                launchConfetti();
-
-                if (currentLevelIndex >= maxLevelUnlocked && maxLevelUnlocked < levels.length - 1) {
-                    maxLevelUnlocked = currentLevelIndex + 1;
-                    localStorage.setItem('cytech_unlocked', maxLevelUnlocked);
-                }
-
-                localStorage.setItem('cytech_score', score);
-                localStorage.setItem('cytech_coins', coins);
-                updateStatsUI();
-                speakAlertText("¡Estación superada!");
-                return;
-            }
-
-            let q = currentQuestions[currentQuestionIndex];
-            document.getElementById('question-counter').innerText = `${currentQuestionIndex + 1}/${currentQuestions.length}`;
-            document.getElementById('question-text').innerText = q.question;
-            document.getElementById('explanation-box').style.display = 'none';
-            document.getElementById('next-btn').style.display = 'none';
-            
-            let optionsContainer = document.getElementById('options-container');
-            optionsContainer.innerHTML = '';
-            
-            let shuffledOptions = [...q.options].sort(() => Math.random() - 0.5);
-            shuffledOptions.forEach(option => {
-                let btn = document.createElement('button');
-                btn.className = 'option-btn';
-                btn.innerText = option;
-                btn.onclick = () => selectAnswer(btn, option, q.answer, q.explanation);
-                optionsContainer.appendChild(btn);
-            });
-            updateStatsUI();
-        }
-
-        function selectAnswer(button, selected, correct, explanation) {
-            let allBtns = document.querySelectorAll('#options-container .option-btn');
-            allBtns.forEach(b => b.disabled = true);
-
-            let expBox = document.getElementById('explanation-box');
-            expBox.innerText = `💡 Explicación pedagógica: ${explanation}`;
-            expBox.style.display = 'block';
-
-            if (selected === correct) {
-                button.style.background = '#238636';
-                button.style.borderColor = '#3fb950';
-                score += 10;
-                coins += 2; // Pequeña bonificación por acierto
-                speakAlertText("¡Correcto!");
-            } else {
-                button.style.background = '#da3633';
-                button.style.borderColor = '#f85149';
-                lives--;
-                speakAlertText("Incorrecto");
-                allBtns.forEach(b => {
-                    if (b.innerText === correct) {
-                        b.style.background = '#238636';
-                        b.style.borderColor = '#3fb950';
-                    }
-                });
-            }
-
-            localStorage.setItem('cytech_score', score);
-            localStorage.setItem('cytech_coins', coins);
-            updateStatsUI();
-
-            if (lives <= 0) {
-                speakAlertText("Juego terminado. Te has quedado sin vidas.");
-                setTimeout(() => {
-                    alert("¡Te has quedado sin vidas! Reiniciando estación.");
-                    startLevel(currentLevelIndex);
-                }, 1500);
-                return;
-            }
-
-            document.getElementById('next-btn').style.display = 'block';
-        }
-
-        function nextQuestion() {
-            currentQuestionIndex++;
-            showQuestion();
-        }
-
-        function skipQuestion() {
-            speakAlertText("Nivel saltado en modo prueba");
-            currentQuestionIndex++;
-            showQuestion();
-        }
-
-        function proceedToNextStation() {
-            let nextIndex = currentLevelIndex + 1;
-            if (nextIndex < levels.length) {
-                startLevel(nextIndex);
-            } else {
-                returnToDashboard();
-            }
-        }
-
-        function updateStatsUI() {
-            document.getElementById('score-display').innerText = `Puntaje: ${score}`;
-            document.getElementById('coins-ingame').innerText = `🪙 ${coins} Bits`;
-            let heartsStr = '';
-            for (let i = 0; i < lives; i++) heartsStr += '❤️';
-            document.getElementById('hearts-display').innerText = `Vidas: ${heartsStr}`;
-            document.getElementById('lb-xp').innerText = `${score} XP`;
-            document.getElementById('lb-user-xp').innerText = `${score} XP`;
-            document.getElementById('lb-streak').innerText = `${streak} Días`;
-            updateNodeUI();
-        }
-
-        function showLeaderboard() {
-            document.getElementById('welcome-screen').style.display = 'none';
-            document.getElementById('leaderboard-screen').style.display = 'block';
-            updateStatsUI();
-        }
-
-        function showStore() {
-            document.getElementById('welcome-screen').style.display = 'none';
-            document.getElementById('store-screen').style.display = 'block';
-            updateNodeUI();
-        }
-
-        function buyItem(itemType, cost) {
-            if (coins < cost) {
-                alert("¡No tienes suficientes Cripto-Bits! Sigue respondiendo preguntas para ganar más.");
-                return;
-            }
-            coins -= cost;
-            localStorage.setItem('cytech_coins', coins);
-            if (itemType === 'hearts') {
-                lives = 3;
-                alert("¡Has comprado una recarga de corazones! Vidas restauradas a 3.");
-            } else if (itemType === 'shield') {
-                alert("¡Escudo de racha activado con éxito!");
-            }
-            updateStatsUI();
-        }
-
-        function returnToDashboard() {
-            document.getElementById('challenge-screen').style.display = 'none';
-            document.getElementById('game-screen').style.display = 'none';
-            document.getElementById('leaderboard-screen').style.display = 'none';
-            document.getElementById('store-screen').style.display = 'none';
-            document.getElementById('welcome-screen').style.display = 'block';
-            updateNodeUI();
-        }
-
-        renderPath();
-        updateNodeUI();
-    </script>
 </body>
 </html>
