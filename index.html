@@ -6,32 +6,114 @@
     <title>CyTech Pro</title>
     <style>
         :root {
-            --bg-color: #0d1117;
-            --card-bg: #161b22;
+            --bg-color: #0b0f19;
+            --card-bg: #131b2e;
             --accent-color: #238636;
             --text-color: #c9d1d9;
             --gold: #f1e05a;
+            --neon-blue: #58a6ff;
         }
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             margin: 0;
-            padding: 15px;
+            padding: 10px;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
         .container {
             width: 100%;
-            max-width: 400px;
+            max-width: 420px;
             background: var(--card-bg);
-            border-radius: 12px;
+            border-radius: 16px;
             padding: 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+            box-sizing: border-box;
         }
-        h2 { font-size: 1.1rem; color: #58a6ff; margin-bottom: 15px; }
-        .stats { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 15px; color: var(--gold); }
+        .header-stats {
+            display: flex;
+            justify-content: space-around;
+            background: #1a233a;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+        h2 { font-size: 1.1rem; color: var(--neon-blue); margin-bottom: 15px; text-align: center; }
+        
+        /* Mapa en Zigzag */
+        .path-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            padding: 20px 0;
+            position: relative;
+        }
+        .node {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            cursor: pointer;
+            border: 3px solid #30363d;
+            background: #21262d;
+            color: #8b949e;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+            transition: transform 0.2s;
+            text-align: center;
+            font-size: 0.75rem;
+        }
+        .node.unlocked {
+            background: #1f6feb;
+            border-color: var(--neon-blue);
+            color: #fff;
+        }
+        .node.completed {
+            background: #238636;
+            border-color: #2ea043;
+            color: #fff;
+        }
+        .node.locked {
+            background: #161b22;
+            border-color: #30363d;
+            color: #484f58;
+            cursor: not-allowed;
+        }
+        /* Efecto Zigzag con desplazamiento lateral */
+        .node:nth-child(odd) { transform: translateX(-40px); }
+        .node:nth-child(even) { transform: translateX(40px); }
+
+        .btn-menu {
+            width: 100%;
+            background: linear-gradient(135deg, #238636, #2ea043);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+        .btn-secondary {
+            background: #21262d;
+            border: 1px solid #30363d;
+            color: var(--text-color);
+        }
+        
+        /* Pantallas del Juego */
+        .screen { display: none; }
+        .screen.active { display: block; }
+        
         .question { font-size: 1rem; margin-bottom: 20px; line-height: 1.4; }
         .btn-option {
             width: 100%;
@@ -61,68 +143,249 @@
 </head>
 <body>
 
-<div class="container" id="game-screen">
-    <div id="level-title" style="font-weight: bold; margin-bottom: 5px;">NIVEL 3: BASE DE DATOS</div>
-    <div class="stats">
-        <span id="lives-container">Vidas: ❤️❤️❤️</span>
-        <span id="bits-container">🪙 174 Bits</span>
-    </div>
-    
-    <div class="question" id="question-text">¿Cuál es la función de la cláusula `GROUP BY`?</div>
-    
-    <div id="options-container">
-        <button class="btn-option" onclick="checkAnswer(0)">Unir dos tablas diferentes</button>
-        <button class="btn-option" onclick="checkAnswer(1)">Filtrar por fechas</button>
-        <button class="btn-option" onclick="checkAnswer(2)">Crear índices de búsqueda</button>
-        <button class="btn-option" onclick="checkAnswer(3)">Agrupar filas que tienen los mismos valores en columnas resumidas</button>
+<div class="container">
+    <div class="header-stats">
+        <span style="color: #ff7b72;">🔥 <span id="streak-val">1</span> Días</span>
+        <span style="color: var(--neon-blue);">⚡ <span id="xp-val">6301</span> XP</span>
+        <span style="color: var(--gold);">🪙 <span id="bits-val">170</span> Bits</span>
     </div>
 
-    <button class="btn-skip" onclick="skipLevel()">⚡ Saltar Nivel (Modo Prueba)</button>
-    
-    <div style="margin-top: 20px; font-size: 0.8rem; display: flex; justify-content: space-between; color: #8b949e;">
-        <span>Puntaje: <span id="score-val">631</span></span>
-        <span>Christ Ydrogo</span>
+    <!-- PANTALLA PRINCIPAL: MAPA DE MUNDOS (11 NIVELES) -->
+    <div id="map-screen" class="screen active">
+        <h2>Ruta de Aprendizaje Tecnológico</h2>
+        <div class="path-container" id="path-nodes">
+            <!-- Los nodos se generan dinámicamente mediante JS para los 11 mundos -->
+        </div>
+        <button class="btn-menu" onclick="switchScreen('leaderboard-screen')">🏆 Salón de la Fama & Ligas</button>
+        <button class="btn-menu btn-secondary" onclick="switchScreen('store-screen')">🛒 Tienda Hacker (Gastar Bits)</button>
+    </div>
+
+    <!-- PANTALLA DE JUEGO / RETO -->
+    <div id="game-screen" class="screen">
+        <div id="level-title" style="font-weight: bold; margin-bottom: 10px; color: var(--neon-blue);">NIVEL</div>
+        <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 15px; color: #8b949e;">
+            <span id="lives-txt">Vidas: ❤️❤️❤️</span>
+            <span id="progress-txt">Pregunta 1/3</span>
+        </div>
+        
+        <div class="question" id="question-text">Cargando pregunta...</div>
+        
+        <div id="options-container"></div>
+
+        <button class="btn-skip" onclick="skipLevel()">⚡ Saltar Nivel (Modo Prueba)</button>
+        <button class="btn-menu btn-secondary" onclick="switchScreen('map-screen')" style="margin-top: 15px;">⬅ Volver al Mapa</button>
+        
+        <div style="margin-top: 15px; font-size: 0.8rem; display: flex; justify-content: space-between; color: #8b949e;">
+            <span>Christ Ydrogo</span>
+            <button onclick="resetProgress()" style="background:none; border:none; color:#ff7b72; cursor:pointer; font-size:0.75rem;">Reiniciar Progreso</button>
+        </div>
+    </div>
+
+    <!-- SALÓN DE LA FAMA -->
+    <div id="leaderboard-screen" class="screen">
+        <h2>🏆 Salón de la Fama</h2>
+        <p style="font-size: 0.9rem; text-align: center; color: #8b949e;">Liga Diamante - Desarrolladores Pro</p>
+        <div style="background: #161b22; border-radius: 8px; padding: 10px; margin-bottom: 15px;">
+            <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #30363d;">
+                <span>🥇 1. Carlos M.</span><span>7420 XP</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #30363d; color: var(--gold); font-weight: bold;">
+                <span>🥈 2. Christ Ydrogo</span><span>6301 XP</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 8px 0;">
+                <span>🥉 3. Ana Sofía</span><span>5900 XP</span>
+            </div>
+        </div>
+        <button class="btn-menu" onclick="switchScreen('map-screen')">Volver al Mapa</button>
+    </div>
+
+    <!-- TIENDA HACKER -->
+    <div id="store-screen" class="screen">
+        <h2>🛒 Tienda Hacker</h2>
+        <p style="font-size: 0.9rem; text-align: center; color: #8b949e;">Mejora tus herramientas con tus Bits.</p>
+        <div style="background: #161b22; border-radius: 8px; padding: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <div style="font-weight: bold;">Vida Extra (+1 ❤️)</div>
+                <div style="font-size: 0.8rem; color: var(--gold);">50 Bits</div>
+            </div>
+            <button class="btn-menu" style="width: auto; padding: 8px 12px; margin:0;" onclick="buyItem('vida')">Comprar</button>
+        </div>
+        <div style="background: #161b22; border-radius: 8px; padding: 12px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <div style="font-weight: bold;">Salto de Nivel Automático</div>
+                <div style="font-size: 0.8rem; color: var(--gold);">120 Bits</div>
+            </div>
+            <button class="btn-menu" style="width: auto; padding: 8px 12px; margin:0;" onclick="buyItem('salto')">Comprar</button>
+        </div>
+        <button class="btn-menu" onclick="switchScreen('map-screen')">Volver al Mapa</button>
     </div>
 </div>
 
 <script>
-    // Variables de control del juego
-    let currentLevel = 3;
-    let maxLevelUnlocked = 10; // Desbloquea todos los mundos por completo
-    
-    // Lista de simulacion de mundos/preguntas para probar el salto
-    const levelsData = [
-        { title: "NIVEL 1: INTRODUCCIÓN", q: "¿Qué significa HTML?", opts: ["Hyper Text Markup Language", "Home Tool Markup Language", "Hyperlinks and Text Markup Language"] },
-        { title: "NIVEL 2: ESTILOS CSS", q: "¿Para qué sirve CSS?", opts: ["Estructurar la web", "Dar diseño y estilos", "Gestionar bases de datos"] },
-        { title: "NIVEL 3: BASE DE DATOS", q: "¿Cuál es la función de la cláusula `GROUP BY`?", opts: ["Unir dos tablas diferentes", "Filtrar por fechas", "Crear índices de búsqueda", "Agrupar filas que tienen los mismos valores en columnas resumidas"] },
-        { title: "NIVEL 4: JAVASCRIPT AVANZADO", q: "¿Qué es un Closure en JS?", opts: ["Una función que recuerda su ámbito léxico", "Un error de sintaxis", "Un bucle infinito"] }
+    // Configuración de los 11 Mundos Tecnológicos
+    const worlds = [
+        { id: 0, title: "Nivel 0: Introducción Web", q: "¿Qué lenguaje estructura las páginas web?", opts: ["CSS", "HTML", "Python", "SQL"], ans: 1 },
+        { id: 1, title: "Nivel 1: Estilos CSS", q: "¿Para qué se utiliza principalmente CSS?", opts: ["Dar diseño y estilos visuales", "Gestionar bases de datos", "Crear servidores", "Compilar código binario"], ans: 0 },
+        { id: 2, title: "Nivel 2: JavaScript Básico", q: "¿Cómo se declara una variable en JavaScript moderno?", opts: ["variable x;", "v x;", "let x;", "define x;"], ans: 2 },
+        { id: 3, title: "Nivel 3: Base de Datos", q: "¿Cuál es la función de la cláusula `GROUP BY`?", opts: ["Unir dos tablas diferentes", "Filtrar por fechas", "Crear índices de búsqueda", "Agrupar filas con valores idénticos"], ans: 3 },
+        { id: 4, title: "Nivel 5: Git & Control de Versiones", q: "¿Qué comando de Git guarda los cambios localmente?", opts: ["git push", "git commit", "git pull", "git clone"], ans: 1 },
+        { id: 5, title: "Nivel 6: Terminal Linux", q: "¿Qué comando permite listar archivos en Linux?", opts: ["cd", "mkdir", "ls", "pwd"], ans: 2 },
+        { id: 6, title: "Nivel 7: APIs & Redes", q: "¿Qué formato es el estándar más usado para APIs web?", opts: ["XML", "JSON", "CSV", "YAML"], ans: 1 },
+        { id: 7, title: "Nivel 8: Algoritmos", q: "¿Qué estructura de datos opera como LIFO (Último en entrar, primero en salir)?", opts: ["Cola (Queue)", "Pila (Stack)", "Árbol", "Grafo"], ans: 1 },
+        { id: 8, title: "Nivel 9: Inteligencia Artificial", q: "¿Qué es un modelo de lenguaje grande (LLM)?", opts: ["Un disco duro", "Un sistema entrenado con texto masivo", "Un editor de código", "Un protocolo de red"], ans: 1 },
+        { id: 9, title: "Nivel 10: Prompt Engineering", q: "¿Qué técnica ayuda a que una IA responda de forma más precisa?", opts: ["Dar instrucciones claras y contexto", "Escribir en código binario", "Reiniciar el router", "Usar variables globales"], ans: 0 },
+        { id: 10, title: "Nivel 11: Cloud & DevOps", q: "¿Qué plataforma permite alojar páginas estáticas gratis?", opts: ["GitHub Pages", "Un servidor local", "Una memoria USB", "Bluetooth"], ans: 0 }
     ];
 
-    function skipLevel() {
-        // Incrementa el nivel al siguiente
-        currentLevel++;
-        if (currentLevel >= levelsData.length) {
-            currentLevel = 0; // Reinicia o cicla si llega al final
+    let currentLevelIndex = 0;
+    let currentQuestionIdx = 0;
+    let lives = 3;
+    let bits = 170;
+    let xp = 6301;
+    let maxUnlocked = parseInt(localStorage.getItem('cytech_max_unlocked') || '10'); // Desbloquea todos por defecto
+
+    function switchScreen(screenId) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(screenId).classList.add('active');
+        if (screenId === 'map-screen') {
+            renderMap();
         }
-        
-        // Actualiza los elementos en pantalla inmediatamente
-        let currentData = levelsData[currentLevel];
-        document.getElementById('level-title').innerText = currentData.title;
-        document.getElementById('question-text').innerText = currentData.q;
-        
-        // Actualiza los botones de opciones dinámicamente
-        let optContainer = document.getElementById('options-container');
-        optContainer.innerHTML = "";
-        currentData.opts.forEach((opt, index) => {
-            optContainer.innerHTML += `<button class="btn-option" onclick="checkAnswer(${index})">${opt}</button>`;
-        });
-        
-        console.log("Nivel cambiado a: " + currentLevel);
     }
 
-    function checkAnswer(index) {
-        alert("¡Respuesta registrada!");
+    function renderMap() {
+        const pathContainer = document.getElementById('path-nodes');
+        pathContainer.innerHTML = '';
+        
+        worlds.forEach((world, index) => {
+            const node = document.createElement('div');
+            node.className = 'node';
+            
+            if (index <= maxUnlocked) {
+                node.classList.add(index < maxUnlocked ? 'completed' : 'unlocked');
+                node.innerHTML = `<span>Nivel</span><span>${index + 1}</span>`;
+                node.onclick = () => startLevel(index);
+            } else {
+                node.classList.add('locked');
+                node.innerHTML = `🔒`;
+            }
+            pathContainer.appendChild(node);
+        });
     }
+
+    function startLevel(index) {
+        currentLevelIndex = index;
+        currentQuestionIdx = 0;
+        lives = 3;
+        switchScreen('game-screen');
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        const world = worlds[currentLevelIndex];
+        document.getElementById('level-title').innerText = world.title;
+        document.getElementById('question-text').innerText = world.q;
+        document.getElementById('lives-txt').innerText = `Vidas: ${'❤️'.repeat(lives)}`;
+        document.getElementById('progress-txt').innerText = `Mundo ${currentLevelIndex + 1} / 11`;
+
+        const optsContainer = document.getElementById('options-container');
+        optsContainer.innerHTML = '';
+        
+        world.opts.forEach((opt, idx) => {
+            const btn = document.createElement('button');
+            btn.className = 'btn-option';
+            btn.innerText = opt;
+            btn.onclick = () => checkAnswer(idx, world.ans);
+            optsContainer.appendChild(btn);
+        });
+    }
+
+    function checkAnswer(selected, correct) {
+        if (selected === correct) {
+            xp += 50;
+            bits += 15;
+            updateStatsUI();
+            alert("¡Correcto! +50 XP");
+            
+            // Avanzar automáticamente al siguiente nivel o terminar
+            if (currentLevelIndex < worlds.length - 1) {
+                currentLevelIndex++;
+                if (currentLevelIndex > maxUnlocked) {
+                    maxUnlocked = currentLevelIndex;
+                    localStorage.setItem('cytech_max_unlocked', maxUnlocked);
+                }
+                loadQuestion();
+            } else {
+                alert("¡Felicidades! Has completado todos los mundos de CyTech Pro.");
+                switchScreen('map-screen');
+            }
+        } else {
+            lives--;
+            updateStatsUI();
+            if (lives <= 0) {
+                alert("¡Te has quedado sin vidas! Inténtalo de nuevo.");
+                switchScreen('map-screen');
+            } else {
+                alert(`Respuesta incorrecta. Te quedan ${lives} vidas.`);
+                loadQuestion();
+            }
+        }
+    }
+
+    function skipLevel() {
+        // Avanza directamente al siguiente mundo superando la prueba
+        xp += 100;
+        bits += 30;
+        updateStatsUI();
+        
+        if (currentLevelIndex < worlds.length - 1) {
+            currentLevelIndex++;
+            if (currentLevelIndex > maxUnlocked) {
+                maxUnlocked = currentLevelIndex;
+                localStorage.setItem('cytech_max_unlocked', maxUnlocked);
+            }
+            loadQuestion();
+        } else {
+            alert("¡Has llegado al final de la ruta tecnológica!");
+            switchScreen('map-screen');
+        }
+    }
+
+    function updateStatsUI() {
+        document.getElementById('xp-val').innerText = xp;
+        document.getElementById('bits-val').innerText = bits;
+    }
+
+    function buyItem(item) {
+        if (item === 'vida' && bits >= 50) {
+            bits -= 50;
+            lives++;
+            alert("¡Has comprado una vida extra!");
+        } else if (item === 'salto' && bits >= 120) {
+            bits -= 120;
+            maxUnlocked = Math.min(worlds.length - 1, maxUnlocked + 1);
+            localStorage.setItem('cytech_max_unlocked', maxUnlocked);
+            alert("¡Has comprado un salto de nivel!");
+        } else {
+            alert("No tienes suficientes Bits.");
+        }
+        updateStatsUI();
+        renderMap();
+    }
+
+    function resetProgress() {
+        if (confirm("¿Deseas reiniciar tu progreso?")) {
+            localStorage.clear();
+            maxUnlocked = 0;
+            currentLevelIndex = 0;
+            switchScreen('map-screen');
+        }
+    }
+
+    // Inicializar la aplicación al cargar la página
+    window.onload = function() {
+        renderMap();
+        updateStatsUI();
+    };
 </script>
 
 </body>
