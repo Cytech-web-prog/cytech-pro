@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CyTech Pro - Ruta Tecnológica</title>
-    <!-- Librería de Confetti integrada correctamente -->
+    <!-- Librería de Confetti -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.min.js"></script>
     <style>
         :root {
@@ -106,7 +106,6 @@
             cursor: not-allowed;
         }
 
-        /* Efecto de desplazamiento lateral en zigzag */
         .node:nth-child(odd) { transform: translateX(-40px); }
         .node:nth-child(even) { transform: translateX(40px); }
 
@@ -131,7 +130,6 @@
             color: var(--text-color);
         }
         
-        /* Pantallas de la Aplicación */
         .screen { display: none; }
         .screen.active { display: block; }
         
@@ -153,9 +151,21 @@
             cursor: pointer;
             font-size: 0.95rem;
             box-sizing: border-box;
+            transition: background 0.2s, border-color 0.2s;
         }
 
-        .btn-option:active { background: #30363d; }
+        /* Clases dinámicas de colores para los botones al responder */
+        .btn-option.correct {
+            background: #238636 !important;
+            border-color: #2ea043 !important;
+            color: #fff !important;
+        }
+
+        .btn-option.incorrect {
+            background: #da3633 !important;
+            border-color: #f85149 !important;
+            color: #fff !important;
+        }
 
         .btn-skip {
             width: 100%;
@@ -174,24 +184,22 @@
 <body>
 
 <div class="container">
-    <!-- Panel superior de estadísticas globales -->
+    <!-- Panel superior de estadísticas -->
     <div class="header-stats">
         <span style="color: #ff7b72;">🔥 <span id="streak-val">1</span> Días</span>
         <span style="color: var(--neon-blue);">⚡ <span id="xp-val">6301</span> XP</span>
         <span style="color: var(--gold);">🪙 <span id="bits-val">170</span> Bits</span>
     </div>
 
-    <!-- PANTALLA 1: MAPA DE NIVELES (ZIGZAG) -->
+    <!-- PANTALLA 1: MAPA -->
     <div id="map-screen" class="screen active">
         <h2>Ruta de Aprendizaje Tecnológico</h2>
-        <div class="path-container" id="path-nodes">
-            <!-- Los nodos se generan de forma dinámica desde JavaScript -->
-        </div>
+        <div class="path-container" id="path-nodes"></div>
         <button class="btn-menu" onclick="switchScreen('leaderboard-screen')">🏆 Salón de la Fama & Ligas</button>
         <button class="btn-menu btn-secondary" onclick="switchScreen('store-screen')">🛒 Tienda Hacker (Gastar Bits)</button>
     </div>
 
-    <!-- PANTALLA 2: INTERFAZ DE PREGUNTAS Y RETOS -->
+    <!-- PANTALLA 2: JUEGO -->
     <div id="game-screen" class="screen">
         <div id="level-title" style="font-weight: bold; margin-bottom: 10px; color: var(--neon-blue);">NIVEL</div>
         <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 15px; color: #8b949e;">
@@ -253,97 +261,26 @@
 </div>
 
 <script>
-    /* ========================================================
-       CONFIGURACIÓN DE LOS 11 MUNDOS Y PREGUNTAS TECNOLÓGICAS
-       ======================================================== */
     const worlds = [
-        { 
-            id: 0, 
-            title: "Nivel 0: Introducción Web", 
-            q: "¿Qué lenguaje estructura las páginas web?", 
-            opts: ["CSS", "HTML", "Python", "SQL"], 
-            ans: 1 
-        },
-        { 
-            id: 1, 
-            title: "Nivel 1: Estilos CSS", 
-            q: "¿Para qué se utiliza principalmente CSS?", 
-            opts: ["Dar diseño y estilos visuales", "Gestionar bases de datos", "Crear servidores", "Compilar código binario"], 
-            ans: 0 
-        },
-        { 
-            id: 2, 
-            title: "Nivel 2: JavaScript Básico", 
-            q: "¿Cómo se declara una variable en JavaScript moderno?", 
-            opts: ["variable x;", "v x;", "let x;", "define x;"], 
-            ans: 2 
-        },
-        { 
-            id: 3, 
-            title: "Nivel 3: Base de Datos", 
-            q: "¿Cuál es la función de la cláusula `GROUP BY`?", 
-            opts: ["Unir dos tablas diferentes", "Filtrar por fechas", "Crear índices de búsqueda", "Agrupar filas con valores idénticos"], 
-            ans: 3 
-        },
-        { 
-            id: 4, 
-            title: "Nivel 4: Redes y Protocolos", 
-            q: "¿Qué puerto se usa habitualmente para tráfico seguro HTTPS?", 
-            opts: ["80", "21", "443", "8080"], 
-            ans: 2 
-        },
-        { 
-            id: 5, 
-            title: "Nivel 5: Sistemas Operativos", 
-            q: "¿Cuál es el núcleo de un sistema operativo Linux?", 
-            opts: ["Shell", "Kernel", "Terminal", "Bash"], 
-            ans: 1 
-        },
-        { 
-            id: 6, 
-            title: "Nivel 6: Git & Control de Versiones", 
-            q: "¿Qué comando de Git guarda los cambios localmente?", 
-            opts: ["git push", "git commit", "git pull", "git clone"], 
-            ans: 1 
-        },
-        { 
-            id: 7, 
-            title: "Nivel 7: Seguridad Informática", 
-            q: "¿Qué es un ataque de denegación de servicio?", 
-            opts: ["DDoS", "Phishing", "SQL Injection", "Man in the middle"], 
-            ans: 0 
-        },
-        { 
-            id: 8, 
-            title: "Nivel 8: Arquitectura de Software", 
-            q: "¿Qué significan las siglas API?", 
-            opts: ["Application Programming Interface", "Advanced Program Integration", "Automated Process Interaction", "Application Process Integration"], 
-            ans: 0 
-        },
-        { 
-            id: 9, 
-            title: "Nivel 9: Despliegue y Servidores", 
-            q: "¿Qué servicio gratuito de GitHub permite alojar páginas web estáticas?", 
-            opts: ["GitHub Actions", "GitHub Pages", "GitHub CLI", "GitHub Packages"], 
-            ans: 1 
-        },
-        { 
-            id: 10, 
-            title: "Nivel 10: Nivel Master Final", 
-            q: "¿Cuál es el paradigma de programación basado en objetos?", 
-            opts: ["POO", "Imperativo", "Funcional", "Lineal"], 
-            ans: 0 
-        }
+        { id: 0, title: "Nivel 0: Introducción Web", q: "¿Qué lenguaje estructura las páginas web?", opts: ["CSS", "HTML", "Python", "SQL"], ans: 1 },
+        { id: 1, title: "Nivel 1: Estilos CSS", q: "¿Para qué se utiliza principalmente CSS?", opts: ["Dar diseño y estilos visuales", "Gestionar bases de datos", "Crear servidores", "Compilar código binario"], ans: 0 },
+        { id: 2, title: "Nivel 2: JavaScript Básico", q: "¿Cómo se declara una variable en JavaScript moderno?", opts: ["variable x;", "v x;", "let x;", "define x;"], ans: 2 },
+        { id: 3, title: "Nivel 3: Base de Datos", q: "¿Cuál es la función de la cláusula `GROUP BY`?", opts: ["Unir dos tablas diferentes", "Filtrar por fechas", "Crear índices de búsqueda", "Agrupar filas con valores idénticos"], ans: 3 },
+        { id: 4, title: "Nivel 4: Redes y Protocolos", q: "¿Qué puerto se usa habitualmente para tráfico seguro HTTPS?", opts: ["80", "21", "443", "8080"], ans: 2 },
+        { id: 5, title: "Nivel 5: Sistemas Operativos", q: "¿Cuál es el núcleo de un sistema operativo Linux?", opts: ["Shell", "Kernel", "Terminal", "Bash"], ans: 1 },
+        { id: 6, title: "Nivel 6: Git & Control de Versiones", q: "¿Qué comando de Git guarda los cambios localmente?", opts: ["git push", "git commit", "git pull", "git clone"], ans: 1 },
+        { id: 7, title: "Nivel 7: Seguridad Informática", q: "¿Qué es un ataque de denegación de servicio?", opts: ["DDoS", "Phishing", "SQL Injection", "Man in the middle"], ans: 0 },
+        { id: 8, title: "Nivel 8: Arquitectura de Software", q: "¿Qué significan las siglas API?", opts: ["Application Programming Interface", "Advanced Program Integration", "Automated Process Interaction", "Application Process Integration"], ans: 0 },
+        { id: 9, title: "Nivel 9: Despliegue y Servidores", q: "¿Qué servicio gratuito de GitHub permite alojar páginas web estáticas?", opts: ["GitHub Actions", "GitHub Pages", "GitHub CLI", "GitHub Packages"], ans: 1 },
+        { id: 10, title: "Nivel 10: Nivel Master Final", q: "¿Cuál es el paradigma de programación basado en objetos?", opts: ["POO", "Imperativo", "Funcional", "Lineal"], ans: 0 }
     ];
 
-    /* Variables de Estado del Juego */
     let currentLevelIndex = 0;
     let lives = 3;
     let bits = 170;
     let xp = 6301;
     let maxUnlocked = parseInt(localStorage.getItem('cytech_max_unlocked') || '0');
 
-    /* Función central para alternar vistas o pantallas */
     function switchScreen(screenId) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById(screenId).classList.add('active');
@@ -352,7 +289,6 @@
         }
     }
 
-    /* Renderizado de los Nodos del Mapa en la interfaz (Zigzag) */
     function renderMap() {
         const pathContainer = document.getElementById('path-nodes');
         pathContainer.innerHTML = '';
@@ -373,7 +309,6 @@
         });
     }
 
-    /* Inicio de un nivel específico al hacer clic en un nodo */
     function startLevel(index) {
         currentLevelIndex = index;
         lives = 3;
@@ -381,7 +316,6 @@
         loadQuestion();
     }
 
-    /* Carga de la pregunta actual según el mundo */
     function loadQuestion() {
         const world = worlds[currentLevelIndex];
         document.getElementById('level-title').innerText = world.title;
@@ -396,17 +330,25 @@
             const btn = document.createElement('button');
             btn.className = 'btn-option';
             btn.innerText = opt;
-            btn.onclick = () => checkAnswer(idx, world.ans);
+            // Pasamos el botón como referencia para cambiarle el color al hacer clic
+            btn.onclick = (e) => checkAnswer(idx, world.ans, e.target);
             optsContainer.appendChild(btn);
         });
     }
 
-    /* Verificación de la respuesta con confeti y avance automático corregido */
-    function checkAnswer(selected, correct) {
+    /* Validación con cambio de color visual en el botón y sin alertas */
+    function checkAnswer(selected, correct, btnElement) {
+        // Deshabilitar temporalmente los botones para evitar doble clic
+        const allButtons = document.querySelectorAll('.btn-option');
+        allButtons.forEach(b => b.style.pointerEvents = 'none');
+
         if (selected === correct) {
             xp += 50;
             bits += 15;
             updateStatsUI();
+
+            // Poner el botón en verde
+            btnElement.classList.add('correct');
 
             // Lanzar confetti al acertar
             confetti({
@@ -415,39 +357,43 @@
                 origin: { y: 0.6 }
             });
 
-            // Avance automático fluido al siguiente nivel
-            if (currentLevelIndex < worlds.length - 1) {
-                currentLevelIndex++;
-                if (currentLevelIndex > maxUnlocked) {
-                    maxUnlocked = currentLevelIndex;
-                    localStorage.setItem('cytech_max_unlocked', maxUnlocked);
-                }
-                setTimeout(() => {
+            // Avance automático fluido al siguiente nivel después de un leve retraso visual
+            setTimeout(() => {
+                if (currentLevelIndex < worlds.length - 1) {
+                    currentLevelIndex++;
+                    if (currentLevelIndex > maxUnlocked) {
+                        maxUnlocked = currentLevelIndex;
+                        localStorage.setItem('cytech_max_unlocked', maxUnlocked);
+                    }
                     loadQuestion();
-                }, 600); // Pequeña pausa elegante
-            } else {
-                // Gran celebración al terminar el último nivel
-                confetti({
-                    particleCount: 150,
-                    spread: 100,
-                    origin: { y: 0.4 }
-                });
-                alert("¡Felicidades! Has completado todos los mundos de CyTech Pro.");
-                switchScreen('map-screen');
-            }
+                } else {
+                    confetti({
+                        particleCount: 150,
+                        spread: 100,
+                        origin: { y: 0.4 }
+                    });
+                    alert("¡Felicidades! Has completado todos los mundos de CyTech Pro.");
+                    switchScreen('map-screen');
+                }
+            }, 800);
+
         } else {
+            // Poner el botón en rojo si se equivoca
+            btnElement.classList.add('incorrect');
             lives--;
             updateStatsUI();
-            if (lives <= 0) {
-                alert("¡Te has quedado sin vidas! Inténtalo de nuevo.");
-                switchScreen('map-screen');
-            } else {
-                alert(`Respuesta incorrecta. Te quedan ${lives} vidas.`);
-            }
+
+            setTimeout(() => {
+                if (lives <= 0) {
+                    alert("¡Te has quedado sin vidas! Inténtalo de nuevo.");
+                    switchScreen('map-screen');
+                } else {
+                    loadQuestion(); // Recarga la misma pregunta para reintentar
+                }
+            }, 800);
         }
     }
 
-    /* Función para saltar nivel (Modo Prueba) */
     function skipLevel() {
         xp += 100;
         bits += 30;
@@ -466,13 +412,11 @@
         }
     }
 
-    /* Actualizador global de los valores visuales superiores */
     function updateStatsUI() {
         document.getElementById('xp-val').innerText = xp;
         document.getElementById('bits-val').innerText = bits;
     }
 
-    /* Lógica de compra dentro de la Tienda Hacker */
     function buyItem(item) {
         if (item === 'vida' && bits >= 50) {
             bits -= 50;
@@ -490,7 +434,6 @@
         renderMap();
     }
 
-    /* Restablecer todo el progreso guardado */
     function resetProgress() {
         if (confirm("¿Deseas reiniciar tu progreso?")) {
             localStorage.clear();
@@ -501,7 +444,6 @@
         }
     }
 
-    /* Inicialización automática de la aplicación al cargar el DOM */
     window.onload = function() {
         renderMap();
         updateStatsUI();
