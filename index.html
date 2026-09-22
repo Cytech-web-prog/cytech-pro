@@ -106,7 +106,6 @@
             cursor: not-allowed;
         }
 
-        /* Efecto de desplazamiento lateral en zigzag */
         .node:nth-child(odd) { transform: translateX(-40px); }
         .node:nth-child(even) { transform: translateX(40px); }
 
@@ -131,7 +130,6 @@
             color: var(--text-color);
         }
         
-        /* Pantallas de la Aplicación */
         .screen { display: none; }
         .screen.active { display: block; }
         
@@ -155,8 +153,6 @@
             box-sizing: border-box;
             transition: background 0.2s, border-color 0.2s;
         }
-
-        .btn-option:active { background: #30363d; }
 
         .btn-option.correct {
             background: #238636 !important;
@@ -182,29 +178,35 @@
             font-weight: bold;
             box-sizing: border-box;
         }
+
+        .trophy-card {
+            background: #161b22;
+            border: 2px solid var(--gold);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- Panel superior de estadísticas globales -->
     <div class="header-stats">
         <span style="color: #ff7b72;">🔥 <span id="streak-val">1</span> Días</span>
         <span style="color: var(--neon-blue);">⚡ <span id="xp-val">6301</span> XP</span>
         <span style="color: var(--gold);">🪙 <span id="bits-val">170</span> Bits</span>
     </div>
 
-    <!-- PANTALLA 1: MAPA DE NIVELES (ZIGZAG) -->
+    <!-- MAPA -->
     <div id="map-screen" class="screen active">
         <h2>Ruta de Aprendizaje Tecnológico</h2>
-        <div class="path-container" id="path-nodes">
-            <!-- Los nodos se generan de forma dinámica desde JavaScript -->
-        </div>
+        <div class="path-container" id="path-nodes"></div>
         <button class="btn-menu" onclick="switchScreen('leaderboard-screen')">🏆 Salón de la Fama & Ligas</button>
         <button class="btn-menu btn-secondary" onclick="switchScreen('store-screen')">🛒 Tienda Hacker (Gastar Bits)</button>
     </div>
 
-    <!-- PANTALLA 2: INTERFAZ DE PREGUNTAS Y RETOS -->
+    <!-- JUEGO -->
     <div id="game-screen" class="screen">
         <div id="level-title" style="font-weight: bold; margin-bottom: 10px; color: var(--neon-blue);">NIVEL</div>
         <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 15px; color: #8b949e;">
@@ -225,7 +227,20 @@
         </div>
     </div>
 
-    <!-- PANTALLA 3: SALÓN DE LA FAMA -->
+    <!-- PANTALLA DE VICTORIA Y TROFEO -->
+    <div id="victory-screen" class="screen">
+        <h2>🎉 ¡Misión Cumplida!</h2>
+        <div class="trophy-card">
+            <div style="font-size: 50px; margin-bottom: 10px;">🏆</div>
+            <h3 style="color: var(--gold); margin: 5px 0;">Rango: Desarrollador Full-Stack Elite</h3>
+            <p style="font-size: 0.9rem; color: var(--text-color); line-height: 1.4; margin-top: 10px;">
+                ¡Felicidades, Christ Ydrogo! Has demostrado un dominio absoluto de las 11 estaciones tecnológicas, superando desde la estructura web básica hasta arquitecturas cloud y control de versiones. Este trofeo certifica tu capacidad técnica superior.
+            </p>
+        </div>
+        <button class="btn-menu" onclick="switchScreen('map-screen')">Volver al Mapa Principal</button>
+    </div>
+
+    <!-- SALÓN DE LA FAMA -->
     <div id="leaderboard-screen" class="screen">
         <h2>🏆 Salón de la Fama</h2>
         <p style="font-size: 0.9rem; text-align: center; color: #8b949e;">Liga Diamante - Desarrolladores Pro</p>
@@ -243,7 +258,7 @@
         <button class="btn-menu" onclick="switchScreen('map-screen')">Volver al Mapa</button>
     </div>
 
-    <!-- PANTALLA 4: TIENDA HACKER -->
+    <!-- TIENDA HACKER -->
     <div id="store-screen" class="screen">
         <h2>🛒 Tienda Hacker</h2>
         <p style="font-size: 0.9rem; text-align: center; color: #8b949e;">Mejora tus herramientas con tus Bits.</p>
@@ -266,97 +281,26 @@
 </div>
 
 <script>
-    /* ========================================================
-       CONFIGURACIÓN DE LOS 11 MUNDOS Y PREGUNTAS TECNOLÓGICAS
-       ======================================================== */
     const worlds = [
-        { 
-            id: 0, 
-            title: "Nivel 0: Introducción Web", 
-            q: "¿Qué lenguaje estructura las páginas web?", 
-            opts: ["CSS", "HTML", "Python", "SQL"], 
-            ans: 1 
-        },
-        { 
-            id: 1, 
-            title: "Nivel 1: Estilos CSS", 
-            q: "¿Para qué se utiliza principalmente CSS?", 
-            opts: ["Dar diseño y estilos visuales", "Gestionar bases de datos", "Crear servidores", "Compilar código binario"], 
-            ans: 0 
-        },
-        { 
-            id: 2, 
-            title: "Nivel 2: JavaScript Básico", 
-            q: "¿Cómo se declara una variable en JavaScript moderno?", 
-            opts: ["variable x;", "v x;", "let x;", "define x;"], 
-            ans: 2 
-        },
-        { 
-            id: 3, 
-            title: "Nivel 3: Base de Datos", 
-            q: "¿Cuál es la función de la cláusula `GROUP BY`?", 
-            opts: ["Unir dos tablas diferentes", "Filtrar por fechas", "Crear índices de búsqueda", "Agrupar filas con valores idénticos"], 
-            ans: 3 
-        },
-        { 
-            id: 4, 
-            title: "Nivel 4: Redes y Protocolos", 
-            q: "¿Qué puerto se usa habitualmente para tráfico seguro HTTPS?", 
-            opts: ["80", "21", "443", "8080"], 
-            ans: 2 
-        },
-        { 
-            id: 5, 
-            title: "Nivel 5: Sistemas Operativos", 
-            q: "¿Cuál es el núcleo de un sistema operativo Linux?", 
-            opts: ["Shell", "Kernel", "Terminal", "Bash"], 
-            ans: 1 
-        },
-        { 
-            id: 6, 
-            title: "Nivel 6: Git & Control de Versiones", 
-            q: "¿Qué comando de Git guarda los cambios localmente?", 
-            opts: ["git push", "git commit", "git pull", "git clone"], 
-            ans: 1 
-        },
-        { 
-            id: 7, 
-            title: "Nivel 7: Seguridad Informática", 
-            q: "¿Qué es un ataque de denegación de servicio?", 
-            opts: ["DDoS", "Phishing", "SQL Injection", "Man in the middle"], 
-            ans: 0 
-        },
-        { 
-            id: 8, 
-            title: "Nivel 8: Arquitectura de Software", 
-            q: "¿Qué significan las siglas API?", 
-            opts: ["Application Programming Interface", "Advanced Program Integration", "Automated Process Interaction", "Application Process Integration"], 
-            ans: 0 
-        },
-        { 
-            id: 9, 
-            title: "Nivel 9: Despliegue y Servidores", 
-            q: "¿Qué servicio gratuito de GitHub permite alojar páginas web estáticas?", 
-            opts: ["GitHub Actions", "GitHub Pages", "GitHub CLI", "GitHub Packages"], 
-            ans: 1 
-        },
-        { 
-            id: 10, 
-            title: "Nivel 10: Nivel Master Final", 
-            q: "¿Cuál es el paradigma de programación basado en objetos?", 
-            opts: ["POO", "Imperativo", "Funcional", "Lineal"], 
-            ans: 0 
-        }
+        { id: 0, title: "Nivel 0: Introducción Web", q: "¿Qué lenguaje estructura las páginas web?", opts: ["CSS", "HTML", "Python", "SQL"], ans: 1 },
+        { id: 1, title: "Nivel 1: Estilos CSS", q: "¿Para qué se utiliza principalmente CSS?", opts: ["Dar diseño y estilos visuales", "Gestionar bases de datos", "Crear servidores", "Compilar código binario"], ans: 0 },
+        { id: 2, title: "Nivel 2: JavaScript Básico", q: "¿Cómo se declara una variable en JavaScript moderno?", opts: ["variable x;", "v x;", "let x;", "define x;"], ans: 2 },
+        { id: 3, title: "Nivel 3: Base de Datos", q: "¿Cuál es la función de la cláusula `GROUP BY`?", opts: ["Unir dos tablas diferentes", "Filtrar por fechas", "Crear índices de búsqueda", "Agrupar filas con valores idénticos"], ans: 3 },
+        { id: 4, title: "Nivel 4: Redes y Protocolos", q: "¿Qué puerto se usa habitualmente para tráfico seguro HTTPS?", opts: ["80", "21", "443", "8080"], ans: 2 },
+        { id: 5, title: "Nivel 5: Sistemas Operativos", q: "¿Cuál es el núcleo de un sistema operativo Linux?", opts: ["Shell", "Kernel", "Terminal", "Bash"], ans: 1 },
+        { id: 6, title: "Nivel 6: Git & Control de Versiones", q: "¿Qué comando de Git guarda los cambios localmente?", opts: ["git push", "git commit", "git pull", "git clone"], ans: 1 },
+        { id: 7, title: "Nivel 7: Seguridad Informática", q: "¿Qué es un ataque de denegación de servicio?", opts: ["DDoS", "Phishing", "SQL Injection", "Man in the middle"], ans: 0 },
+        { id: 8, title: "Nivel 8: Arquitectura de Software", q: "¿Qué significan las siglas API?", opts: ["Application Programming Interface", "Advanced Program Integration", "Automated Process Interaction", "Application Process Integration"], ans: 0 },
+        { id: 9, title: "Nivel 9: Despliegue y Servidores", q: "¿Qué servicio gratuito de GitHub permite alojar páginas web estáticas?", opts: ["GitHub Actions", "GitHub Pages", "GitHub CLI", "GitHub Packages"], ans: 1 },
+        { id: 10, title: "Nivel 10: Nivel Master Final", q: "¿Cuál es el paradigma de programación basado en objetos?", opts: ["POO", "Imperativo", "Funcional", "Lineal"], ans: 0 }
     ];
 
-    /* Variables de Estado del Juego */
     let currentLevelIndex = 0;
     let lives = 3;
     let bits = 170;
     let xp = 6301;
     let maxUnlocked = parseInt(localStorage.getItem('cytech_max_unlocked') || '0');
 
-    /* Función para reproducir voz sintetizada del celular */
     function speakText(text) {
         if ('speechSynthesis' in window) {
             window.speechSynthesis.cancel();
@@ -367,7 +311,6 @@
         }
     }
 
-    /* Función central para alternar vistas o pantallas */
     function switchScreen(screenId) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById(screenId).classList.add('active');
@@ -376,7 +319,6 @@
         }
     }
 
-    /* Renderizado de los Nodos del Mapa en la interfaz (Zigzag) */
     function renderMap() {
         const pathContainer = document.getElementById('path-nodes');
         pathContainer.innerHTML = '';
@@ -397,7 +339,6 @@
         });
     }
 
-    /* Inicio de un nivel específico al hacer clic en un nodo */
     function startLevel(index) {
         currentLevelIndex = index;
         lives = 3;
@@ -405,7 +346,6 @@
         loadQuestion();
     }
 
-    /* Carga de la pregunta actual según el mundo */
     function loadQuestion() {
         const world = worlds[currentLevelIndex];
         document.getElementById('level-title').innerText = world.title;
@@ -425,7 +365,6 @@
         });
     }
 
-    /* Verificación de la respuesta con confeti, voz y avance automático */
     function checkAnswer(selected, correct, btnElement) {
         const allButtons = document.querySelectorAll('.btn-option');
         allButtons.forEach(b => b.style.pointerEvents = 'none');
@@ -445,6 +384,7 @@
             });
 
             setTimeout(() => {
+                allButtons.forEach(b => b.style.pointerEvents = 'auto');
                 if (currentLevelIndex < worlds.length - 1) {
                     currentLevelIndex++;
                     if (currentLevelIndex > maxUnlocked) {
@@ -453,14 +393,16 @@
                     }
                     loadQuestion();
                 } else {
+                    // ¡Completó los 11 mundos! Pantalla de Trofeo y Rango Definitivo
                     confetti({
-                        particleCount: 150,
-                        spread: 100,
+                        particleCount: 250,
+                        spread: 120,
                         origin: { y: 0.4 }
                     });
-                    speakText("¡Felicidades, has completado todos los mundos!");
-                    alert("¡Felicidades! Has completado todos los mundos de CyTech Pro.");
-                    switchScreen('map-screen');
+                    speakText("¡Felicidades, has completado todos los mundos y ganado el trofeo!");
+                    maxUnlocked = Math.min(worlds.length - 1, maxUnlocked + 1);
+                    localStorage.setItem('cytech_max_unlocked', maxUnlocked);
+                    switchScreen('victory-screen');
                 }
             }, 1000);
 
@@ -483,7 +425,6 @@
         }
     }
 
-    /* Función para saltar nivel (Modo Prueba) */
     function skipLevel() {
         xp += 100;
         bits += 30;
@@ -498,18 +439,21 @@
             }
             loadQuestion();
         } else {
-            alert("¡Has llegado al final de la ruta tecnológica!");
-            switchScreen('map-screen');
+            confetti({
+                particleCount: 250,
+                spread: 120,
+                origin: { y: 0.4 }
+            });
+            speakText("¡Felicidades, has completado todos los mundos!");
+            switchScreen('victory-screen');
         }
     }
 
-    /* Actualizador global de los valores visuales superiores */
     function updateStatsUI() {
         document.getElementById('xp-val').innerText = xp;
         document.getElementById('bits-val').innerText = bits;
     }
 
-    /* Lógica de compra dentro de la Tienda Hacker */
     function buyItem(item) {
         if (item === 'vida' && bits >= 50) {
             bits -= 50;
@@ -530,7 +474,6 @@
         renderMap();
     }
 
-    /* Restablecer todo el progreso guardado */
     function resetProgress() {
         if (confirm("¿Deseas reiniciar tu progreso?")) {
             localStorage.clear();
@@ -541,7 +484,6 @@
         }
     }
 
-    /* Inicialización automática de la aplicación al cargar el DOM */
     window.onload = function() {
         renderMap();
         updateStatsUI();
