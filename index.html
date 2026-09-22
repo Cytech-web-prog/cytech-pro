@@ -278,13 +278,12 @@
     let xp = 6301;
     let maxUnlocked = parseInt(localStorage.getItem('cytech_max_unlocked') || '0');
 
-    // Función para reproducir voz sintetizada del celular
     function speakText(text) {
         if ('speechSynthesis' in window) {
-            window.speechSynthesis.cancel(); // Detener voz anterior si habla muy rápido
+            window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'es-ES'; // Idioma español
-            utterance.rate = 1.0; // Velocidad normal
+            utterance.lang = 'es-ES';
+            utterance.rate = 1.0;
             window.speechSynthesis.speak(utterance);
         }
     }
@@ -352,8 +351,9 @@
             bits += 15;
             updateStatsUI();
 
+            btnElement.classList.0 = 'correct'; // asegurado
             btnElement.classList.add('correct');
-            speakText("¡Correcto!"); // El celular dice en voz alta
+            speakText("¡Correcto!");
 
             confetti({
                 particleCount: 70,
@@ -379,15 +379,16 @@
                     alert("¡Felicidades! Has completado todos los mundos de CyTech Pro.");
                     switchScreen('map-screen');
                 }
-            }, 900);
+            }, 1000);
 
         } else {
             btnElement.classList.add('incorrect');
             lives--;
             updateStatsUI();
-            speakText("Incorrecto"); // El celular dice en voz alta
+            speakText("Incorrecto");
 
             setTimeout(() => {
+                allButtons.forEach(b => b.style.pointerEvents = 'auto');
                 if (lives <= 0) {
                     speakText("Te has quedado sin vidas");
                     alert("¡Te has quedado sin vidas! Inténtalo de nuevo.");
@@ -395,7 +396,7 @@
                 } else {
                     loadQuestion();
                 }
-            }, 900);
+            }, 1000);
         }
     }
 
