@@ -58,7 +58,6 @@
             text-align: center; 
         }
         
-        /* Contenedor del Mapa en Zigzag */
         .path-container {
             display: flex;
             flex-direction: column;
@@ -154,7 +153,6 @@
             transition: background 0.2s, border-color 0.2s;
         }
 
-        /* Clases dinámicas de colores para los botones al responder */
         .btn-option.correct {
             background: #238636 !important;
             border-color: #2ea043 !important;
@@ -184,14 +182,13 @@
 <body>
 
 <div class="container">
-    <!-- Panel superior de estadísticas -->
     <div class="header-stats">
         <span style="color: #ff7b72;">🔥 <span id="streak-val">1</span> Días</span>
         <span style="color: var(--neon-blue);">⚡ <span id="xp-val">6301</span> XP</span>
         <span style="color: var(--gold);">🪙 <span id="bits-val">170</span> Bits</span>
     </div>
 
-    <!-- PANTALLA 1: MAPA -->
+    <!-- MAPA -->
     <div id="map-screen" class="screen active">
         <h2>Ruta de Aprendizaje Tecnológico</h2>
         <div class="path-container" id="path-nodes"></div>
@@ -199,7 +196,7 @@
         <button class="btn-menu btn-secondary" onclick="switchScreen('store-screen')">🛒 Tienda Hacker (Gastar Bits)</button>
     </div>
 
-    <!-- PANTALLA 2: JUEGO -->
+    <!-- JUEGO -->
     <div id="game-screen" class="screen">
         <div id="level-title" style="font-weight: bold; margin-bottom: 10px; color: var(--neon-blue);">NIVEL</div>
         <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 15px; color: #8b949e;">
@@ -220,7 +217,7 @@
         </div>
     </div>
 
-    <!-- PANTALLA 3: SALÓN DE LA FAMA -->
+    <!-- SALÓN DE LA FAMA -->
     <div id="leaderboard-screen" class="screen">
         <h2>🏆 Salón de la Fama</h2>
         <p style="font-size: 0.9rem; text-align: center; color: #8b949e;">Liga Diamante - Desarrolladores Pro</p>
@@ -238,7 +235,7 @@
         <button class="btn-menu" onclick="switchScreen('map-screen')">Volver al Mapa</button>
     </div>
 
-    <!-- PANTALLA 4: TIENDA HACKER -->
+    <!-- TIENDA HACKER -->
     <div id="store-screen" class="screen">
         <h2>🛒 Tienda Hacker</h2>
         <p style="font-size: 0.9rem; text-align: center; color: #8b949e;">Mejora tus herramientas con tus Bits.</p>
@@ -280,6 +277,17 @@
     let bits = 170;
     let xp = 6301;
     let maxUnlocked = parseInt(localStorage.getItem('cytech_max_unlocked') || '0');
+
+    // Función para reproducir voz sintetizada del celular
+    function speakText(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel(); // Detener voz anterior si habla muy rápido
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'es-ES'; // Idioma español
+            utterance.rate = 1.0; // Velocidad normal
+            window.speechSynthesis.speak(utterance);
+        }
+    }
 
     function switchScreen(screenId) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -330,15 +338,12 @@
             const btn = document.createElement('button');
             btn.className = 'btn-option';
             btn.innerText = opt;
-            // Pasamos el botón como referencia para cambiarle el color al hacer clic
             btn.onclick = (e) => checkAnswer(idx, world.ans, e.target);
             optsContainer.appendChild(btn);
         });
     }
 
-    /* Validación con cambio de color visual en el botón y sin alertas */
     function checkAnswer(selected, correct, btnElement) {
-        // Deshabilitar temporalmente los botones para evitar doble clic
         const allButtons = document.querySelectorAll('.btn-option');
         allButtons.forEach(b => b.style.pointerEvents = 'none');
 
@@ -347,17 +352,15 @@
             bits += 15;
             updateStatsUI();
 
-            // Poner el botón en verde
             btnElement.classList.add('correct');
+            speakText("¡Correcto!"); // El celular dice en voz alta
 
-            // Lanzar confetti al acertar
             confetti({
                 particleCount: 70,
                 spread: 60,
                 origin: { y: 0.6 }
             });
 
-            // Avance automático fluido al siguiente nivel después de un leve retraso visual
             setTimeout(() => {
                 if (currentLevelIndex < worlds.length - 1) {
                     currentLevelIndex++;
@@ -372,25 +375,27 @@
                         spread: 100,
                         origin: { y: 0.4 }
                     });
+                    speakText("¡Felicidades, has completado todos los mundos!");
                     alert("¡Felicidades! Has completado todos los mundos de CyTech Pro.");
                     switchScreen('map-screen');
                 }
-            }, 800);
+            }, 900);
 
         } else {
-            // Poner el botón en rojo si se equivoca
             btnElement.classList.add('incorrect');
             lives--;
             updateStatsUI();
+            speakText("Incorrecto"); // El celular dice en voz alta
 
             setTimeout(() => {
                 if (lives <= 0) {
+                    speakText("Te has quedado sin vidas");
                     alert("¡Te has quedado sin vidas! Inténtalo de nuevo.");
                     switchScreen('map-screen');
                 } else {
-                    loadQuestion(); // Recarga la misma pregunta para reintentar
+                    loadQuestion();
                 }
-            }, 800);
+            }, 900);
         }
     }
 
@@ -398,6 +403,7 @@
         xp += 100;
         bits += 30;
         updateStatsUI();
+        speakText("Nivel saltado");
         
         if (currentLevelIndex < worlds.length - 1) {
             currentLevelIndex++;
@@ -421,13 +427,16 @@
         if (item === 'vida' && bits >= 50) {
             bits -= 50;
             lives++;
+            speakText("Vida extra comprada");
             alert("¡Has comprado una vida extra!");
         } else if (item === 'salto' && bits >= 120) {
             bits -= 120;
             maxUnlocked = Math.min(worlds.length - 1, maxUnlocked + 1);
             localStorage.setItem('cytech_max_unlocked', maxUnlocked);
+            speakText("Salto de nivel comprado");
             alert("¡Has comprado un salto de nivel!");
         } else {
+            speakText("Bits insuficientes");
             alert("No tienes suficientes Bits.");
         }
         updateStatsUI();
