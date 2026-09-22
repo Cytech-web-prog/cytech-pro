@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CyTech Pro - Ruta Tecnológica</title>
+    <!-- Librería de Confetti integrada correctamente -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.min.js"></script>
     <style>
         :root {
             --bg-color: #0b0f19;
@@ -194,7 +196,7 @@
         <div id="level-title" style="font-weight: bold; margin-bottom: 10px; color: var(--neon-blue);">NIVEL</div>
         <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 15px; color: #8b949e;">
             <span id="lives-txt">Vidas: ❤️❤️❤️</span>
-            <span id="progress-txt">Pregunta 1/3</span>
+            <span id="progress-txt">Mundo 1 / 11</span>
         </div>
         
         <div class="question" id="question-text">Cargando pregunta...</div>
@@ -252,7 +254,7 @@
 
 <script>
     /* ========================================================
-       CONFIGURACIÓN DE LOS MUNDOS Y PREGUNTAS TECNOLÓGICAS
+       CONFIGURACIÓN DE LOS 11 MUNDOS Y PREGUNTAS TECNOLÓGICAS
        ======================================================== */
     const worlds = [
         { 
@@ -285,62 +287,61 @@
         },
         { 
             id: 4, 
-            title: "Nivel 5: Git & Control de Versiones", 
+            title: "Nivel 4: Redes y Protocolos", 
+            q: "¿Qué puerto se usa habitualmente para tráfico seguro HTTPS?", 
+            opts: ["80", "21", "443", "8080"], 
+            ans: 2 
+        },
+        { 
+            id: 5, 
+            title: "Nivel 5: Sistemas Operativos", 
+            q: "¿Cuál es el núcleo de un sistema operativo Linux?", 
+            opts: ["Shell", "Kernel", "Terminal", "Bash"], 
+            ans: 1 
+        },
+        { 
+            id: 6, 
+            title: "Nivel 6: Git & Control de Versiones", 
             q: "¿Qué comando de Git guarda los cambios localmente?", 
             opts: ["git push", "git commit", "git pull", "git clone"], 
             ans: 1 
         },
         { 
-            id: 5, 
-            title: "Nivel 6: Terminal Linux", 
-            q: "¿Qué comando permite listar archivos en Linux?", 
-            opts: ["cd", "mkdir", "ls", "pwd"], 
-            ans: 2 
-        },
-        { 
-            id: 6, 
-            title: "Nivel 7: APIs & Redes", 
-            q: "¿Qué formato es el estándar más usado para APIs web?", 
-            opts: ["XML", "JSON", "CSV", "YAML"], 
-            ans: 1 
-        },
-        { 
             id: 7, 
-            title: "Nivel 8: Algoritmos", 
-            q: "¿Qué estructura de datos opera como LIFO (Último en entrar, primero en salir)?", 
-            opts: ["Cola (Queue)", "Pila (Stack)", "Árbol", "Grafo"], 
-            ans: 1 
-        },
-        { 
-            id: 8, 
-            title: "Nivel 9: Inteligencia Artificial", 
-            q: "¿Qué es un modelo de lenguaje grande (LLM)?", 
-            opts: ["Un disco duro", "Un sistema entrenado con texto masivo", "Un editor de código", "Un protocolo de red"], 
-            ans: 1 
-        },
-        { 
-            id: 9, 
-            title: "Nivel 10: Prompt Engineering", 
-            q: "¿Qué técnica ayuda a que una IA responda de forma más precisa?", 
-            opts: ["Dar instrucciones claras y contexto", "Escribir en código binario", "Reiniciar el router", "Usar variables globales"], 
+            title: "Nivel 7: Seguridad Informática", 
+            q: "¿Qué es un ataque de denegación de servicio?", 
+            opts: ["DDoS", "Phishing", "SQL Injection", "Man in the middle"], 
             ans: 0 
         },
         { 
+            id: 8, 
+            title: "Nivel 8: Arquitectura de Software", 
+            q: "¿Qué significan las siglas API?", 
+            opts: ["Application Programming Interface", "Advanced Program Integration", "Automated Process Interaction", "Application Process Integration"], 
+            ans: 0 
+        },
+        { 
+            id: 9, 
+            title: "Nivel 9: Despliegue y Servidores", 
+            q: "¿Qué servicio gratuito de GitHub permite alojar páginas web estáticas?", 
+            opts: ["GitHub Actions", "GitHub Pages", "GitHub CLI", "GitHub Packages"], 
+            ans: 1 
+        },
+        { 
             id: 10, 
-            title: "Nivel 11: Cloud & DevOps", 
-            q: "¿Qué plataforma permite alojar páginas estáticas gratis?", 
-            opts: ["GitHub Pages", "Un servidor local", "Una memoria USB", "Bluetooth"], 
+            title: "Nivel 10: Nivel Master Final", 
+            q: "¿Cuál es el paradigma de programación basado en objetos?", 
+            opts: ["POO", "Imperativo", "Funcional", "Lineal"], 
             ans: 0 
         }
     ];
 
     /* Variables de Estado del Juego */
     let currentLevelIndex = 0;
-    let currentQuestionIdx = 0;
     let lives = 3;
     let bits = 170;
     let xp = 6301;
-    let maxUnlocked = parseInt(localStorage.getItem('cytech_max_unlocked') || '10');
+    let maxUnlocked = parseInt(localStorage.getItem('cytech_max_unlocked') || '0');
 
     /* Función central para alternar vistas o pantallas */
     function switchScreen(screenId) {
@@ -351,7 +352,7 @@
         }
     }
 
-    /* Renderizado de los Nodos del Mapa en la interfaz */
+    /* Renderizado de los Nodos del Mapa en la interfaz (Zigzag) */
     function renderMap() {
         const pathContainer = document.getElementById('path-nodes');
         pathContainer.innerHTML = '';
@@ -362,7 +363,7 @@
             
             if (index <= maxUnlocked) {
                 node.classList.add(index < maxUnlocked ? 'completed' : 'unlocked');
-                node.innerHTML = `<span>Nivel</span><span>${index + 1}</span>`;
+                node.innerHTML = `<span>Nivel</span><span>${index}</span>`;
                 node.onclick = () => startLevel(index);
             } else {
                 node.classList.add('locked');
@@ -375,7 +376,6 @@
     /* Inicio de un nivel específico al hacer clic en un nodo */
     function startLevel(index) {
         currentLevelIndex = index;
-        currentQuestionIdx = 0;
         lives = 3;
         switchScreen('game-screen');
         loadQuestion();
@@ -387,7 +387,7 @@
         document.getElementById('level-title').innerText = world.title;
         document.getElementById('question-text').innerText = world.q;
         document.getElementById('lives-txt').innerText = `Vidas: ${'❤️'.repeat(lives)}`;
-        document.getElementById('progress-txt').innerText = `Mundo ${currentLevelIndex + 1} / 11`;
+        document.getElementById('progress-txt').innerText = `Mundo ${currentLevelIndex + 1} / ${worlds.length}`;
 
         const optsContainer = document.getElementById('options-container');
         optsContainer.innerHTML = '';
@@ -401,22 +401,37 @@
         });
     }
 
-    /* Verificación de la respuesta seleccionada */
+    /* Verificación de la respuesta con confeti y avance automático corregido */
     function checkAnswer(selected, correct) {
         if (selected === correct) {
             xp += 50;
             bits += 15;
             updateStatsUI();
-            // Borra o elimina la línea del alert aquí
-    }
+
+            // Lanzar confetti al acertar
+            confetti({
+                particleCount: 70,
+                spread: 60,
+                origin: { y: 0.6 }
+            });
+
+            // Avance automático fluido al siguiente nivel
             if (currentLevelIndex < worlds.length - 1) {
                 currentLevelIndex++;
                 if (currentLevelIndex > maxUnlocked) {
                     maxUnlocked = currentLevelIndex;
                     localStorage.setItem('cytech_max_unlocked', maxUnlocked);
                 }
-                loadQuestion();
+                setTimeout(() => {
+                    loadQuestion();
+                }, 600); // Pequeña pausa elegante
             } else {
+                // Gran celebración al terminar el último nivel
+                confetti({
+                    particleCount: 150,
+                    spread: 100,
+                    origin: { y: 0.4 }
+                });
                 alert("¡Felicidades! Has completado todos los mundos de CyTech Pro.");
                 switchScreen('map-screen');
             }
@@ -428,7 +443,6 @@
                 switchScreen('map-screen');
             } else {
                 alert(`Respuesta incorrecta. Te quedan ${lives} vidas.`);
-                loadQuestion();
             }
         }
     }
@@ -482,6 +496,7 @@
             localStorage.clear();
             maxUnlocked = 0;
             currentLevelIndex = 0;
+            updateStatsUI();
             switchScreen('map-screen');
         }
     }
@@ -495,4 +510,3 @@
 
 </body>
 </html>
- 
