@@ -1,494 +1,417 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CyTech Pro - Ruta Tecnológica</title>
-    <!-- Librería de Confetti -->
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.min.js"></script>
-    <style>
-        :root {
-            --bg-color: #0b0f19;
-            --card-bg: #131b2e;
-            --accent-color: #238636;
-            --text-color: #c9d1d9;
-            --gold: #f1e05a;
-            --neon-blue: #58a6ff;
-            --border-color: #30363d;
-        }
+<html lang="es"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CyTech Pro - Ruta Tecnológica</title>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.min.js"></script>
+<style>
+:root{--bg:#0b0f19;--card:#131b2e;--ac:#238636;--tx:#c9d1d9;--gold:#f1e05a;--blue:#58a6ff;--bd:#30363d;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;margin:0;padding:10px;display:flex;justify-content:center}
+.box{width:100%;max-width:420px;background:var(--card);border-radius:16px;padding:18px;border:1px solid var(--bd);box-sizing:border-box}
+.stats{display:flex;justify-content:space-around;background:#1a233a;padding:10px;border-radius:10px;margin-bottom:16px;font-size:.85rem;font-weight:bold;border:1px solid var(--bd)}
+h2{font-size:1.1rem;color:var(--blue);text-align:center;margin:0 0 12px}
+.screen{display:none}.screen.on{display:block}
+.path{display:flex;flex-direction:column;align-items:center;gap:14px;padding:14px 0}
+.node{width:76px;height:76px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;border:3px solid var(--bd);background:#161b22;color:#484f58;font-size:.65rem;text-align:center;cursor:not-allowed}
+.node b{font-size:1.5rem}
+.node.cur{background:#1f6feb;border-color:var(--blue);color:#fff;cursor:pointer;animation:p 1.6s infinite}
+.node.ok{background:var(--ac);border-color:#2ea043;color:#fff;cursor:pointer}
+@keyframes p{50%{box-shadow:0 0 0 8px rgba(88,166,255,.2)}}
+.btn{width:100%;background:linear-gradient(135deg,#238636,#2ea043);color:#fff;border:0;padding:12px;border-radius:10px;font-weight:bold;font-size:.95rem;margin-top:10px;cursor:pointer}
+.btn.sec{background:#21262d;border:1px solid var(--bd);color:var(--tx)}
+.btn:disabled{opacity:.4}
+.bar{height:10px;background:#21262d;border-radius:6px;overflow:hidden;flex:1}
+.bar i{display:block;height:100%;width:0;background:var(--ac);transition:width .3s}
+.top{display:flex;align-items:center;gap:10px;margin-bottom:16px;font-size:.9rem}
+.q{font-size:1.05rem;line-height:1.4;margin-bottom:16px}
+.opt{width:100%;background:#21262d;color:var(--tx);border:1px solid var(--bd);padding:12px;margin-bottom:9px;border-radius:8px;text-align:left;font-size:.95rem;cursor:pointer}
+.opt.good{background:#238636;border-color:#2ea043;color:#fff}
+.opt.bad{background:#da3633;border-color:#f85149;color:#fff}
+.opt.off{opacity:.25}
+.fb{display:none;margin-top:10px;padding:12px;border-radius:10px;font-size:.9rem;line-height:1.4}
+.fb.good{display:block;background:#12301c;border:1px solid #2ea043}
+.fb.bad{display:block;background:#3a1618;border:1px solid #f85149}
+.row{display:flex;justify-content:space-between;align-items:center;background:#161b22;border:1px solid var(--bd);border-radius:8px;padding:10px 12px;margin-bottom:8px}
+.trophy{background:#161b22;border:2px solid var(--gold);border-radius:12px;padding:18px;text-align:center}
+#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#1f6feb;color:#fff;padding:10px 16px;border-radius:20px;font-size:.85rem;opacity:0;transition:opacity .3s;pointer-events:none}
+#toast.on{opacity:1}
+</style></head><body>
+<div class="box">
+<div class="stats"><span style="color:#ff7b72">🔥 <span id="st">1</span> Días</span><span style="color:var(--blue)">⚡ <span id="xp">0</span> XP</span><span style="color:var(--gold)">🪙 <span id="bt">0</span> Bits</span></div>
+<div id="map" class="screen on"><h2>Ruta de Aprendizaje Tecnológico</h2><div class="path" id="path"></div>
+<button class="btn" onclick="go('lb')">🏆 Salón de la Fama</button>
+<button class="btn sec" onclick="go('store')">🛒 Tienda Hacker</button>
+<button class="btn sec" id="rst" onclick="reset()">Reiniciar progreso</button></div>
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            margin: 0;
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+<div id="game" class="screen">
+<div class="top"><span onclick="go('map')" style="cursor:pointer;font-size:1.2rem">✕</span><div class="bar"><i id="pb"></i></div><span id="lv">❤️❤️❤️</span></div>
+<div id="ut" style="color:var(--blue);font-weight:bold;font-size:.85rem;margin-bottom:8px"></div>
+<div class="q" id="q"></div><div id="opts"></div>
+<button class="btn sec" id="hint" onclick="hint()">💡 Pista 50/50 (0)</button>
+<div class="fb" id="fb"></div>
+<button class="btn" id="next" onclick="next()" style="display:none">Continuar</button></div>
 
-        .container {
-            width: 100%;
-            max-width: 420px;
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
-            box-sizing: border-box;
-            border: 1px solid var(--border-color);
-        }
+<div id="res" class="screen"><h2 id="rt"></h2><div class="trophy" id="rb"></div><button class="btn" onclick="go('map')">Volver al Mapa</button></div>
 
-        .header-stats {
-            display: flex;
-            justify-content: space-around;
-            background: #1a233a;
-            padding: 10px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            font-size: 0.85rem;
-            font-weight: bold;
-            border: 1px solid var(--border-color);
-        }
+<div id="lb" class="screen"><h2>🏆 Salón de la Fama</h2><div id="lbl"></div><button class="btn" onclick="go('map')">Volver al Mapa</button></div>
 
-        h2 { 
-            font-size: 1.1rem; 
-            color: var(--neon-blue); 
-            margin-bottom: 15px; 
-            text-align: center; 
-        }
-        
-        /* Contenedor del Mapa en Zigzag */
-        .path-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-            padding: 20px 0;
-            position: relative;
-        }
-
-        .node {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            cursor: pointer;
-            border: 3px solid var(--border-color);
-            background: #21262d;
-            color: #8b949e;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-            transition: transform 0.2s;
-            text-align: center;
-            font-size: 0.75rem;
-        }
-
-        .node.unlocked {
-            background: #1f6feb;
-            border-color: var(--neon-blue);
-            color: #fff;
-        }
-
-        .node.completed {
-            background: var(--accent-color);
-            border-color: #2ea043;
-            color: #fff;
-        }
-
-        .node.locked {
-            background: #161b22;
-            border-color: var(--border-color);
-            color: #484f58;
-            cursor: not-allowed;
-        }
-
-        .node:nth-child(odd) { transform: translateX(-40px); }
-        .node:nth-child(even) { transform: translateX(40px); }
-
-        .btn-menu {
-            width: 100%;
-            background: linear-gradient(135deg, #238636, #2ea043);
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 10px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 10px;
-            text-align: center;
-            font-size: 0.95rem;
-            box-sizing: border-box;
-        }
-
-        .btn-secondary {
-            background: #21262d;
-            border: 1px solid var(--border-color);
-            color: var(--text-color);
-        }
-        
-        .screen { display: none; }
-        .screen.active { display: block; }
-        
-        .question { 
-            font-size: 1rem; 
-            margin-bottom: 20px; 
-            line-height: 1.4; 
-        }
-
-        .btn-option {
-            width: 100%;
-            background: #21262d;
-            color: var(--text-color);
-            border: 1px solid var(--border-color);
-            padding: 12px;
-            margin-bottom: 10px;
-            border-radius: 8px;
-            text-align: left;
-            cursor: pointer;
-            font-size: 0.95rem;
-            box-sizing: border-box;
-            transition: background 0.2s, border-color 0.2s;
-        }
-
-        .btn-option.correct {
-            background: #238636 !important;
-            border-color: #2ea043 !important;
-            color: #fff !important;
-        }
-
-        .btn-option.incorrect {
-            background: #da3633 !important;
-            border-color: #f85149 !important;
-            color: #fff !important;
-        }
-
-        .btn-skip {
-            width: 100%;
-            background: transparent;
-            color: var(--gold);
-            border: 1px dashed var(--gold);
-            padding: 10px;
-            margin-top: 10px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            box-sizing: border-box;
-        }
-
-        .trophy-card {
-            background: #161b22;
-            border: 2px solid var(--gold);
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-    </style>
-</head>
-<body>
-
-<div class="container">
-    <div class="header-stats">
-        <span style="color: #ff7b72;">🔥 <span id="streak-val">1</span> Días</span>
-        <span style="color: var(--neon-blue);">⚡ <span id="xp-val">6301</span> XP</span>
-        <span style="color: var(--gold);">🪙 <span id="bits-val">170</span> Bits</span>
-    </div>
-
-    <!-- MAPA -->
-    <div id="map-screen" class="screen active">
-        <h2>Ruta de Aprendizaje Tecnológico</h2>
-        <div class="path-container" id="path-nodes"></div>
-        <button class="btn-menu" onclick="switchScreen('leaderboard-screen')">🏆 Salón de la Fama & Ligas</button>
-        <button class="btn-menu btn-secondary" onclick="switchScreen('store-screen')">🛒 Tienda Hacker (Gastar Bits)</button>
-    </div>
-
-    <!-- JUEGO -->
-    <div id="game-screen" class="screen">
-        <div id="level-title" style="font-weight: bold; margin-bottom: 10px; color: var(--neon-blue);">NIVEL</div>
-        <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 15px; color: #8b949e;">
-            <span id="lives-txt">Vidas: ❤️❤️❤️</span>
-            <span id="progress-txt">Mundo 1 / 11</span>
-        </div>
-        
-        <div class="question" id="question-text">Cargando pregunta...</div>
-        
-        <div id="options-container"></div>
-
-        <button class="btn-skip" onclick="skipLevel()">⚡ Saltar Nivel (Modo Prueba)</button>
-        <button class="btn-menu btn-secondary" onclick="switchScreen('map-screen')" style="margin-top: 15px;">⬅ Volver al Mapa</button>
-        
-        <div style="margin-top: 15px; font-size: 0.8rem; display: flex; justify-content: space-between; color: #8b949e;">
-            <span>Christ Ydrogo</span>
-            <button onclick="resetProgress()" style="background:none; border:none; color:#ff7b72; cursor:pointer; font-size:0.75rem;">Reiniciar Progreso</button>
-        </div>
-    </div>
-
-    <!-- PANTALLA DE VICTORIA Y TROFEO -->
-    <div id="victory-screen" class="screen">
-        <h2>🎉 ¡Misión Cumplida!</h2>
-        <div class="trophy-card">
-            <div style="font-size: 50px; margin-bottom: 10px;">🏆</div>
-            <h3 style="color: var(--gold); margin: 5px 0;">Rango: Desarrollador Full-Stack Elite</h3>
-            <p style="font-size: 0.9rem; color: var(--text-color); line-height: 1.4; margin-top: 10px;">
-                ¡Felicidades, Christ Ydrogo! Has demostrado un dominio absoluto de las 11 estaciones tecnológicas, superando desde la estructura web básica hasta arquitecturas cloud y control de versiones. Este trofeo certifica tu capacidad técnica superior.
-            </p>
-        </div>
-        <button class="btn-menu" onclick="switchScreen('map-screen')">Volver al Mapa Principal</button>
-    </div>
-
-    <!-- SALÓN DE LA FAMA -->
-    <div id="leaderboard-screen" class="screen">
-        <h2>🏆 Salón de la Fama</h2>
-        <p style="font-size: 0.9rem; text-align: center; color: #8b949e;">Liga Diamante - Desarrolladores Pro</p>
-        <div style="background: #161b22; border-radius: 8px; padding: 10px; margin-bottom: 15px; border: 1px solid var(--border-color);">
-            <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #30363d;">
-                <span>🥇 1. Carlos M.</span><span>7420 XP</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #30363d; color: var(--gold); font-weight: bold;">
-                <span>🥈 2. Christ Ydrogo</span><span>6301 XP</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; padding: 8px 0;">
-                <span>🥉 3. Ana Sofía</span><span>5900 XP</span>
-            </div>
-        </div>
-        <button class="btn-menu" onclick="switchScreen('map-screen')">Volver al Mapa</button>
-    </div>
-
-    <!-- TIENDA HACKER -->
-    <div id="store-screen" class="screen">
-        <h2>🛒 Tienda Hacker</h2>
-        <p style="font-size: 0.9rem; text-align: center; color: #8b949e;">Mejora tus herramientas con tus Bits.</p>
-        <div style="background: #161b22; border-radius: 8px; padding: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-color);">
-            <div>
-                <div style="font-weight: bold;">Vida Extra (+1 ❤️)</div>
-                <div style="font-size: 0.8rem; color: var(--gold);">50 Bits</div>
-            </div>
-            <button class="btn-menu" style="width: auto; padding: 8px 12px; margin:0;" onclick="buyItem('vida')">Comprar</button>
-        </div>
-        <div style="background: #161b22; border-radius: 8px; padding: 12px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-color);">
-            <div>
-                <div style="font-weight: bold;">Salto de Nivel Automático</div>
-                <div style="font-size: 0.8rem; color: var(--gold);">120 Bits</div>
-            </div>
-            <button class="btn-menu" style="width: auto; padding: 8px 12px; margin:0;" onclick="buyItem('salto')">Comprar</button>
-        </div>
-        <button class="btn-menu" onclick="switchScreen('map-screen')">Volver al Mapa</button>
-    </div>
-</div>
+<div id="store" class="screen"><h2>🛒 Tienda Hacker</h2>
+<div class="row"><div><b>Vida Extra ❤️</b><br><small style="color:var(--gold)">50 Bits · se usa solo al quedarte sin vidas</small></div><button class="btn" style="width:auto;margin:0;padding:8px 12px" onclick="buy('vida')">Comprar</button></div>
+<div class="row"><div><b>Pista 50/50 💡</b><br><small style="color:var(--gold)">30 Bits · elimina 2 opciones</small></div><button class="btn" style="width:auto;margin:0;padding:8px 12px" onclick="buy('pista')">Comprar</button></div>
+<p id="inv" style="text-align:center;font-size:.85rem;color:#8b949e"></p>
+<button class="btn" onclick="go('map')">Volver al Mapa</button></div>
+</div><div id="toast"></div>
 
 <script>
-    const worlds = [
-        { id: 0, title: "Nivel 0: Introducción Web", q: "¿Qué lenguaje estructura las páginas web?", opts: ["CSS", "HTML", "Python", "SQL"], ans: 1 },
-        { id: 1, title: "Nivel 1: Estilos CSS", q: "¿Para qué se utiliza principalmente CSS?", opts: ["Dar diseño y estilos visuales", "Gestionar bases de datos", "Crear servidores", "Compilar código binario"], ans: 0 },
-        { id: 2, title: "Nivel 2: JavaScript Básico", q: "¿Cómo se declara una variable en JavaScript moderno?", opts: ["variable x;", "v x;", "let x;", "define x;"], ans: 2 },
-        { id: 3, title: "Nivel 3: Base de Datos", q: "¿Cuál es la función de la cláusula `GROUP BY`?", opts: ["Unir dos tablas diferentes", "Filtrar por fechas", "Crear índices de búsqueda", "Agrupar filas con valores idénticos"], ans: 3 },
-        { id: 4, title: "Nivel 4: Redes y Protocolos", q: "¿Qué puerto se usa habitualmente para tráfico seguro HTTPS?", opts: ["80", "21", "443", "8080"], ans: 2 },
-        { id: 5, title: "Nivel 5: Sistemas Operativos", q: "¿Cuál es el núcleo de un sistema operativo Linux?", opts: ["Shell", "Kernel", "Terminal", "Bash"], ans: 1 },
-        { id: 6, title: "Nivel 6: Git & Control de Versiones", q: "¿Qué comando de Git guarda los cambios localmente?", opts: ["git push", "git commit", "git pull", "git clone"], ans: 1 },
-        { id: 7, title: "Nivel 7: Seguridad Informática", q: "¿Qué es un ataque de denegación de servicio?", opts: ["DDoS", "Phishing", "SQL Injection", "Man in the middle"], ans: 0 },
-        { id: 8, title: "Nivel 8: Arquitectura de Software", q: "¿Qué significan las siglas API?", opts: ["Application Programming Interface", "Advanced Program Integration", "Automated Process Interaction", "Application Process Integration"], ans: 0 },
-        { id: 9, title: "Nivel 9: Despliegue y Servidores", q: "¿Qué servicio gratuito de GitHub permite alojar páginas web estáticas?", opts: ["GitHub Actions", "GitHub Pages", "GitHub CLI", "GitHub Packages"], ans: 1 },
-        { id: 10, title: "Nivel 10: Nivel Master Final", q: "¿Cuál es el paradigma de programación basado en objetos?", opts: ["POO", "Imperativo", "Funcional", "Lineal"], ans: 0 }
-    ];
+const OLD=[
+{n:"Redes",i:"🌐",q:[
+["¿Qué puerto usa HTTPS por defecto?","443","80","21","25","HTTP usa el 80; HTTPS, cifrado con TLS, usa el 443."],
+["¿Qué protocolo traduce nombres de dominio a direcciones IP?","DNS","DHCP","FTP","SMTP","DNS funciona como la agenda de Internet."],
+["¿Cuántos bits tiene una dirección IPv4?","32","64","128","16","IPv6 tiene 128 bits."],
+["¿Qué dispositivo conecta redes distintas y enruta paquetes?","Router","Switch","Hub","Repetidor","El switch conecta equipos dentro de una misma red."],
+["¿Qué protocolo de transporte garantiza la entrega ordenada de datos?","TCP","UDP","ICMP","ARP","UDP es más rápido pero no garantiza entrega."]
+]},
+{n:"Programación",i:"💻",q:[
+["¿Qué estructura repite código mientras se cumpla una condición?","while","if","switch","return","while evalúa la condición antes de cada vuelta."],
+["¿Cuánto vale 7 % 3 en la mayoría de lenguajes?","1","2","0","3","% devuelve el residuo de la división."],
+["¿Qué tipo de dato almacena verdadero o falso?","Booleano","Entero","Cadena","Flotante","Se llama así por George Boole."],
+["¿Qué es un array?","Una colección ordenada de elementos","Un tipo de error","Un compilador","Un protocolo de red","Se accede a sus elementos por índice."],
+["¿Cómo se llama una función que se llama a sí misma?","Recursiva","Iterativa","Anónima","Estática","Necesita un caso base para detenerse."]
+]},
+{n:"Paradigmas",i:"🧩",q:[
+["¿Qué paradigma organiza el código en objetos y clases?","POO","Imperativo","Funcional","Lógico","POO = Programación Orientada a Objetos."],
+["¿Qué pilar de la POO oculta los datos internos de un objeto?","Encapsulamiento","Recursión","Compilación","Iteración","Se logra con atributos privados y métodos de acceso."],
+["¿Cuál es un lenguaje principalmente funcional?","Haskell","C","Assembly","COBOL","Se basa en funciones puras y sin estado mutable."],
+["SQL es un ejemplo de paradigma…","Declarativo","Imperativo","Orientado a objetos","Ensamblador","Dices qué quieres obtener, no cómo hacerlo."],
+["¿Qué permite la herencia en POO?","Reutilizar atributos y métodos de una clase base","Cifrar datos","Ejecutar en paralelo","Eliminar objetos","Una clase hija extiende a su clase padre."]
+]},
+{n:"Software libre",i:"🕊️",q:[
+["¿Quién fundó el movimiento del software libre y la FSF?","Richard Stallman","Linus Torvalds","Bill Gates","Steve Jobs","Lo inició en 1983 con el proyecto GNU."],
+["¿Cuántas libertades esenciales define el software libre?","4","2","3","5","Usar, estudiar, distribuir y mejorar (numeradas 0 a 3)."],
+["¿Cuál es una licencia copyleft?","GPL","MIT","BSD","Licencia propietaria","Copyleft exige que las obras derivadas sigan siendo libres."],
+["Software libre significa principalmente…","Respeta la libertad de usar, estudiar y modificar","Que es gratis","Que no necesita internet","Que solo es para empresas","Libre se refiere a libertad, no a precio."],
+["¿Quién creó el kernel Linux en 1991?","Linus Torvalds","Dennis Ritchie","Ken Thompson","Tim Berners-Lee","Linux + herramientas GNU forman GNU/Linux."]
+]},
+{n:"Linux",i:"🐧",q:[
+["¿Qué comando lista los archivos de un directorio?","ls","cd","rm","cat","ls = list."],
+["¿Qué comando cambia de directorio?","cd","mv","pwd","mkdir","cd = change directory."],
+["¿Cómo se llama el superusuario en Linux?","root","admin","sudo","guest","sudo permite ejecutar comandos como root."],
+["¿Qué comando muestra la ruta del directorio actual?","pwd","path","where","dir","pwd = print working directory."],
+["¿En qué directorio suelen estar los archivos de configuración del sistema?","/etc","/bin","/tmp","/home","/home guarda los archivos de los usuarios."]
+]},
+{n:"Bases de datos",i:"🗄️️",q:[
+["¿Qué hace la cláusula GROUP BY?","Agrupa filas con valores idénticos","Une dos tablas","Borra duplicados","Crea índices","Se usa junto a COUNT, SUM, AVG…"],
+["¿Qué identifica de forma única cada fila de una tabla?","Clave primaria","Clave foránea","Índice","Vista","La clave foránea referencia la primaria de otra tabla."],
+["¿Cuál de estas bases de datos es NoSQL?","MongoDB","MySQL","PostgreSQL","Oracle","MongoDB guarda documentos tipo JSON."],
+["¿Qué sentencia SQL consulta datos?","SELECT","INSERT","UPDATE","DROP","INSERT agrega, UPDATE modifica, DROP elimina."],
+["¿Qué significa la A de ACID?","Atomicidad","Aislamiento","Acceso","Almacenamiento","Una transacción se ejecuta completa o no se ejecuta."]
+]},
+{n:"Ing. de Software",i:"🛠️",q:[
+["¿Qué metodología ágil trabaja con sprints?","Scrum","Cascada","Espiral","RUP","Los sprints son iteraciones cortas, de 1 a 4 semanas."],
+["¿Qué lenguaje se usa para modelar y documentar sistemas con diagramas?","UML","HTML","SQL","JSON","Incluye diagramas de clases, casos de uso, secuencia…"],
+["¿Cuál es un requisito no funcional?","El sistema responde en menos de 2 segundos","El usuario puede iniciar sesión","Se puede registrar un cliente","Se genera un reporte en PDF","Los no funcionales describen calidad: rendimiento, seguridad…"],
+["¿Qué comando de Git guarda cambios en el repositorio local?","git commit","git push","git pull","git clone","push los sube al repositorio remoto."],
+["¿Qué modelo de ciclo de vida es secuencial, fase tras fase?","Cascada","Scrum","Kanban","Prototipado","Análisis → diseño → implementación → pruebas → mantenimiento."]
+]}
+];
 
-    let currentLevelIndex = 0;
-    let lives = 3;
-    let bits = 170;
-    let xp = 6301;
-    let maxUnlocked = parseInt(localStorage.getItem('cytech_max_unlocked') || '0');
+// Pregunta 160 adicional para completar exactamente las 160 preguntas requeridas
+OLD[6].q.push(["¿Qué fase de la prueba de software evalúa el sistema completo frente a los requisitos especificados?","Pruebas de aceptación","Pruebas unitarias","Pruebas de caja blanca","Pruebas de compilación","Valida que el software cumpla con las expectativas del usuario final."]);
 
-    function speakText(text) {
-        if ('speechSynthesis' in window) {
-            window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'es-ES';
-            utterance.rate = 1.0;
-            window.speechSynthesis.speak(utterance);
-        }
+OLD[2].q.push(
+["¿Qué paradigma describe una secuencia de instrucciones que cambian el estado del programa?","Imperativo","Declarativo","Lógico","Funcional","Indicas paso a paso cómo hacerlo (C, Pascal)."],
+["¿Qué es un objeto en POO?","Una instancia de una clase con atributos y métodos","Un tipo de bucle","Un archivo de texto","Un protocolo de red","La clase es el molde; el objeto es lo creado con él."],
+["¿Qué pilar de la POO permite que objetos distintos respondan de forma diferente al mismo mensaje?","Polimorfismo","Abstracción","Encapsulamiento","Herencia","Poli = muchas, morfo = formas."],
+["¿Qué es una función pura?","Devuelve siempre lo mismo para los mismos argumentos y sin efectos secundarios","Usa variables globales","Modifica sus parámetros","Imprime en pantalla","Es la base de la programación funcional."],
+["¿Qué paradigma usa Prolog?","Lógico","Imperativo","Orientado a objetos","Estructurado","Se programa con hechos y reglas."],
+["¿En qué se basa la programación estructurada?","Secuencia, selección e iteración","Clases y herencia","Funciones puras","Hechos y reglas","Evita el uso desordenado de goto."],
+["¿Qué es la abstracción en POO?","Mostrar solo lo esencial y ocultar los detalles","Cifrar los datos","Copiar objetos","Compilar el código","Usas un objeto sin saber cómo funciona por dentro."],
+["¿Qué lenguaje fue pionero de la POO en los años 70?","Smalltalk","Fortran","COBOL","Assembly","Simula y Smalltalk sentaron las bases de la POO."],
+["¿Qué es un constructor?","Un método que inicializa un objeto al crearlo","Un método que lo destruye","Un atributo estático","Un tipo de bucle","Se ejecuta al hacer new."],
+["¿Qué es una función de orden superior?","Una que recibe o devuelve otras funciones","Una que solo usa números","Una siempre recursiva","Una sin parámetros","Ejemplos: map, filter y reduce."],
+["¿Qué paradigma responde a acciones como clics o teclas?","Dirigido por eventos","Lógico","Secuencial por lotes","Ensamblador","Es el modelo típico de interfaces gráficas y web."],
+["¿Qué lenguaje permite herencia múltiple de clases?","Python","Java","C#","PHP","Java, C# y PHP solo permiten una clase padre."],
+["¿Qué significa inmutabilidad?","Un dato no puede modificarse tras crearse","Una variable global","Un error de compilación","Un tipo de herencia","Evita efectos secundarios inesperados."],
+["¿Qué es una clase abstracta?","Una clase que no puede instanciarse directamente","Una clase sin métodos","Una clase final","Una clase solo con atributos estáticos","Sirve de base para otras clases."],
+["¿Cuál de estos lenguajes es multiparadigma?","Python","SQL","Prolog","Haskell","Python admite estilo imperativo, POO y funcional."]);
+
+OLD[3].q.push(
+["¿Cuál es la libertad 0 del software libre?","Ejecutar el programa para cualquier propósito","Estudiar el código","Distribuir copias","Mejorar el programa","Las otras son: 1 estudiar, 2 distribuir, 3 mejorar."],
+["¿Qué organización promueve el término 'open source'?","Open Source Initiative","Free Software Foundation","Mozilla","W3C","La OSI nació en 1998."],
+["¿Qué significa GNU?","GNU's Not Unix","General New Unix","Great Network Utilities","Global Native Unix","Es un acrónimo recursivo."],
+["¿Cuál es una licencia permisiva?","MIT","GPL","AGPL","CC BY-SA","Permite usar el código incluso en software cerrado."],
+["¿Qué navegador libre desarrolla la Mozilla Foundation?","Firefox","Chrome","Edge","Safari","Su código es abierto."],
+["¿Cuál es una suite ofimática libre?","LibreOffice","Microsoft Office","iWork","WPS Office","Nació como bifurcación de OpenOffice."],
+["¿Qué es un fork?","Una copia del código para desarrollarlo de forma independiente","Un error de compilación","Un tipo de licencia","Un compilador","Las licencias libres permiten hacerlo."],
+["¿Cuál de estos es una distribución GNU/Linux?","Ubuntu","Windows 11","macOS","iOS","Debian, Fedora y Arch son otras."],
+["¿Qué es el copyleft?","Usar el copyright para que las obras derivadas sigan siendo libres","Renunciar a todo derecho de autor","Prohibir copiar el software","Una licencia comercial","La GPL es el ejemplo más conocido."],
+["¿Un programa gratuito (freeware) es siempre software libre?","No, gratis no implica acceso al código ni libertades","Sí, siempre","Sí, si no tiene anuncios","Solo si corre en Linux","Libre se refiere a libertad, no a precio."],
+["¿Qué plataforma se usa mucho para colaborar en proyectos de código abierto?","GitHub","Photoshop","Excel","Spotify","Ofrece forks, issues y pull requests."],
+["¿Con qué licencia se distribuye el kernel Linux?","GPLv2","MIT","Apache 2.0","BSD","Es una licencia copyleft."],
+["¿Cuál es un gestor de bases de datos libre?","PostgreSQL","Oracle Database","SQL Server","DB2","MySQL y MariaDB también lo son."],
+["¿Qué fundación creó Stallman en 1985?","Free Software Foundation","Linux Foundation","Apache Foundation","Mozilla Foundation","Promueve el software libre."],
+["¿Cuál es una ventaja del software libre?","Puedes auditar el código y adaptarlo a tus necesidades","Nunca tiene errores","Solo funciona en servidores","Siempre incluye soporte pagado","La transparencia mejora la seguridad y la autonomía."]);
+
+OLD[6].q.push(
+["¿Qué es un requisito funcional?","Describe lo que el sistema debe hacer","Describe su nivel de calidad","Es una restricción legal","Indica el lenguaje a usar","Ejemplo: 'el usuario puede iniciar sesión'."],
+["¿En qué fase se define qué debe hacer el sistema?","Análisis de requisitos","Mantenimiento","Despliegue","Pruebas","Es la primera etapa del ciclo de vida."],
+["¿Qué es una prueba unitaria?","Verifica una pequeña unidad de código de forma aislada","Prueba todo el sistema","Mide la carga","Evalúa la usabilidad","Se automatiza con frameworks como JUnit o pytest."],
+["¿Quién prioriza el Product Backlog en Scrum?","Product Owner","Scrum Master","Desarrollador","Cliente final","Decide el orden según el valor de negocio."],
+["¿Qué diagrama UML muestra la interacción entre actores y sistema?","Casos de uso","Clases","Estados","Despliegue","Describe qué hace el sistema para cada actor."],
+["¿Qué es refactorizar?","Mejorar la estructura del código sin cambiar su comportamiento","Agregar funcionalidades","Borrar el código antiguo","Traducir a otro lenguaje","Hace el código más limpio y mantenible."],
+["En SOLID, ¿qué significa la S?","Responsabilidad única","Seguridad","Simplicidad","Servicio","Una clase debe tener una sola razón para cambiar."],
+["¿Qué es la deuda técnica?","El costo futuro de elegir soluciones rápidas o deficientes","Un préstamo para comprar hardware","El precio de las licencias","Las horas extra del equipo","Se paga después con retrabajo."],
+["¿Qué evalúa una prueba de caja negra?","Entradas y salidas sin conocer el código interno","El código línea por línea","La memoria usada","La velocidad de red","La caja blanca sí examina el código."],
+["¿Qué es el mantenimiento correctivo?","Corregir errores detectados","Agregar nuevas funciones","Prevenir fallos futuros","Adaptar a otro entorno","Los otros tipos: evolutivo, preventivo y adaptativo."],
+["¿Qué es una historia de usuario?","Una descripción breve de una funcionalidad desde el punto de vista del usuario","Un diagrama de clases","Un contrato legal","Un manual de usuario","Formato típico: 'Como X quiero Y para Z'."],
+["¿Qué herramienta organiza tareas en columnas como Por hacer, En curso y Hecho?","Kanban","Diagrama ER","Árbol sintáctico","UML de clases","Visualiza el flujo de trabajo."],
+["¿Qué garantiza el patrón Singleton?","Una única instancia de una clase","Crear familias de objetos","Observar eventos","Adaptar interfaces","Es un patrón creacional."],
+["¿Qué es la integración continua?","Integrar y probar el código automáticamente y con frecuencia","Desplegar a mano cada mes","Revisar el código una vez al año","Documentar el sistema","Detecta errores temprano."],
+["¿Qué diagrama muestra tareas y plazos con barras en el tiempo?","Diagrama de Gantt","UML","Kanban","Entidad-Relación","Sirve para planificar proyectos."]);
+
+const esc=s=>s.replace(/[&\u003c>]/g,c=>({'&':'&amp;','\u003c':'&lt;','>':'&gt;'}[c]));
+const W=[
+[["¿Qué lenguaje estructura las páginas web?",1,"CSS","HTML","Python","SQL"],
+["¿Qué etiqueta HTML se usa para el contenido principal de una página?",0,"\u003cmain>","\u003csection>","\u003cdiv>","\u003carticle>"],
+["¿Cuál es el atributo correcto para colocar un enlace en la etiqueta \u003ca>?",1,"src","href","link","url"],
+["¿Qué atributo es obligatorio en una imagen para accesibilidad (texto alternativo)?",1,"title","alt","longdesc","aria"],
+["¿Qué etiqueta se utiliza para crear una lista ordenada numéricamente?",2,"\u003cul>","\u003cli>","\u003col>","\u003clist>"],
+["¿Qué tipo de input se usa para contraseñas enmascaradas?",2,"text","secure","password","hidden"],
+["¿Qué etiqueta define una fila de celdas en una tabla?",1,"\u003ctd>","\u003ctr>","\u003cth>","\u003ctable>"],
+["¿En qué sección del documento HTML se colocan los metadatos y el título?",1,"\u003cbody>","\u003chead>","\u003cmeta>","\u003cheader>"],
+["¿Cómo se escribe un comentario en HTML?",2,"// Comentario","/* Comentario */","\u003c!-- Comentario -->","# Comentario"],
+["¿Cuál es la versión estándar actual de HTML?",1,"HTML 4","HTML 5","XHTML","HTML 6"]],
+[["¿Para qué se utiliza principalmente CSS?",0,"Dar diseño y estilos visuales","Gestionar bases de datos","Crear servidores","Compilar código binario"],
+["¿Qué símbolo se utiliza en CSS para seleccionar un elemento por su ID?",1,'.','#','*','&'],
+["¿Qué símbolo se usa en CSS para seleccionar elementos por su clase?",1,'#','.',"@",'$'],
+["¿Qué propiedad de CSS define el espacio interno entre el contenido y el borde?",1,"margin","padding","border","spacing"],
+["¿Qué propiedad define el espacio exterior de un elemento?",1,"padding","margin","spacing","outline"],
+["¿Qué propiedad de CSS activa el modelo de diseño Flexbox?",0,"display: flex;","layout: flexbox;","flex: true;","box: flexible;"],
+["¿Qué valor de position saca a un elemento del flujo normal y lo posiciona respecto a la pantalla?",2,"relative","absolute","fixed","static"],
+["¿Qué formato de color en CSS permite definir la opacidad (canal alfa)?",2,"HEX","RGB","RGBA","CMYK"],
+["¿Qué propiedad cambia el tamaño de la fuente en CSS?",2,"font-weight","text-size","font-size","text-style"],
+["¿Qué herramienta de CSS se usa para diseño responsivo?",0,"Media Queries","Flexbox Grid","Responsive CSS","Viewports"]],
+[["¿Cómo se declara una variable en JavaScript moderno?",2,"variable x;","v x;","let x;","define x;"],
+["¿Cuál de los siguientes no es un tipo de dato primitivo en JS?",2,"String","Boolean","Object","Number"],
+["¿Cómo se define una función flecha (arrow function) en JS?",0,"const f = () => {}","function = f() {}","def f() => {}","arrow f() {}"],
+["¿Qué método de array en JS añade un elemento al final?",2,"shift()","pop()","push()","unshift()"],
+["¿Cómo se accede a la propiedad 'nombre' de un objeto llamado 'usuario'?",1,"usuario->nombre","usuario.nombre","usuario[nombre]","getNombre(usuario)"],
+["¿Cuál es la diferencia principal entre '==' y '===' en JS?",0,"'===' evalúa valor y tipo de dato","No hay diferencia","'==' es más rápido","'===' solo sirve para strings"],
+["¿Qué método selecciona un elemento por su ID en el DOM?",1,"querySelectorAll","getElementById","getElementsByClass","selectId"],
+["¿Qué objeto representa el resultado eventual de una operación asíncrona en JS?",1,"Callback","Promise","EventLoop","AsyncObj"],
+["¿Qué método convierte un objeto de JavaScript a una cadena JSON?",1,"JSON.parse()","JSON.stringify()","JSON.convert()","JSON.toText()"],
+["¿Qué palabra clave declara una constante cuyo valor no puede reasignarse?",2,"var","let","const","static"]],
+[["¿Cuál es la función de la cláusula GROUP BY?",3,"Unir dos tablas diferentes","Filtrar por fechas","Crear índices de búsqueda","Agrupar filas con valores idénticos"],
+["¿Qué comando SQL se utiliza para recuperar datos de una base de datos?",1,"GET","SELECT","FETCH","QUERY"],
+["¿Qué cláusula se usa para filtrar registros en SQL?",1,"FILTER","WHERE","HAVING","CHECK"],
+["¿Qué comando SQL se utiliza para actualizar datos existentes?",1,"MODIFY","UPDATE","CHANGE","NEW"],
+["¿Qué tipo de JOIN devuelve solo las filas que coinciden en ambas tablas?",0,"INNER JOIN","LEFT JOIN","RIGHT JOIN","CROSS JOIN"],
+["¿Qué restricción identifica unívocamente a cada fila en una tabla?",1,"Foreign Key","Primary Key","Unique Key","Index Key"],
+["¿Qué comando se usa para eliminar una tabla por completo de la base de datos?",1,"DELETE TABLE","DROP TABLE","REMOVE TABLE","CLEAR TABLE"],
+["¿Qué palabra clave ordena los resultados de una consulta SQL?",1,"SORT BY","ORDER BY","ARRANGE BY","GROUP BY"],
+["¿Qué función SQL cuenta el número de filas en una consulta?",2,"TOTAL()","SUM()","COUNT()","NUMBER()"],
+["¿Cuál de las siguientes es una base de datos NoSQL orientada a documentos?",2,"MySQL","PostgreSQL","MongoDB","SQLite"]],
+[["¿Qué puerto se usa habitualmente para tráfico seguro HTTPS?",2,"80","21","443","8080"],
+["¿Qué puerto utiliza por defecto el protocolo HTTP sin cifrar?",0,"80","443","22","3306"],
+["¿Cuántos bits componen una dirección IPv4?",0,"32 bits","64 bits","128 bits","16 bits"],
+["¿Cuál es la función principal del servicio DNS?",1,"Asignar IPs dinámicas","Traducir nombres de dominio a direcciones IP","Seguridad en la red","Filtrar paquetes maliciosos"],
+["¿En qué capa del modelo OSI opera el protocolo TCP?",2,"Capa física","Capa de red","Capa de transporte","Capa de aplicación"],
+["¿Qué protocolo reemplaza de forma segura al protocolo Telnet?",0,"SSH","FTP","SMTP","SNMP"],
+["¿Qué puerto utiliza habitualmente el protocolo seguro SMTPS para correo?",1,"25","465","110","143"],
+["¿Qué protocolo se usa para asignar direcciones IP automáticamente en una red local?",1,"DNS","DHCP","FTP","ARP"],
+["¿Qué característica principal diferencia a TCP de UDP?",0,"TCP es orientado a conexión y confiable","UDP es más lento","TCP no verifica errores","UDP requiere confirmación de entrega"],
+["¿Cuál es la dirección IP de bucle local (localhost) estándar?",2,"192.168.1.1","10.0.0.1","127.0.0.1","255.255.255.0"]],
+[["¿Cuál es el núcleo de un sistema operativo Linux?",1,"Shell","Kernel","Terminal","Bash"],
+["¿Qué comando permite listar archivos y directorios en Linux?",2,"cd","mkdir","ls","pwd"],
+["¿Qué comando muestra la ruta del directorio de trabajo actual?",1,"dir","pwd","path","where"],
+["¿Qué comando de Linux cambia los permisos de un archivo o directorio?",1,"chown","chmod","chgrp","setperm"],
+["¿Qué comando lista los procesos activos en ejecución en Linux?",0,"top / ps","tasklist","proc","run"],
+["¿Qué comando busca patrones o texto dentro de archivos en Linux?",1,"find","grep","search","locate"],
+["¿Qué usuario tiene privilegios administrativos totales en Linux?",1,"admin","root","super","system"],
+["¿Qué utilidad se usa comúnmente para comprimir archivos en formato tar.gz?",1,"zip","tar","rar","compress"],
+["¿Qué comando muestra el valor de una variable de entorno?",0,"printenv","showvar","envlist","getval"],
+["¿Qué comando clásico muestra la configuración de red en Linux?",0,"ip / ifconfig","netconfig","winipcfg","network-show"]],
+[["¿Qué comando de Git guarda los cambios localmente?",1,"git push","git commit","git pull","git clone"],
+["¿Qué comando inicializa un repositorio nuevo de Git?",1,"git start","git init","git new","git create"],
+["¿Qué comando añade archivos al área de preparación (staging area)?",0,"git add","git stage","git prepare","git track"],
+["¿Qué comando sube los cambios locales al servidor remoto?",1,"git send","git push","git upload","git commit"],
+["¿Qué comando descarga los cambios del repositorio remoto y los fusiona?",1,"git fetch","git pull","git download","git get"],
+["¿Qué comando crea y cambia a una nueva rama simultáneamente?",3,"git branch -new","git checkout -b","git switch -c","Ambas b y c son correctas"],
+["¿Qué comando muestra el estado actual del repositorio y archivos modificados?",0,"git status","git check","git info","git log"],
+["¿Qué comando muestra el historial de commits realizados?",1,"git history","git log","git records","git trace"],
+["¿Qué comando clona un repositorio existente desde una URL?",1,"git copy","git clone","git download","git fetch"],
+["¿Qué comando integra una rama en otra?",1,"git join","git merge","git combine","git integrate"]],
+[["¿Qué es un ataque de denegación de servicio?",0,"DDoS","Phishing","SQL Injection","Man in the middle"],
+["¿Qué técnica de ingeniería social suplanta la identidad de una entidad confiable por correo?",0,"Phishing","Malware","Ransomware","Sniffing"],
+["¿Qué vulnerabilidad permite ejecutar código malicioso en consultas de bases de datos?",1,"XSS","SQL Injection","CSRF","Buffer Overflow"],
+["¿Qué algoritmo es un estándar de cifrado simétrico ampliamente utilizado?",0,"AES","RSA","MD5","SHA-1"],
+["¿Qué función criptográfica convierte datos en una cadena hash de longitud fija e irreversible?",1,"AES","SHA-256","RSA","Base64"],
+["¿Qué dispositivo de seguridad filtra el tráfico de red basado en reglas predefinidas?",1,"Switch","Firewall","Router","Hub"],
+["¿Qué mecanismo de seguridad requiere dos o más pruebas de identidad independientes?",1,"Single Sign-On","MFA / 2FA","Password Hash","Biometric Lock"],
+["¿Qué significa la vulnerabilidad web XSS?",1,"XML Secure System","Cross-Site Scripting","External Style Sheet","Cross-Server Session"],
+["¿Qué tipo de llave se utiliza para descifrar un mensaje cifrado con una llave pública en RSA?",1,"La misma llave pública","Llave privada","Llave simétrica","Llave maestra"],
+["¿Qué tipo de software malicioso cifra los archivos de la víctima exigiendo un rescate?",2,"Spyware","Adware","Ransomware","Trojan"]],
+[["¿Qué significan las siglas API?",0,"Application Programming Interface","Advanced Program Integration","Automated Process Interaction","Application Process Integration"],
+["¿Qué estilo de arquitectura web utiliza métodos HTTP estándar como GET, POST, PUT y DELETE?",1,"SOAP","REST","GraphQL","RPC"],
+["¿Qué código de estado HTTP indica que una petición fue exitosa?",0,"200 OK","404 Not Found","500 Server Error","301 Moved"],
+["¿Qué código HTTP indica que el recurso solicitado no fue encontrado?",2,"200","302","404","500"],
+["¿Qué código HTTP denota un error interno en el servidor?",3,"201","400","403","500"],
+["¿Qué patrón de arquitectura separa una aplicación en Modelo, Vista y Controlador?",0,"MVC","MVP","MVVM","SOA"],
+["¿Quién desarrolló originalmente el lenguaje de consulta de datos GraphQL?",1,"Google","Meta (Facebook)","Microsoft","Netflix"],
+["¿Cuál es una ventaja principal de la arquitectura de microservicios?",0,"Despliegue y escalabilidad independiente","Menor uso de red","Base de datos única centralizada","Código más corto"],
+["¿Qué significa que un protocolo o servicio sea 'Stateless' (sin estado)?",1,"No guarda datos en memoria nunca","Cada petición del cliente contiene toda la información necesaria","No usa bases de datos","Es inseguro"],
+["¿Qué herramienta es un estándar abierto para describir APIs RESTful?",0,"Swagger / OpenAPI","Postman CLI","JSON Schema","WSDL"]],
+[["¿Qué servicio gratuito de GitHub permite alojar páginas web estáticas?",1,"GitHub Actions","GitHub Pages","GitHub CLI","GitHub Packages"],
+["¿Qué tecnología ligera de virtualización utiliza contenedores de aislamiento?",0,"Docker","VirtualBox","VMware","Hyper-V"],
+["¿Cuál es la herramienta estándar de la industria para orquestar contenedores?",0,"Kubernetes","Ansible","Terraform","Jenkins"],
+["¿Qué significan las siglas CI/CD en DevOps?",1,"Code Integration / Code Delivery","Continuous Integration / Continuous Delivery","Cloud Instance / Cloud Deployment","Container Image / Container Disk"],
+["¿Qué servicio integrado en GitHub permite automatizar flujos de CI/CD?",1,"GitHub Pages","GitHub Actions","GitHub Copilot","GitHub Security"],
+["¿Qué herramienta se utiliza comúnmente para aprovisionar infraestructura mediante código (IaC)?",0,"Terraform","Docker","Git","Nginx"],
+["¿Qué software de servidor web de alto rendimiento actúa también como proxy inverso?",1,"Apache","Nginx","IIS","Tomcat"],
+["¿Cuál es el proveedor de servicios en nube con mayor cuota de mercado global?",2,"Google Cloud","Microsoft Azure","Amazon Web Services (AWS)","IBM Cloud"],
+["¿Qué autoridad de certificación gratuita ofrece certificados SSL/TLS automatizados?",0,"Let's Encrypt","VeriSign","DigiCert","Cloudflare SSL"]]];
+
+let n=0;
+const E=["HTML define la estructura y el contenido de la página.","\u003cmain> marca el contenido principal único del documento.","href guarda la URL de destino; src es para recursos como imágenes.","alt describe la imagen a lectores de pantalla y si no carga.","\u003col> numera los elementos; \u003cul> usa viñetas.","type=password oculta lo que escribes con puntos.","\u003ctr> es la fila; \u003ctd> es la celda.","\u003chead> guarda título, meta y enlaces a estilos.","Los comentarios HTML no se muestran en el navegador.","HTML5 es el estándar vigente.",
+"CSS controla colores, tipografías y disposición.","#id selecciona un elemento único.",".clase selecciona todos los elementos con esa clase.","padding es el relleno interior; margin es el espacio exterior.","margin separa el elemento de sus vecinos.","display:flex activa el contenedor flexible.","fixed se ancla a la ventana y no se mueve al hacer scroll.","RGBA añade el canal alfa (0 a 1) para la transparencia.","font-size define el tamaño del texto.","@media aplica estilos según el tamaño de pantalla.",
+"let declara variables con alcance de bloque.","Object es un tipo de referencia, no primitivo.","La sintaxis flecha es () => {}.","push agrega al final; unshift, al inicio.","Se usa la notación de punto.","=== compara valor y tipo sin conversión.","document.getElementById devuelve el elemento con ese id.","Una Promise representa un valor que llegará más adelante.","stringify convierte a texto JSON; parse hace lo contrario.","const impide reasignar la variable.",
+"Se usa con funciones de agregación como COUNT o SUM.","SELECT consulta datos sin modificarlos.","WHERE filtra filas; HAVING filtra grupos.","UPDATE modifica filas existentes, normalmente con WHERE.","INNER JOIN devuelve solo las filas con coincidencia en ambas tablas.","La clave primaria es única y no nula.","DROP TABLE elimina la tabla y sus datos.","ORDER BY ordena de forma ASC o DESC.","COUNT(*) cuenta filas.","MongoDB guarda documentos tipo JSON.",
+"HTTPS usa TLS en el puerto 443.","HTTP sin cifrar usa el puerto 80.","32 bits dan unos 4.300 millones de direcciones.","DNS funciona como la agenda de Internet.","TCP está en la capa 4 (transporte).","SSH cifra la sesión remota; Telnet no.","SMTPS usa el 465; SMTP clásico, el 25.","DHCP entrega IP, máscara y puerta de enlace.","TCP confirma y reordena; UDP no.","127.0.0.1 apunta al propio equipo.",
+"El kernel gestiona hardware y procesos.","ls viene de list.","pwd = print working directory.","chmod cambia permisos; chown cambia el propietario.","ps lista procesos y top los muestra en vivo.","grep busca texto dentro de archivos.","root puede hacerlo todo; úsalo con cuidado.","tar empaqueta y gzip comprime.","printenv lista las variables de entorno.","ip addr es el moderno; ifconfig, el clásico.",
+"commit guarda una instantánea local.","git init crea la carpeta .git.","git add prepara cambios para el commit.","git push envía commits al remoto.","pull = fetch + merge.","checkout -b y switch -c crean y cambian de rama.","git status muestra qué cambió y qué está preparado.","git log lista los commits.","git clone copia un repositorio completo.","git merge fusiona otra rama en la actual.",
+"DDoS satura un servicio con tráfico desde muchos orígenes.","El phishing engaña para robar credenciales.","SQL Injection se evita con consultas parametrizadas.","AES usa la misma clave para cifrar y descifrar.","SHA-256 produce un hash de 256 bits irreversible.","El firewall permite o bloquea tráfico según reglas.","MFA combina algo que sabes, tienes o eres.","XSS inyecta scripts en páginas que ven otros usuarios.","En RSA se cifra con la pública y se descifra con la privada.","El ransomware secuestra tus archivos cifrándolos.",
+"Una API permite que los programas se comuniquen.","REST usa verbos HTTP sobre recursos.","Los códigos 2xx significan éxito.","404 = recurso no encontrado.","Los 5xx son errores del servidor.","MVC separa datos, interfaz y lógica de control.","GraphQL nació en Facebook en 2012.","Cada microservicio se despliega y escala por separado.","Sin estado: el servidor no recuerda peticiones previas.","OpenAPI (antes Swagger) documenta APIs REST.",
+"GitHub Pages sirve sitios estáticos gratis.","Docker empaqueta apps en contenedores ligeros.","Kubernetes automatiza despliegue y escalado de contenedores.","CI/CD automatiza integrar, probar y entregar código.","GitHub Actions ejecuta flujos definidos en YAML.","Terraform describe la infraestructura en archivos de código.","Nginx sirve contenido y balancea carga como proxy inverso.","AWS lidera el mercado de nube.","Let's Encrypt emite certificados gratis y renovables."];
+
+const NM=[["HTML","🏷️"],["CSS","🎨"],["JavaScript","⚡"],["SQL y Bases de Datos","🗄️"],["Redes","🌐"],["Linux","🐧"],["Git","🔀"],["Seguridad","🔐"],["Arquitectura y APIs","🏗️"],["Cloud y DevOps","☁️"]];
+const U=W.map((u,i)=>({n:NM[i][0],i:NM[i][1],q:u.map(x=>({q:x[0],a:x[1],o:x.slice(2),e:E[n++]}))}))
+.concat([2,3,6].map(k=>{const u=OLD[k];return{n:u.n,i:u.i,q:u.q.map(x=>({q:x[0],o:x.slice(1,5),a:0,e:x[5]}))}}));
+
+const RIV=[["Carlos M.",7420],["Ana Sofía",5900],["Luis P.",4800],["María T.",3300]];
+const $=id=>document.getElementById(id);
+let S={xp:6301,bits:170,streak:1,last:"",done:0,hints:0,extra:0};
+try{Object.assign(S,JSON.parse(localStorage.getItem('cytech3')||'{}'))}catch(e){}
+const save=()=>{try{localStorage.setItem('cytech3',JSON.stringify(S))}catch(e){}};
+const today=new Date().toDateString();
+if(S.last!==today){S.streak=S.last===new Date(Date.now()-864e5).toDateString()?S.streak+1:1;S.last=today;save()}
+const shuf=a=>a.map(x=>[Math.random(),x]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);
+
+function say(t){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='es-ES';speechSynthesis.speak(u)}catch(e){}}
+function toast(t){const e=$('toast');e.innerText=t;e.classList.add('on');setTimeout(()=>e.classList.remove('on'),1800)}
+function stats(){$('st').innerText=S.streak;$('xp').innerText=S.xp;$('bt').innerText=S.bits}
+function go(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));$(id).classList.add('on');
+ if(id=='map')map();if(id=='lb')board();if(id=='store')$('inv').innerText=`Tienes: ${S.extra} vidas extra · ${S.hints} pistas`;stats()}
+function map(){const p=$('path');p.innerHTML='';U.forEach((u,i)=>{const n=document.createElement('div');
+ n.className='node '+(i<S.done?'ok':i==S.done?'cur':'');n.style.transform=`translateX(${i%2?40:-40}px)`;
+ n.innerHTML=i<=S.done?`<b>${i<S.done?'✓':u.i}</b>${u.n}`:`<b>🔒</b>${u.n}`;if(i<=S.done)n.onclick=()=>start(i);p.appendChild(n)})}
+let L;
+function start(u){L={u,qs:shuf(U[u].q).map(x=>({q:x.q,a:x.o[x.a],o:x.o.some(t=>/^Ambas/.test(t))?x.o:shuf(x.o),e:x.e||''})),i:0,lives:3,ok:0,done:false};go('game');show()}
+function hearts(){$('lv').innerText='❤️'.repeat(Math.max(L.lives,0))||'💔'}
+function show(){const c=L.qs[L.i];L.done=false;L.used=false;hearts();$('ut').innerText=`${U[L.u].i} ${U[L.u].n}`;
+ $('pb').style.width=(L.i/L.qs.length*100)+'\%';$('q').innerText=c.q;$('fb').className='fb';$('next').style.display='none';
+ $('hint').style.display='block';$('hint').innerText=`💡 Pista 50/50 (${S.hints})`;
+ const o=$('opts');o.innerHTML='';c.o.forEach(t=>{const b=document.createElement('button');b.className='opt';b.innerText=t;b.onclick=()=>pick(b,t);o.appendChild(b)})}
+function hint(){if(L.done||L.used)return;if(S.hints<1)return toast('No tienes pistas. Cómpralas en la tienda');
+ S.hints--;L.used=true;save();$('hint').innerText=`💡 Pista 50/50 (${S.hints})`;
+ const c=L.qs[L.i];shuf([...document.querySelectorAll('.opt')].filter(b=>b.innerText!==c.a)).slice(0,2).forEach(b=>{b.classList.add('off');b.disabled=true})}
+
+function pick(b,t){
+    if(L.done)return;
+    L.done=true;
+    const c=L.qs[L.i],f=$('fb');$('hint').style.display='none';
+    document.querySelectorAll('.opt').forEach(x=>{x.disabled=true;if(x.innerText===c.a)x.classList.add('good')});
+    
+    if(t===c.a){
+        L.ok++;
+        S.xp+=50;
+        S.bits+=15;
+        f.className='fb good';
+        f.innerHTML=`✅ <b>¡Correcto!</b> ${c.e}`;
+        say('¡Correcto!');
+        try{confetti({particleCount:70,spread:60,origin:{y:.6}})}catch(e){}
+    } else {
+        b.classList.add('bad');
+        L.lives--;
+        if(L.lives<=0&&S.extra>0){S.extra--;L.lives=1;toast('Se usó una vida extra ❤️')}
+        L.qs.push(c);
+        f.className='fb bad';
+        f.innerHTML=`❌ <b>Respuesta:</b> ${esc(c.a)}. ${c.e}<br><small>Volverá a aparecer al final.</small>`;
+        say('Incorrecto');
     }
+    save();
+    stats();
+    hearts();
+    $('next').style.display='block';
+}
 
-    function switchScreen(screenId) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById(screenId).classList.add('active');
-        if (screenId === 'map-screen') {
-            renderMap();
-        }
+function next(){
+    if(L.lives<=0)return end(false);
+    L.i++;
+    if(L.i>=L.qs.length){
+        end(true);
+    } else {
+        show();
     }
+}
 
-    function renderMap() {
-        const pathContainer = document.getElementById('path-nodes');
-        pathContainer.innerHTML = '';
-        
-        worlds.forEach((world, index) => {
-            const node = document.createElement('div');
-            node.className = 'node';
-            
-            if (index <= maxUnlocked) {
-                node.classList.add(index < maxUnlocked ? 'completed' : 'unlocked');
-                node.innerHTML = `<span>Nivel</span><span>${index}</span>`;
-                node.onclick = () => startLevel(index);
-            } else {
-                node.classList.add('locked');
-                node.innerHTML = `🔒`;
-            }
-            pathContainer.appendChild(node);
-        });
+function end(win){
+    go('res');
+    if(!win){
+        $('rt').innerText='💔 Te quedaste sin vidas';
+        $('rb').innerHTML='<div style="font-size:46px">😵</div><p>No te rindas, ¡inténtalo de nuevo! Repasa y vuelve más fuerte.</p>';
+        say('Te quedaste sin vidas');
+        return;
     }
+    S.xp+=100;
+    S.bits+=30;
+    const first=L.u===S.done;
+    if(first)S.done++;
+    save();
+    stats();
+    
+    try{confetti({particleCount:250,spread:120,origin:{y:.4}})}catch(e){}
 
-    function startLevel(index) {
-        currentLevelIndex = index;
-        lives = 3;
-        switchScreen('game-screen');
-        loadQuestion();
+    if(S.done>=U.length){
+        $('rt').innerText='🎉 ¡Misión Cumplida y Estación Legendaria!';
+        $('rb').innerHTML=`<div style="font-size:50px">🏆</div><h3 style="color:var(--gold);margin:6px 0">Rango: Desarrollador Full-Stack Elite con Insignia de Oro</h3><p style="font-size:.9rem;line-height:1.4">¡Felicidades, Christ Ydrogo! Has completado las ${U.length} unidades y las 160 preguntas tecnológicas. Esta insignia certifica tu maestría técnica absoluta.</p>`;
+        say('¡Felicidades, has completado todas las unidades y ganado la insignia de oro!');
+    } else {
+        $('rt').innerText='✅ ¡Lección completada!';
+        $('rb').innerHTML=`<div style="font-size:46px">${U[L.u].i}</div><h3 style="color:var(--gold);margin:6px 0">${U[L.u].n}</h3><p>+XP ganada · ❤️ ${L.lives} vidas restantes<br>${first&&S.done<U.length?'¡Desbloqueaste la siguiente unidad!':''}</p>`;
+        say('Lección completada con éxito');
     }
+}
 
-    function loadQuestion() {
-        const world = worlds[currentLevelIndex];
-        document.getElementById('level-title').innerText = world.title;
-        document.getElementById('question-text').innerText = world.q;
-        document.getElementById('lives-txt').innerText = `Vidas: ${'❤️'.repeat(lives)}`;
-        document.getElementById('progress-txt').innerText = `Mundo ${currentLevelIndex + 1} / ${worlds.length}`;
+function board(){
+    const l=[...RIV,["Christ Ydrogo",S.xp]].sort((a,b)=>b[1]-a[1]);
+    $('lbl').innerHTML=l.map((r,i)=>`<div class="row" style="${r[0]=='Christ Ydrogo'?'color:var(--gold);font-weight:bold':''}"><span>${['🥇','🥈','🥉'][i]||(i+1)+'.'} ${r[0]}</span><span>${r[1]} XP</span></div>`).join('');
+}
 
-        const optsContainer = document.getElementById('options-container');
-        optsContainer.innerHTML = '';
-        
-        world.opts.forEach((opt, idx) => {
-            const btn = document.createElement('button');
-            btn.className = 'btn-option';
-            btn.innerText = opt;
-            btn.onclick = (e) => checkAnswer(idx, world.ans, e.target);
-            optsContainer.appendChild(btn);
-        });
+function buy(k){
+    const c=k=='vida'?50:30;
+    if(S.bits<c)return toast('No tienes suficientes Bits');
+    S.bits-=c;
+    k=='vida'?S.extra++:S.hints++;
+    save();
+    stats();
+    toast('¡Compra realizada!');
+    go('store');
+}
+
+let rc=false;
+function reset(){
+    if(!rc){
+        rc=true;
+        $('rst').innerText='Toca de nuevo para confirmar';
+        setTimeout(()=>{rc=false;$('rst').innerText='Reiniciar progreso'},3000);
+        return;
     }
+    S={xp:6301,bits:170,streak:1,last:today,done:0,hints:0,extra:0};
+    save();
+    rc=false;
+    $('rst').innerText='Reiniciar progreso';
+    go('map');
+}
 
-    function checkAnswer(selected, correct, btnElement) {
-        const allButtons = document.querySelectorAll('.btn-option');
-        allButtons.forEach(b => b.style.pointerEvents = 'none');
-
-        if (selected === correct) {
-            xp += 50;
-            bits += 15;
-            updateStatsUI();
-
-            btnElement.classList.add('correct');
-            speakText("¡Correcto!");
-
-            confetti({
-                particleCount: 70,
-                spread: 60,
-                origin: { y: 0.6 }
-            });
-
-            setTimeout(() => {
-                allButtons.forEach(b => b.style.pointerEvents = 'auto');
-                if (currentLevelIndex < worlds.length - 1) {
-                    currentLevelIndex++;
-                    if (currentLevelIndex > maxUnlocked) {
-                        maxUnlocked = currentLevelIndex;
-                        localStorage.setItem('cytech_max_unlocked', maxUnlocked);
-                    }
-                    loadQuestion();
-                } else {
-                    // ¡Completó los 11 mundos! Pantalla de Trofeo y Rango Definitivo
-                    confetti({
-                        particleCount: 250,
-                        spread: 120,
-                        origin: { y: 0.4 }
-                    });
-                    speakText("¡Felicidades, has completado todos los mundos y ganado el trofeo!");
-                    maxUnlocked = Math.min(worlds.length - 1, maxUnlocked + 1);
-                    localStorage.setItem('cytech_max_unlocked', maxUnlocked);
-                    switchScreen('victory-screen');
-                }
-            }, 1000);
-
-        } else {
-            btnElement.classList.add('incorrect');
-            lives--;
-            updateStatsUI();
-            speakText("Incorrecto");
-
-            setTimeout(() => {
-                allButtons.forEach(b => b.style.pointerEvents = 'auto');
-                if (lives <= 0) {
-                    speakText("Te has quedado sin vidas");
-                    alert("¡Te has quedado sin vidas! Inténtalo de nuevo.");
-                    switchScreen('map-screen');
-                } else {
-                    loadQuestion();
-                }
-            }, 1000);
-        }
-    }
-
-    function skipLevel() {
-        xp += 100;
-        bits += 30;
-        updateStatsUI();
-        speakText("Nivel saltado");
-        
-        if (currentLevelIndex < worlds.length - 1) {
-            currentLevelIndex++;
-            if (currentLevelIndex > maxUnlocked) {
-                maxUnlocked = currentLevelIndex;
-                localStorage.setItem('cytech_max_unlocked', maxUnlocked);
-            }
-            loadQuestion();
-        } else {
-            confetti({
-                particleCount: 250,
-                spread: 120,
-                origin: { y: 0.4 }
-            });
-            speakText("¡Felicidades, has completado todos los mundos!");
-            switchScreen('victory-screen');
-        }
-    }
-
-    function updateStatsUI() {
-        document.getElementById('xp-val').innerText = xp;
-        document.getElementById('bits-val').innerText = bits;
-    }
-
-    function buyItem(item) {
-        if (item === 'vida' && bits >= 50) {
-            bits -= 50;
-            lives++;
-            speakText("Vida extra comprada");
-            alert("¡Has comprado una vida extra!");
-        } else if (item === 'salto' && bits >= 120) {
-            bits -= 120;
-            maxUnlocked = Math.min(worlds.length - 1, maxUnlocked + 1);
-            localStorage.setItem('cytech_max_unlocked', maxUnlocked);
-            speakText("Salto de nivel comprado");
-            alert("¡Has comprado un salto de nivel!");
-        } else {
-            speakText("Bits insuficientes");
-            alert("No tienes suficientes Bits.");
-        }
-        updateStatsUI();
-        renderMap();
-    }
-
-    function resetProgress() {
-        if (confirm("¿Deseas reiniciar tu progreso?")) {
-            localStorage.clear();
-            maxUnlocked = 0;
-            currentLevelIndex = 0;
-            updateStatsUI();
-            switchScreen('map-screen');
-        }
-    }
-
-    window.onload = function() {
-        renderMap();
-        updateStatsUI();
-    };
-</script>
-
-</body>
-</html>
+go('map');
+</script></body></html>
