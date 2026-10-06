@@ -35,10 +35,48 @@ h2{font-size:1.1rem;color:var(--blue);text-align:center;margin:0 0 12px}
 .trophy{background:#161b22;border:2px solid var(--gold);border-radius:12px;padding:18px;text-align:center}
 #toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#1f6feb;color:#fff;padding:10px 16px;border-radius:20px;font-size:.85rem;opacity:0;transition:opacity .3s;pointer-events:none}
 #toast.on{opacity:1}
+
+.hero{position:relative;text-align:center;padding-top:6px}
+.mascot{width:185px;animation:fl 3s ease-in-out infinite}
+@keyframes fl{50%{transform:translateY(-8px)}}
+.eye{transform-box:fill-box;transform-origin:center;animation:bl 4s infinite}
+@keyframes bl{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+.bulb{animation:gl 1.4s infinite}@keyframes gl{50%{opacity:.35}}
+.arm{transform-box:fill-box;transform-origin:0% 100%;animation:wv 1.6s infinite}
+@keyframes wv{50%{transform:rotate(-20deg)}}
+.sym{position:absolute;color:#58a6ff;opacity:.3;font:bold 1.1rem monospace;animation:fl 4s ease-in-out infinite}
+.logo{font-size:2.6rem;margin:2px 0;text-align:center;color:#fff;letter-spacing:-1px}
+.logo span{background:linear-gradient(90deg,#58a6ff,#3fb950);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.tag{text-align:center;color:#8b949e;margin:0 0 10px;font-size:.95rem}
+.bub{background:#1a233a;border:1px solid var(--bd);border-radius:14px;padding:9px 12px;margin:0 6px 12px;text-align:center;font-size:.85rem}
+.chips{text-align:center}.chips span{display:inline-block;background:#161b22;border:1px solid var(--bd);border-radius:20px;padding:4px 10px;margin:3px;font-size:.75rem}
 </style></head><body>
 <div class="box">
 <div class="stats"><span style="color:#ff7b72">🔥 <span id="st">1</span> Días</span><span style="color:var(--blue)">⚡ <span id="xp">0</span> XP</span><span style="color:var(--gold)">🪙 <span id="bt">0</span> Bits</span></div>
-<div id="map" class="screen on"><h2>Ruta de Aprendizaje Tecnológico</h2><div class="path" id="path"></div>
+
+<div id="cover" class="screen on"><div class="hero">
+<span class="sym" style="left:6%;top:10%">&lt;/&gt;</span><span class="sym" style="right:8%;top:22%;animation-delay:1s">{ }</span><span class="sym" style="left:10%;top:62%;animation-delay:2s">01</span><span class="sym" style="right:10%;top:68%;animation-delay:.5s">#</span>
+<svg class="mascot" viewBox="0 0 200 220" aria-label="Jacke, la mascota">
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#388bfd"/><stop offset="1" stop-color="#0d419d"/></linearGradient></defs>
+<ellipse cx="100" cy="208" rx="46" ry="7" fill="#000" opacity=".35"/>
+<line x1="100" y1="52" x2="100" y2="32" stroke="#58a6ff" stroke-width="4"/>
+<circle class="bulb" cx="100" cy="26" r="8" fill="#f1e05a"/>
+<g fill="#8b949e"><rect x="36" y="76" width="16" height="9" rx="3"/><rect x="36" y="98" width="16" height="9" rx="3"/><rect x="36" y="120" width="16" height="9" rx="3"/><rect x="148" y="98" width="16" height="9" rx="3"/><rect x="148" y="120" width="16" height="9" rx="3"/><rect x="72" y="160" width="13" height="30" rx="4"/><rect x="115" y="160" width="13" height="30" rx="4"/></g>
+<ellipse cx="78" cy="192" rx="14" ry="6" fill="#58a6ff"/><ellipse cx="122" cy="192" rx="14" ry="6" fill="#58a6ff"/>
+<g class="arm"><line x1="150" y1="84" x2="180" y2="56" stroke="#58a6ff" stroke-width="9" stroke-linecap="round"/><circle cx="182" cy="53" r="9" fill="#f1e05a"/></g>
+<rect x="50" y="50" width="100" height="112" rx="24" fill="url(#g)" stroke="#58a6ff" stroke-width="3"/>
+<rect x="64" y="66" width="72" height="62" rx="14" fill="#0b0f19"/>
+<rect class="eye" x="78" y="82" width="12" height="18" rx="6" fill="#3fb950"/><rect class="eye" x="110" y="82" width="12" height="18" rx="6" fill="#3fb950"/>
+<path d="M84 110 Q100 124 116 110" stroke="#3fb950" stroke-width="4" fill="none" stroke-linecap="round"/>
+<rect x="64" y="134" width="72" height="22" rx="6" fill="#0b0f19" stroke="#f1e05a" stroke-width="1.5"/><text x="100" y="150" text-anchor="middle" fill="#f1e05a" font-family="monospace" font-weight="bold" font-size="14" letter-spacing="1">JACKE</text>
+</svg></div>
+<h1 class="logo">Cy<span>Tech</span></h1>
+<p class="tag">Aprende informática jugando · by Jacke</p>
+<div class="bub">🤖 ¡Hola! Soy <b>Jacke</b>, tu guía tecnológica. ¿Listo para compilar tu cerebro?</div>
+<div class="chips" id="cinfo"></div>
+<button class="btn" onclick="go('map')">▶ Empezar</button>
+<p style="text-align:center;font-size:.8rem;color:#8b949e;margin:12px 0 0">Jugador: Christ Ydrogo</p></div>
+<div id="map" class="screen"><h2>Ruta de Aprendizaje Tecnológico</h2><div class="path" id="path"></div>
 <button class="btn" onclick="go('lb')">🏆 Salón de la Fama</button>
 <button class="btn sec" onclick="go('store')">🛒 Tienda Hacker</button>
 <button class="btn sec" id="rst" onclick="reset()">Reiniciar progreso</button></div>
@@ -63,61 +101,51 @@ h2{font-size:1.1rem;color:var(--blue);text-align:center;margin:0 0 12px}
 </div><div id="toast"></div>
 
 <script>
+// Formato: [pregunta, correcta, mala1, mala2, mala3, explicación]
 const OLD=[
 {n:"Redes",i:"🌐",q:[
 ["¿Qué puerto usa HTTPS por defecto?","443","80","21","25","HTTP usa el 80; HTTPS, cifrado con TLS, usa el 443."],
 ["¿Qué protocolo traduce nombres de dominio a direcciones IP?","DNS","DHCP","FTP","SMTP","DNS funciona como la agenda de Internet."],
 ["¿Cuántos bits tiene una dirección IPv4?","32","64","128","16","IPv6 tiene 128 bits."],
 ["¿Qué dispositivo conecta redes distintas y enruta paquetes?","Router","Switch","Hub","Repetidor","El switch conecta equipos dentro de una misma red."],
-["¿Qué protocolo de transporte garantiza la entrega ordenada de datos?","TCP","UDP","ICMP","ARP","UDP es más rápido pero no garantiza entrega."]
-]},
+["¿Qué protocolo de transporte garantiza la entrega ordenada de datos?","TCP","UDP","ICMP","ARP","UDP es más rápido pero no garantiza entrega."]]},
 {n:"Programación",i:"💻",q:[
 ["¿Qué estructura repite código mientras se cumpla una condición?","while","if","switch","return","while evalúa la condición antes de cada vuelta."],
 ["¿Cuánto vale 7 % 3 en la mayoría de lenguajes?","1","2","0","3","% devuelve el residuo de la división."],
 ["¿Qué tipo de dato almacena verdadero o falso?","Booleano","Entero","Cadena","Flotante","Se llama así por George Boole."],
 ["¿Qué es un array?","Una colección ordenada de elementos","Un tipo de error","Un compilador","Un protocolo de red","Se accede a sus elementos por índice."],
-["¿Cómo se llama una función que se llama a sí misma?","Recursiva","Iterativa","Anónima","Estática","Necesita un caso base para detenerse."]
-]},
+["¿Cómo se llama una función que se llama a sí misma?","Recursiva","Iterativa","Anónima","Estática","Necesita un caso base para detenerse."]]},
 {n:"Paradigmas",i:"🧩",q:[
 ["¿Qué paradigma organiza el código en objetos y clases?","POO","Imperativo","Funcional","Lógico","POO = Programación Orientada a Objetos."],
 ["¿Qué pilar de la POO oculta los datos internos de un objeto?","Encapsulamiento","Recursión","Compilación","Iteración","Se logra con atributos privados y métodos de acceso."],
 ["¿Cuál es un lenguaje principalmente funcional?","Haskell","C","Assembly","COBOL","Se basa en funciones puras y sin estado mutable."],
 ["SQL es un ejemplo de paradigma…","Declarativo","Imperativo","Orientado a objetos","Ensamblador","Dices qué quieres obtener, no cómo hacerlo."],
-["¿Qué permite la herencia en POO?","Reutilizar atributos y métodos de una clase base","Cifrar datos","Ejecutar en paralelo","Eliminar objetos","Una clase hija extiende a su clase padre."]
-]},
+["¿Qué permite la herencia en POO?","Reutilizar atributos y métodos de una clase base","Cifrar datos","Ejecutar en paralelo","Eliminar objetos","Una clase hija extiende a su clase padre."]]},
 {n:"Software libre",i:"🕊️",q:[
 ["¿Quién fundó el movimiento del software libre y la FSF?","Richard Stallman","Linus Torvalds","Bill Gates","Steve Jobs","Lo inició en 1983 con el proyecto GNU."],
 ["¿Cuántas libertades esenciales define el software libre?","4","2","3","5","Usar, estudiar, distribuir y mejorar (numeradas 0 a 3)."],
 ["¿Cuál es una licencia copyleft?","GPL","MIT","BSD","Licencia propietaria","Copyleft exige que las obras derivadas sigan siendo libres."],
 ["Software libre significa principalmente…","Respeta la libertad de usar, estudiar y modificar","Que es gratis","Que no necesita internet","Que solo es para empresas","Libre se refiere a libertad, no a precio."],
-["¿Quién creó el kernel Linux en 1991?","Linus Torvalds","Dennis Ritchie","Ken Thompson","Tim Berners-Lee","Linux + herramientas GNU forman GNU/Linux."]
-]},
+["¿Quién creó el kernel Linux en 1991?","Linus Torvalds","Dennis Ritchie","Ken Thompson","Tim Berners-Lee","Linux + herramientas GNU forman GNU/Linux."]]},
 {n:"Linux",i:"🐧",q:[
 ["¿Qué comando lista los archivos de un directorio?","ls","cd","rm","cat","ls = list."],
 ["¿Qué comando cambia de directorio?","cd","mv","pwd","mkdir","cd = change directory."],
 ["¿Cómo se llama el superusuario en Linux?","root","admin","sudo","guest","sudo permite ejecutar comandos como root."],
 ["¿Qué comando muestra la ruta del directorio actual?","pwd","path","where","dir","pwd = print working directory."],
-["¿En qué directorio suelen estar los archivos de configuración del sistema?","/etc","/bin","/tmp","/home","/home guarda los archivos de los usuarios."]
-]},
-{n:"Bases de datos",i:"🗄️️",q:[
+["¿En qué directorio suelen estar los archivos de configuración del sistema?","/etc","/bin","/tmp","/home","/home guarda los archivos de los usuarios."]]},
+{n:"Bases de datos",i:"🗄️",q:[
 ["¿Qué hace la cláusula GROUP BY?","Agrupa filas con valores idénticos","Une dos tablas","Borra duplicados","Crea índices","Se usa junto a COUNT, SUM, AVG…"],
 ["¿Qué identifica de forma única cada fila de una tabla?","Clave primaria","Clave foránea","Índice","Vista","La clave foránea referencia la primaria de otra tabla."],
 ["¿Cuál de estas bases de datos es NoSQL?","MongoDB","MySQL","PostgreSQL","Oracle","MongoDB guarda documentos tipo JSON."],
 ["¿Qué sentencia SQL consulta datos?","SELECT","INSERT","UPDATE","DROP","INSERT agrega, UPDATE modifica, DROP elimina."],
-["¿Qué significa la A de ACID?","Atomicidad","Aislamiento","Acceso","Almacenamiento","Una transacción se ejecuta completa o no se ejecuta."]
-]},
+["¿Qué significa la A de ACID?","Atomicidad","Aislamiento","Acceso","Almacenamiento","Una transacción se ejecuta completa o no se ejecuta."]]},
 {n:"Ing. de Software",i:"🛠️",q:[
 ["¿Qué metodología ágil trabaja con sprints?","Scrum","Cascada","Espiral","RUP","Los sprints son iteraciones cortas, de 1 a 4 semanas."],
 ["¿Qué lenguaje se usa para modelar y documentar sistemas con diagramas?","UML","HTML","SQL","JSON","Incluye diagramas de clases, casos de uso, secuencia…"],
 ["¿Cuál es un requisito no funcional?","El sistema responde en menos de 2 segundos","El usuario puede iniciar sesión","Se puede registrar un cliente","Se genera un reporte en PDF","Los no funcionales describen calidad: rendimiento, seguridad…"],
 ["¿Qué comando de Git guarda cambios en el repositorio local?","git commit","git push","git pull","git clone","push los sube al repositorio remoto."],
-["¿Qué modelo de ciclo de vida es secuencial, fase tras fase?","Cascada","Scrum","Kanban","Prototipado","Análisis → diseño → implementación → pruebas → mantenimiento."]
-]}
+["¿Qué modelo de ciclo de vida es secuencial, fase tras fase?","Cascada","Scrum","Kanban","Prototipado","Análisis → diseño → implementación → pruebas → mantenimiento."]]}
 ];
-
-// Pregunta 160 adicional para completar exactamente las 160 preguntas requeridas
-OLD[6].q.push(["¿Qué fase de la prueba de software evalúa el sistema completo frente a los requisitos especificados?","Pruebas de aceptación","Pruebas unitarias","Pruebas de caja blanca","Pruebas de compilación","Valida que el software cumpla con las expectativas del usuario final."]);
-
 OLD[2].q.push(
 ["¿Qué paradigma describe una secuencia de instrucciones que cambian el estado del programa?","Imperativo","Declarativo","Lógico","Funcional","Indicas paso a paso cómo hacerlo (C, Pascal)."],
 ["¿Qué es un objeto en POO?","Una instancia de una clase con atributos y métodos","Un tipo de bucle","Un archivo de texto","Un protocolo de red","La clase es el molde; el objeto es lo creado con él."],
@@ -134,7 +162,6 @@ OLD[2].q.push(
 ["¿Qué significa inmutabilidad?","Un dato no puede modificarse tras crearse","Una variable global","Un error de compilación","Un tipo de herencia","Evita efectos secundarios inesperados."],
 ["¿Qué es una clase abstracta?","Una clase que no puede instanciarse directamente","Una clase sin métodos","Una clase final","Una clase solo con atributos estáticos","Sirve de base para otras clases."],
 ["¿Cuál de estos lenguajes es multiparadigma?","Python","SQL","Prolog","Haskell","Python admite estilo imperativo, POO y funcional."]);
-
 OLD[3].q.push(
 ["¿Cuál es la libertad 0 del software libre?","Ejecutar el programa para cualquier propósito","Estudiar el código","Distribuir copias","Mejorar el programa","Las otras son: 1 estudiar, 2 distribuir, 3 mejorar."],
 ["¿Qué organización promueve el término 'open source'?","Open Source Initiative","Free Software Foundation","Mozilla","W3C","La OSI nació en 1998."],
@@ -151,7 +178,6 @@ OLD[3].q.push(
 ["¿Cuál es un gestor de bases de datos libre?","PostgreSQL","Oracle Database","SQL Server","DB2","MySQL y MariaDB también lo son."],
 ["¿Qué fundación creó Stallman en 1985?","Free Software Foundation","Linux Foundation","Apache Foundation","Mozilla Foundation","Promueve el software libre."],
 ["¿Cuál es una ventaja del software libre?","Puedes auditar el código y adaptarlo a tus necesidades","Nunca tiene errores","Solo funciona en servidores","Siempre incluye soporte pagado","La transparencia mejora la seguridad y la autonomía."]);
-
 OLD[6].q.push(
 ["¿Qué es un requisito funcional?","Describe lo que el sistema debe hacer","Describe su nivel de calidad","Es una restricción legal","Indica el lenguaje a usar","Ejemplo: 'el usuario puede iniciar sesión'."],
 ["¿En qué fase se define qué debe hacer el sistema?","Análisis de requisitos","Mantenimiento","Despliegue","Pruebas","Es la primera etapa del ciclo de vida."],
@@ -168,8 +194,8 @@ OLD[6].q.push(
 ["¿Qué garantiza el patrón Singleton?","Una única instancia de una clase","Crear familias de objetos","Observar eventos","Adaptar interfaces","Es un patrón creacional."],
 ["¿Qué es la integración continua?","Integrar y probar el código automáticamente y con frecuencia","Desplegar a mano cada mes","Revisar el código una vez al año","Documentar el sistema","Detecta errores temprano."],
 ["¿Qué diagrama muestra tareas y plazos con barras en el tiempo?","Diagrama de Gantt","UML","Kanban","Entidad-Relación","Sirve para planificar proyectos."]);
-
 const esc=s=>s.replace(/[&\u003c>]/g,c=>({'&':'&amp;','\u003c':'&lt;','>':'&gt;'}[c]));
+// [pregunta, índice correcto, opción0..3]
 const W=[
 [["¿Qué lenguaje estructura las páginas web?",1,"CSS","HTML","Python","SQL"],
 ["¿Qué etiqueta HTML se usa para el contenido principal de una página?",0,"\u003cmain>","\u003csection>","\u003cdiv>","\u003carticle>"],
@@ -182,8 +208,8 @@ const W=[
 ["¿Cómo se escribe un comentario en HTML?",2,"// Comentario","/* Comentario */","\u003c!-- Comentario -->","# Comentario"],
 ["¿Cuál es la versión estándar actual de HTML?",1,"HTML 4","HTML 5","XHTML","HTML 6"]],
 [["¿Para qué se utiliza principalmente CSS?",0,"Dar diseño y estilos visuales","Gestionar bases de datos","Crear servidores","Compilar código binario"],
-["¿Qué símbolo se utiliza en CSS para seleccionar un elemento por su ID?",1,'.','#','*','&'],
-["¿Qué símbolo se usa en CSS para seleccionar elementos por su clase?",1,'#','.',"@",'$'],
+["¿Qué símbolo se utiliza en CSS para seleccionar un elemento por su ID?",1,".","#","*","&"],
+["¿Qué símbolo se usa en CSS para seleccionar elementos por su clase?",1,"#",".","@","$"],
 ["¿Qué propiedad de CSS define el espacio interno entre el contenido y el borde?",1,"margin","padding","border","spacing"],
 ["¿Qué propiedad define el espacio exterior de un elemento?",1,"padding","margin","spacing","outline"],
 ["¿Qué propiedad de CSS activa el modelo de diseño Flexbox?",0,"display: flex;","layout: flexbox;","flex: true;","box: flexible;"],
@@ -266,11 +292,10 @@ const W=[
 ["¿Cuál es la herramienta estándar de la industria para orquestar contenedores?",0,"Kubernetes","Ansible","Terraform","Jenkins"],
 ["¿Qué significan las siglas CI/CD en DevOps?",1,"Code Integration / Code Delivery","Continuous Integration / Continuous Delivery","Cloud Instance / Cloud Deployment","Container Image / Container Disk"],
 ["¿Qué servicio integrado en GitHub permite automatizar flujos de CI/CD?",1,"GitHub Pages","GitHub Actions","GitHub Copilot","GitHub Security"],
-["¿Qué herramienta se utiliza comúnmente para aprovisionar infraestructura mediante código (IaC)?",0,"Terraform","Docker","Git","Nginx"],
+["¿Qué herramienta se utiliza comúnmente para aprovisionar infraestructuramediante código (IaC)?",0,"Terraform","Docker","Git","Nginx"],
 ["¿Qué software de servidor web de alto rendimiento actúa también como proxy inverso?",1,"Apache","Nginx","IIS","Tomcat"],
 ["¿Cuál es el proveedor de servicios en nube con mayor cuota de mercado global?",2,"Google Cloud","Microsoft Azure","Amazon Web Services (AWS)","IBM Cloud"],
 ["¿Qué autoridad de certificación gratuita ofrece certificados SSL/TLS automatizados?",0,"Let's Encrypt","VeriSign","DigiCert","Cloudflare SSL"]]];
-
 let n=0;
 const E=["HTML define la estructura y el contenido de la página.","\u003cmain> marca el contenido principal único del documento.","href guarda la URL de destino; src es para recursos como imágenes.","alt describe la imagen a lectores de pantalla y si no carga.","\u003col> numera los elementos; \u003cul> usa viñetas.","type=password oculta lo que escribes con puntos.","\u003ctr> es la fila; \u003ctd> es la celda.","\u003chead> guarda título, meta y enlaces a estilos.","Los comentarios HTML no se muestran en el navegador.","HTML5 es el estándar vigente.",
 "CSS controla colores, tipografías y disposición.","#id selecciona un elemento único.",".clase selecciona todos los elementos con esa clase.","padding es el relleno interior; margin es el espacio exterior.","margin separa el elemento de sus vecinos.","display:flex activa el contenedor flexible.","fixed se ancla a la ventana y no se mueve al hacer scroll.","RGBA añade el canal alfa (0 a 1) para la transparencia.","font-size define el tamaño del texto.","@media aplica estilos según el tamaño de pantalla.",
@@ -282,24 +307,21 @@ const E=["HTML define la estructura y el contenido de la página.","\u003cmain> 
 "DDoS satura un servicio con tráfico desde muchos orígenes.","El phishing engaña para robar credenciales.","SQL Injection se evita con consultas parametrizadas.","AES usa la misma clave para cifrar y descifrar.","SHA-256 produce un hash de 256 bits irreversible.","El firewall permite o bloquea tráfico según reglas.","MFA combina algo que sabes, tienes o eres.","XSS inyecta scripts en páginas que ven otros usuarios.","En RSA se cifra con la pública y se descifra con la privada.","El ransomware secuestra tus archivos cifrándolos.",
 "Una API permite que los programas se comuniquen.","REST usa verbos HTTP sobre recursos.","Los códigos 2xx significan éxito.","404 = recurso no encontrado.","Los 5xx son errores del servidor.","MVC separa datos, interfaz y lógica de control.","GraphQL nació en Facebook en 2012.","Cada microservicio se despliega y escala por separado.","Sin estado: el servidor no recuerda peticiones previas.","OpenAPI (antes Swagger) documenta APIs REST.",
 "GitHub Pages sirve sitios estáticos gratis.","Docker empaqueta apps en contenedores ligeros.","Kubernetes automatiza despliegue y escalado de contenedores.","CI/CD automatiza integrar, probar y entregar código.","GitHub Actions ejecuta flujos definidos en YAML.","Terraform describe la infraestructura en archivos de código.","Nginx sirve contenido y balancea carga como proxy inverso.","AWS lidera el mercado de nube.","Let's Encrypt emite certificados gratis y renovables."];
-
 const NM=[["HTML","🏷️"],["CSS","🎨"],["JavaScript","⚡"],["SQL y Bases de Datos","🗄️"],["Redes","🌐"],["Linux","🐧"],["Git","🔀"],["Seguridad","🔐"],["Arquitectura y APIs","🏗️"],["Cloud y DevOps","☁️"]];
 const U=W.map((u,i)=>({n:NM[i][0],i:NM[i][1],q:u.map(x=>({q:x[0],a:x[1],o:x.slice(2),e:E[n++]}))}))
 .concat([2,3,6].map(k=>{const u=OLD[k];return{n:u.n,i:u.i,q:u.q.map(x=>({q:x[0],o:x.slice(1,5),a:0,e:x[5]}))}}));
-
 const RIV=[["Carlos M.",7420],["Ana Sofía",5900],["Luis P.",4800],["María T.",3300]];
 const $=id=>document.getElementById(id);
-let S={xp:6301,bits:170,streak:1,last:"",done:0,hints:0,extra:0};
+let S={xp:0,bits:0,streak:1,last:"",done:0,hints:0,extra:0};
 try{Object.assign(S,JSON.parse(localStorage.getItem('cytech3')||'{}'))}catch(e){}
 const save=()=>{try{localStorage.setItem('cytech3',JSON.stringify(S))}catch(e){}};
 const today=new Date().toDateString();
 if(S.last!==today){S.streak=S.last===new Date(Date.now()-864e5).toDateString()?S.streak+1:1;S.last=today;save()}
 const shuf=a=>a.map(x=>[Math.random(),x]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);
-
 function say(t){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='es-ES';speechSynthesis.speak(u)}catch(e){}}
 function toast(t){const e=$('toast');e.innerText=t;e.classList.add('on');setTimeout(()=>e.classList.remove('on'),1800)}
 function stats(){$('st').innerText=S.streak;$('xp').innerText=S.xp;$('bt').innerText=S.bits}
-function go(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));$(id).classList.add('on');
+function go(id){document.querySelector('.stats').style.display=id=='cover'?'none':'flex';document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));$(id).classList.add('on');
  if(id=='map')map();if(id=='lb')board();if(id=='store')$('inv').innerText=`Tienes: ${S.extra} vidas extra · ${S.hints} pistas`;stats()}
 function map(){const p=$('path');p.innerHTML='';U.forEach((u,i)=>{const n=document.createElement('div');
  n.className='node '+(i<S.done?'ok':i==S.done?'cur':'');n.style.transform=`translateX(${i%2?40:-40}px)`;
@@ -308,110 +330,34 @@ let L;
 function start(u){L={u,qs:shuf(U[u].q).map(x=>({q:x.q,a:x.o[x.a],o:x.o.some(t=>/^Ambas/.test(t))?x.o:shuf(x.o),e:x.e||''})),i:0,lives:3,ok:0,done:false};go('game');show()}
 function hearts(){$('lv').innerText='❤️'.repeat(Math.max(L.lives,0))||'💔'}
 function show(){const c=L.qs[L.i];L.done=false;L.used=false;hearts();$('ut').innerText=`${U[L.u].i} ${U[L.u].n}`;
- $('pb').style.width=(L.i/L.qs.length*100)+'\%';$('q').innerText=c.q;$('fb').className='fb';$('next').style.display='none';
+ $('pb').style.width=(L.i/L.qs.length*100)+'%';$('q').innerText=c.q;$('fb').className='fb';$('next').style.display='none';
  $('hint').style.display='block';$('hint').innerText=`💡 Pista 50/50 (${S.hints})`;
  const o=$('opts');o.innerHTML='';c.o.forEach(t=>{const b=document.createElement('button');b.className='opt';b.innerText=t;b.onclick=()=>pick(b,t);o.appendChild(b)})}
 function hint(){if(L.done||L.used)return;if(S.hints<1)return toast('No tienes pistas. Cómpralas en la tienda');
  S.hints--;L.used=true;save();$('hint').innerText=`💡 Pista 50/50 (${S.hints})`;
  const c=L.qs[L.i];shuf([...document.querySelectorAll('.opt')].filter(b=>b.innerText!==c.a)).slice(0,2).forEach(b=>{b.classList.add('off');b.disabled=true})}
-
-function pick(b,t){
-    if(L.done)return;
-    L.done=true;
-    const c=L.qs[L.i],f=$('fb');$('hint').style.display='none';
-    document.querySelectorAll('.opt').forEach(x=>{x.disabled=true;if(x.innerText===c.a)x.classList.add('good')});
-    
-    if(t===c.a){
-        L.ok++;
-        S.xp+=50;
-        S.bits+=15;
-        f.className='fb good';
-        f.innerHTML=`✅ <b>¡Correcto!</b> ${c.e}`;
-        say('¡Correcto!');
-        try{confetti({particleCount:70,spread:60,origin:{y:.6}})}catch(e){}
-    } else {
-        b.classList.add('bad');
-        L.lives--;
-        if(L.lives<=0&&S.extra>0){S.extra--;L.lives=1;toast('Se usó una vida extra ❤️')}
-        L.qs.push(c);
-        f.className='fb bad';
-        f.innerHTML=`❌ <b>Respuesta:</b> ${esc(c.a)}. ${c.e}<br><small>Volverá a aparecer al final.</small>`;
-        say('Incorrecto');
-    }
-    save();
-    stats();
-    hearts();
-    $('next').style.display='block';
-}
-
-function next(){
-    if(L.lives<=0)return end(false);
-    L.i++;
-    if(L.i>=L.qs.length){
-        end(true);
-    } else {
-        show();
-    }
-}
-
-function end(win){
-    go('res');
-    if(!win){
-        $('rt').innerText='💔 Te quedaste sin vidas';
-        $('rb').innerHTML='<div style="font-size:46px">😵</div><p>No te rindas, ¡inténtalo de nuevo! Repasa y vuelve más fuerte.</p>';
-        say('Te quedaste sin vidas');
-        return;
-    }
-    S.xp+=100;
-    S.bits+=30;
-    const first=L.u===S.done;
-    if(first)S.done++;
-    save();
-    stats();
-    
-    try{confetti({particleCount:250,spread:120,origin:{y:.4}})}catch(e){}
-
-    if(S.done>=U.length){
-        $('rt').innerText='🎉 ¡Misión Cumplida y Estación Legendaria!';
-        $('rb').innerHTML=`<div style="font-size:50px">🏆</div><h3 style="color:var(--gold);margin:6px 0">Rango: Desarrollador Full-Stack Elite con Insignia de Oro</h3><p style="font-size:.9rem;line-height:1.4">¡Felicidades, Christ Ydrogo! Has completado las ${U.length} unidades y las 160 preguntas tecnológicas. Esta insignia certifica tu maestría técnica absoluta.</p>`;
-        say('¡Felicidades, has completado todas las unidades y ganado la insignia de oro!');
-    } else {
-        $('rt').innerText='✅ ¡Lección completada!';
-        $('rb').innerHTML=`<div style="font-size:46px">${U[L.u].i}</div><h3 style="color:var(--gold);margin:6px 0">${U[L.u].n}</h3><p>+XP ganada · ❤️ ${L.lives} vidas restantes<br>${first&&S.done<U.length?'¡Desbloqueaste la siguiente unidad!':''}</p>`;
-        say('Lección completada con éxito');
-    }
-}
-
-function board(){
-    const l=[...RIV,["Christ Ydrogo",S.xp]].sort((a,b)=>b[1]-a[1]);
-    $('lbl').innerHTML=l.map((r,i)=>`<div class="row" style="${r[0]=='Christ Ydrogo'?'color:var(--gold);font-weight:bold':''}"><span>${['🥇','🥈','🥉'][i]||(i+1)+'.'} ${r[0]}</span><span>${r[1]} XP</span></div>`).join('');
-}
-
-function buy(k){
-    const c=k=='vida'?50:30;
-    if(S.bits<c)return toast('No tienes suficientes Bits');
-    S.bits-=c;
-    k=='vida'?S.extra++:S.hints++;
-    save();
-    stats();
-    toast('¡Compra realizada!');
-    go('store');
-}
-
-let rc=false;
-function reset(){
-    if(!rc){
-        rc=true;
-        $('rst').innerText='Toca de nuevo para confirmar';
-        setTimeout(()=>{rc=false;$('rst').innerText='Reiniciar progreso'},3000);
-        return;
-    }
-    S={xp:6301,bits:170,streak:1,last:today,done:0,hints:0,extra:0};
-    save();
-    rc=false;
-    $('rst').innerText='Reiniciar progreso';
-    go('map');
-}
-
-go('map');
+function pick(b,t){if(L.done)return;L.done=true;const c=L.qs[L.i],f=$('fb');$('hint').style.display='none';
+ document.querySelectorAll('.opt').forEach(x=>{x.disabled=true;if(x.innerText===c.a)x.classList.add('good')});
+ if(t===c.a){L.ok++;S.xp+=10;S.bits+=5;f.className='fb good';f.innerHTML=`✅ <b>¡Correcto!</b> ${c.e}`;say('¡Correcto!');
+  try{confetti({particleCount:50,spread:60,origin:{y:.6}})}catch(e){}}
+ else{b.classList.add('bad');L.lives--;if(L.lives<=0&&S.extra>0){S.extra--;L.lives=1;toast('Se usó una vida extra ❤️')}
+  L.qs.push(c);f.className='fb bad';f.innerHTML=`❌ <b>Respuesta:</b> ${esc(c.a)}. ${c.e}<br><small>Volverá a aparecer al final.</small>`;say('Incorrecto')}
+ save();stats();hearts();$('next').style.display='block'}
+function next(){if(L.lives<=0)return end(false);L.i++;L.i>=L.qs.length?end(true):show()}
+function end(win){go('res');if(!win){$('rt').innerText='💔 Te quedaste sin vidas';
+  $('rb').innerHTML='<div style="font-size:46px">😵</div><p>No te rindas, ¡inténtalo de nuevo! Repasa y vuelve más fuerte.</p>';return}
+ S.xp+=20;S.bits+=10;const first=L.u===S.done;if(first)S.done++;save();stats();
+ try{confetti({particleCount:200,spread:110,origin:{y:.4}})}catch(e){}
+ if(S.done>=U.length&&first){$('rt').innerText='🎉 ¡Misión Cumplida!';
+  $('rb').innerHTML=`<div style="font-size:50px">🏆</div><h3 style="color:var(--gold);margin:6px 0">Rango: Desarrollador Full-Stack Elite</h3><p style="font-size:.9rem;line-height:1.4">¡Felicidades, Christ Ydrogo! Completaste las ${U.length} unidades de la ruta tecnológica.</p>`;say('¡Felicidades, completaste todas las áreas!')}
+ else{$('rt').innerText='✅ ¡Lección completada!';
+  $('rb').innerHTML=`<div style="font-size:46px">${U[L.u].i}</div><h3 style="color:var(--gold);margin:6px 0">${U[L.u].n}</h3><p>+${L.ok*10+20} XP · ❤️ ${L.lives} vidas restantes<br>${first&&S.done<U.length?'¡Desbloqueaste la siguiente unidad!':''}</p>`}}
+function board(){const l=[...RIV,["Christ Ydrogo",S.xp]].sort((a,b)=>b[1]-a[1]);
+ $('lbl').innerHTML=l.map((r,i)=>`<div class="row" style="${r[0]=='Christ Ydrogo'?'color:var(--gold);font-weight:bold':''}"><span>${['🥇','🥈','🥉'][i]||(i+1)+'.'} ${r[0]}</span><span>${r[1]} XP</span></div>`).join('')}
+function buy(k){const c=k=='vida'?50:30;if(S.bits<c)return toast('No tienes suficientes Bits');
+ S.bits-=c;k=='vida'?S.extra++:S.hints++;save();stats();toast('¡Compra realizada!');go('store')}
+let rc=false;function reset(){if(!rc){rc=true;$('rst').innerText='Toca de nuevo para confirmar';setTimeout(()=>{rc=false;$('rst').innerText='Reiniciar progreso'},3000);return}
+ S={xp:0,bits:0,streak:1,last:today,done:0,hints:0,extra:0};save();rc=false;$('rst').innerText='Reiniciar progreso';go('map')}
+$('cinfo').innerHTML=`<span>📚 ${U.length} unidades</span><span>❓ ${U.reduce((a,u)=>a+u.q.length,0)} preguntas</span><span>🔥 Racha: ${S.streak}</span>`;
+go('cover');
 </script></body></html>
